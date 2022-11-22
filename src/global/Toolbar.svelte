@@ -12,7 +12,7 @@ onMount(async () => {
     return () => unlisten();
 })
 
-
+// #db8cbf #d92626
 
 </script>
 
@@ -31,12 +31,14 @@ onMount(async () => {
 <style lang="scss">
 	nav {
 		background-color: var(--nav-unfocused);
-		height: 32px;
+		height: 28px;
 
         display: flex;
         justify-content: space-between;
 
         transition: 0.3s all;
+        border-bottom-right-radius: 10px;
+        border-bottom-left-radius: 10px;
 
         .left, .right {
             display: flex;
@@ -45,7 +47,7 @@ onMount(async () => {
         }
 
         .left {
-            padding: 0px 5px;
+            padding: 0px 10px;
         }
 
         button {
@@ -60,12 +62,12 @@ onMount(async () => {
 
             transition: 0.2s all;
             &:hover {
-                background: rgba($color: #ffffff, $alpha: 0.15);
+                color: rgba($color: #ffffff, $alpha: 0.5);
             }
         }
 
         .red-hover:hover {
-            background: rgba($color: #ff0000, $alpha: 0.7);
+            color: rgba($color: #ff0000, $alpha: 0.7);
         }
 
         img {

@@ -1,28 +1,23 @@
 <script lang="ts">
   import Toolbar from './global/Toolbar.svelte';
-import Greet from './lib/Greet.svelte'
+  import { invoke } from '@tauri-apps/api/tauri';
+  let canvas: HTMLCanvasElement;
+  let data: any;
+  let color=0;
+
+  let update_color = async (color) => {
+
+    let val = await invoke("get_image", {hue: color});
+    data = val;
+
+  }
 </script>
+
 <Toolbar></Toolbar>
-<main class="container">
-  <h1>Welcome to Tauri!</h1>
+<input bind:value={color}  type="range" min="0" max="360" class="slider">
+<canvas width="255" height="255" bind:this={canvas}/>
+<!-- svelte-ignore empty-block -->
+<img src={data}>
+{#await update_color(color) then _}
 
-  <p>
-    Click on the Tauri, Vite, and Svelte logos to learn more.
-  </p>
-
-  <div class="row">
-    <Greet />
-  </div>
-
-
-</main>
-
-<style>
-  .logo.vite:hover {
-    filter: drop-shadow(0 0 2em #747bff);
-  }
-
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00);
-  }
-</style>
+{/await}
