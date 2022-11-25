@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { getImage } from "./engine/ColorSelector";
+    import Window from "./components/Window.svelte";
+import { getImage } from "./engine/ColorSelector";
     import Toolbar from "./global/Toolbar.svelte";
     //import { invoke } from '@tauri-apps/api/tauri';
     let canvas: HTMLCanvasElement;
@@ -9,6 +10,7 @@
     $: {
         color;
         if(canvas!=null) {
+            console.log("render");
             let ctx = canvas.getContext("2d");
             let idata = ctx.createImageData(255, 255);
 
@@ -23,5 +25,9 @@
 </script>
 
 <Toolbar />
-<input bind:value={color} type="range" min="0" max="360" class="slider" />
+
+<Window title="Color" x=10 y=20>
+    <input bind:value={color} type="range" min="0" max="360" class="slider" />
 <canvas width="255" height="255" bind:this={canvas} />
+</Window>
+<Window title="cf" x=100 y=20></Window>
