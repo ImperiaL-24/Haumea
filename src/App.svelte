@@ -2,6 +2,7 @@
     import Window from "./components/Window.svelte";
 import { getImage } from "./engine/ColorSelector";
     import Toolbar from "./global/Toolbar.svelte";
+    import { mousePos, mouseDelta } from './store'; 
     //import { invoke } from '@tauri-apps/api/tauri';
     let canvas: HTMLCanvasElement;
     let data: any;
@@ -22,6 +23,11 @@ import { getImage } from "./engine/ColorSelector";
         }
         
     }
+
+        let setMousePos = (e) => {
+        $mouseDelta = [e.clientX-$mousePos[0], e.clientY-$mousePos[1]]
+        $mousePos = [e.clientX, e.clientY];
+    }
 </script>
 
 <Toolbar />
@@ -31,3 +37,5 @@ import { getImage } from "./engine/ColorSelector";
 <canvas width="255" height="255" bind:this={canvas} />
 </Window>
 <Window title="cf" x=100 y=20></Window>
+
+<svelte:window on:mousemove={(e) => setMousePos(e)}></svelte:window>

@@ -1,16 +1,16 @@
 <script lang="ts">
 
-import { indexCount } from "../store";
+import { indexCount, mouseDelta } from "../store";
 export let title: string;
-export let x: string;
-export let y: string;
+export let x: string = "0";
+export let y: string = "10";
 let window: HTMLDivElement;
 let moving: boolean = false;
-let move = (e:MouseEvent) => {
+let move = () => {
     if(!moving) return;
-    console.log(e.movementX)
-    x=(parseInt(x)+e.movementX).toString()
-    y=(parseInt(y)+e.movementY).toString()
+    console.log($mouseDelta)
+    x=(parseInt(x)+$mouseDelta[0]).toString()
+    y=(parseInt(y)+$mouseDelta[1]).toString()
 }
 </script>
 
@@ -20,7 +20,7 @@ let move = (e:MouseEvent) => {
  </nav>
  <slot/>
 </div>
-<svelte:window on:mousemove={(e) => move(e)} on:mouseup={() => {moving = false;}}></svelte:window>
+<svelte:window on:mousemove={() => move()} on:mouseup={() => {moving = false;}}></svelte:window>
 
 <style lang="scss">
     div {
