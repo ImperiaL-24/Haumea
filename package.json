@@ -14,7 +14,8 @@
     "@tauri-apps/api": "^1.1.0",
     "node-sass": "^8.0.0",
     "sass": "^1.56.1",
-    "svelte-feather-icons": "^4.0.0"
+    "svelte-feather-icons": "^4.0.0",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.0.1",
