@@ -7,6 +7,7 @@ export let indexCount = writable(1)
 export let mousePos = writable([0,0])
 export let mouseDelta = writable([0,0])
 export let currentWindow = writable("")
+// Map of all current windows on the screen
 export let windows: Writable<Map<string,WindowData>> = writable(new Map())
 export let windowRerender = writable(false);
 export let addWindow = (...tabs: TabType[]) => {

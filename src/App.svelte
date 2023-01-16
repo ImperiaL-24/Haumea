@@ -4,6 +4,7 @@
     import { mousePos, mouseDelta, windows, addWindow, currentWindow, windowRerender } from './store'; 
     import Toolbar from "./global/Toolbar.svelte";
     import { TabType } from "./window/TabType";
+    import { currentColor } from "./engine/ColorManager";
     
     let setMousePos = (e) => {
         $mouseDelta = [e.clientX-$mousePos[0], e.clientY-$mousePos[1]]
@@ -13,8 +14,8 @@
     windows.subscribe(n => {
         wind=n;
     })
-    addWindow(TabType.ColorSelector, TabType.Test)
-    addWindow(TabType.Test)
+    // addWindow(TabType.ColorSelector, TabType.Test)
+    // addWindow(TabType.Test)
     addWindow(TabType.ColorSelector)
     $: {
         console.log(wind)   
@@ -23,7 +24,8 @@
 </script>
 
 <Toolbar />
-<button on:click={() => console.log($windows)}>eee</button>
+<button on:click={() => console.log($currentColor)}>eee</button>
+<div style="{`background-color:${$currentColor.asHex()}; width:100px; height:100px;`}"></div>
 {#key $windowRerender}
     {#each [...wind] as window}
     <Window id={window[0]}></Window>

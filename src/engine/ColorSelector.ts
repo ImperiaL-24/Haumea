@@ -1,6 +1,8 @@
-let hsvToRgb = (hue: number, saturation: number, value: number): [number, number, number] => {
+import { Color } from "./Color";
 
-    if (saturation == 0.0) return [value * 255, value * 255, value * 255];
+export let hsvToRgb = (hue: number, saturation: number, value: number): Color => {
+
+    if (saturation == 0.0) return new Color(value * 255, value * 255, value * 255);
 
     let r: number;
     let g: number;
@@ -52,7 +54,7 @@ let hsvToRgb = (hue: number, saturation: number, value: number): [number, number
             break;
         }
     }
-    return [r * 255, g * 255, b * 255]
+    return new Color(r * 255, g * 255, b * 255);
 
 }
 
@@ -66,9 +68,9 @@ export let getImage = (hue: number): Uint8ClampedArray => {
             let height: number = 1 - y / 255;
             let width: number = 1 - x / 255;
 
-            buffer[pos] = (color[0] + ((255 - color[0]) * width)) * height;
-            buffer[pos + 1] = (color[1] + ((255 - color[1]) * width)) * height;
-            buffer[pos + 2] = (color[2] + ((255 - color[2]) * width)) * height;
+            buffer[pos] = (color.r + ((255 - color.r) * width)) * height;
+            buffer[pos + 1] = (color.g + ((255 - color.g) * width)) * height;
+            buffer[pos + 2] = (color.b + ((255 - color.b) * width)) * height;
             buffer[pos + 3] = 255;
         }
     }
