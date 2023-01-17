@@ -33,4 +33,4 @@
 {/key}
 
 
-<svelte:window on:mousemove={(e) => setMousePos(e)} on:mouseup={() => {$currentWindow=""; console.log("cleared")}}></svelte:window>
+<svelte:window on:mousemove={(e) => setMousePos(e)} on:mouseup={() => {$currentWindow="";}}></svelte:window>

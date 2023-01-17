@@ -43,7 +43,7 @@ let windowDrop = () => {
 }
 </script>
 
-<div bind:this={window} 
+<div bind:this={window} class="window"
 style="top: {data.y}px; left: {data.x}px;" 
 on:mousedown={() => {window.style.zIndex=($indexCount+1).toString(); $indexCount++;}} 
 class:isMoving={data.moving}>
@@ -59,26 +59,34 @@ class:isMoving={data.moving}>
             <button on:click={() => {data.selectedTab = i}} class:selected={i==data.selectedTab}>{tab.title}</button>
         {/each}
     </nav>
-
-    {#if data.tabs[data.selectedTab].type == TabId.ColorSelector}
+    <div class="content">
+        {#if data.tabs[data.selectedTab].type == TabId.ColorSelector}
         <ColorSelector></ColorSelector>
-    {:else if data.tabs[data.selectedTab].type == TabId.Test}
-        <Test></Test>
-    {/if}
+        {:else if data.tabs[data.selectedTab].type == TabId.Test}
+            <Test></Test>
+        {/if}
+    </div>
+
 
 </div>
 <svelte:window on:mousemove={() => move()} on:mouseup={() => { windowDrop(); data.moving = false; }}></svelte:window>
 
 <style lang="scss">
-    div {
-        position: fixed;
-        height: 400px;
-        width: 300px;
-        background-color: rgba($color: #252525, $alpha: 0.6);
-        backdrop-filter: blur(12px);
-        box-shadow: 0px 0px 5px #000;
-        border-radius: 10px;
+.window {
+    position: fixed;
+    height: 400px;
+    width: 400px;
+    background-color: rgba($color: #252525, $alpha: 0.6);
+    backdrop-filter: blur(12px);
+    box-shadow: 0px 0px 5px #000;
+    border-radius: 10px;
+
+    .content {
+        width: 100%;
+        height: calc(100% - 38px);
     }
+}
+
 nav {
     display: flex;
     align-items: center;
