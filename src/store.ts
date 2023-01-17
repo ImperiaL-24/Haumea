@@ -17,3 +17,5 @@ export let addWindow = (...tabs: TabType[]) => {
         return n
     })
 }
+
+export let colorTarget: Writable<[number, number, number]> = writable([0,0,0])

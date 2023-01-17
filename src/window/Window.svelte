@@ -1,5 +1,7 @@
 <script lang="ts">
-import { indexCount, mouseDelta, currentWindow, windows, windowRerender } from "../store";
+    import { Color } from "../engine/Color";
+    import { currentColor } from "../engine/ColorManager";
+import { indexCount, mouseDelta, currentWindow, windows, windowRerender, colorTarget } from "../store";
 import ColorSelector from "./tabs/ColorSelector.svelte";
 import Test from "./tabs/Test.svelte";
 import { TabId } from "./TabType";
@@ -61,7 +63,7 @@ class:isMoving={data.moving}>
     </nav>
     <div class="content">
         {#if data.tabs[data.selectedTab].type == TabId.ColorSelector}
-        <ColorSelector></ColorSelector>
+        <ColorSelector on:colorchange={(e) => {$currentColor = Color.newFromHSV(e.detail[0], e.detail[1], e.detail[2]); $colorTarget = e.detail}} bind:colorTarget={$colorTarget}></ColorSelector>
         {:else if data.tabs[data.selectedTab].type == TabId.Test}
             <Test></Test>
         {/if}

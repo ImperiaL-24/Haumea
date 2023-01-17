@@ -33,20 +33,6 @@ export class Color {
     }
 
     asHex(): string {
-        let string = "#";
-
-        let red = this.r.toString(16);
-        if(red.length==1) red = "0" + red;
-        string += red;
-
-        let green = this.g.toString(16);
-        if(green.length==1) green = "0" + green;
-        string += green;
-
-        let blue = this.b.toString(16);
-        if(blue.length==1) blue = "0" + blue;
-        string += blue;
-
-        return string;
+        return "#" + this.r.toString(16).padStart(2, "0") + this.g.toString(16).padStart(2, "0") + this.b.toString(16).padStart(2, "0");
     }
 }

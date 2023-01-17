@@ -1,152 +1,167 @@
 <script lang="ts">
     import { Color } from "../../engine/Color";
-    import { currentColor } from "../../engine/ColorManager";
+    import { createEventDispatcher } from 'svelte';
+    import { getMappedClickLocation } from "../../util";
 
+    const dispatch = createEventDispatcher();
 
-    import { getImage } from "../../engine/ColorSelector";
-    let canvas: HTMLCanvasElement;
     let isClicked: boolean;
     let isHueClicked: boolean;
-    let hue = $currentColor.asHSV()[0];
+
+    let svSquare: HTMLElement;
     let huebar: HTMLImageElement;
-
-    let hueIndicatorPosition: number = 0;
     
+    let pointer: HTMLDivElement;
+    let huePointer: HTMLDivElement;
+
+    export let colorTarget = [0,0,0];
+
+
+    // Update the color selector when target color changes
     $: {
-        hue;
-        if(canvas!=null) {
-            let ctx = canvas.getContext("2d");
-            let idata = ctx.createImageData(255, 255);
-
-            // set our buffer as source
-            idata.data.set(getImage($currentColor.asHSV()[0]));
-
-            // update canvas with new data
-            ctx.putImageData(idata, 0, 0);
+        if(svSquare!=null) {
+            colorTarget[0];
+            svSquare.style.background = `linear-gradient(360deg, rgba(0,0,0,1) 0%, rgba(255,0,0,0) 100%), linear-gradient(90deg, rgba(255,255,255,1) 0%, hsl(${colorTarget[0]},100%,50%) 100%)`
         }
         
     }
 
-    let handleClick = (e) => {
-        let location = getMappedClickLocation(canvas,e);
-        $currentColor = Color.newFromHSV(hue,location.x,1-location.y);
+    // Change Pointer Locations
+    $: {
+        if(pointer) {
+            const rect = svSquare.getBoundingClientRect();
+            pointer.style.top = `${(1-colorTarget[2])*rect.height-4}px`;
+            pointer.style.left = `${colorTarget[1]*rect.width-4}px`;
+        }
     }
-    let handleHueClick = (e) => {
 
-        hueIndicatorPosition = getClickLocation(huebar,e).y;
+    $: {
+        if(huePointer) {
+            const rect = huebar.getBoundingClientRect();
+            huePointer.style.marginTop = `${(1-colorTarget[0]/360)*rect.height-5}px`;
+        }
+    }
 
-        hue = Math.round(getMappedClickLocation(huebar,e).y*360);
 
-        let hsv = $currentColor.asHSV();
-        $currentColor = Color.newFromHSV(hue, hsv[1],hsv[2]);
-
+    // Handle Clicks
+    let handleClick = (e) => {
+        let location = getMappedClickLocation(svSquare,e);
+        colorTarget = [colorTarget[0],location.x, 1-location.y]
+        dispatch("colorchange", colorTarget)
         
     }
-    /**
-     * Gets the click location relative to a HTML Element. Returns an (x,y) pair with x,y = [0,1]
-     * @param obj Clicked object
-     * @param event mouse event
-     */
-
-    function getMappedClickLocation(obj: HTMLElement, event:any): {x:number, y:number} {
-        const rect = obj.getBoundingClientRect();
-        // Formula -> clamp(MouseCoordinate - ElementCoordinate) / Dimension;
-        return {
-            x: Math.max(0,Math.min(rect.width,(event.pageX-Math.floor(rect.left + window.scrollX)+1)))/rect.width,
-            y: Math.max(0,Math.min(rect.height,(event.pageY-Math.floor(rect.top + window.scrollY)+1)))/rect.height
-        };
-    }
-
-    /**
-     * Gets the click location relative to a HTML Element. Returns an (x,y) pair.
-     * @param obj Clicked object
-     * @param event mouse event
-     */
-
-     function getClickLocation(obj: HTMLElement, event:any): {x:number, y:number} {
-        const rect = obj.getBoundingClientRect();
-        // Formula -> clamp(MouseCoordinate - ElementCoordinate);
-        return {
-            x: Math.max(0,Math.min(rect.width,(event.pageX-Math.floor(rect.left + window.scrollX)+1))),
-            y: Math.max(0,Math.min(rect.height,(event.pageY-Math.floor(rect.top + window.scrollY)+1)))
-        };
+    let handleHueClick = (e) => {
+        const hue = Math.round((1-getMappedClickLocation(huebar,e).y)*360);
+        colorTarget = [hue, colorTarget[1], colorTarget[2]]
+        dispatch("colorchange", colorTarget)
+        
     }
 </script>
 
 <main>
     <div class="info">
-        <div class="color-preview" style="{`background-color:${$currentColor.asHex()}; width:40px; height:40px;`}"></div>
-        <p>{$currentColor.asHex()}</p>
+        <div class="color-preview" style:background-color={Color.newFromHSV(colorTarget[0], colorTarget[1], colorTarget[2]).asHex()}></div>
+        <p>{Color.newFromHSV(colorTarget[0], colorTarget[1], colorTarget[2]).asHex()}</p>
     </div>
-    
-    <canvas width="255" height="255" 
-    bind:this={canvas} 
-    on:mousedown={(e) => {isClicked = true;handleClick(e)}} 
-    />
+
+    <div class="color-sel">
+        <div class="color-bg"
+        bind:this={svSquare} 
+        on:mousedown={(e) => {isClicked = true;handleClick(e)}}/>
+        <div bind:this={pointer} class="pointer"></div>
+    </div>
+
     <div class="selector">
+        <div bind:this={huePointer} class="hue-pointer"></div>
         <img 
         bind:this={huebar}
         src="hue.png" 
         alt="color-picker" 
         draggable="false"
         on:mousedown={(e) => {isHueClicked = true; handleHueClick(e)}} 
-        
         />
-        <div class="indicator" style="{`top:${hueIndicatorPosition+ 48}`}px"></div>
     </div>
-
-    
-    
 </main>
 
 <svelte:window on:mouseup={() => {isClicked=false; isHueClicked = false}} on:mousemove={(e) => {if(isHueClicked) handleHueClick(e); if(isClicked) handleClick(e)}}/>
 
 <style lang="scss">
-    .info {
-        width: 80px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 5px
-    }
-    .color-preview {
-        border-radius: 8px;
-        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-    }
-    p {
-        margin: 0;
-        width: 100%;
-        font-size: 0.7rem;
-        color: rgb(134, 134, 134);
-    }
     main {
         display: flex;
         align-items: center;
         height:calc(100% - 20px);
         gap: 10px;
         padding: 10px;
-    }
-    .selector{ 
-        width:20px;
-        height: 100%;
-    }
-    img {
-        width: 20px;
-        height: 100%;
-    }
-    input {
-        transform-origin: left 0;
-        rotate: -90deg;
-        margin: 0;
-        height: 100%;
-        width: 100%;
+        user-select: none;
     }
 
-    .indicator {
-        height: 5px;
-        width: 5px;
-        position: absolute;
-        background-color: aqua;
+    .info {
+        width: 80px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        text-align: center;
+        
+        .color-preview {
+            border-radius: 8px;
+            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+            width: 40px;
+            height: 40px;
+        }
+
+        p {
+            margin: 0;
+            width: 100%;
+            font-size: 0.7rem;
+            color: rgb(134, 134, 134);
+        }
+    }
+
+
+    .color-sel {
+        position: relative;
+        height: 100%;
+        width: calc(100% - 135px);
+        .color-bg {
+            border-radius: 5px;
+            height: 100%;
+            width: 100%;
+            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+            background: linear-gradient(360deg, rgba(0,0,0,1) 0%, rgba(255,0,0,0) 100%), linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,0,0,1) 100%);
+        }
+
+        .pointer {
+            width: 5px;
+            height: 5px;
+            border-radius: 5px;
+            border: 1px solid white;
+            backdrop-filter: invert(100%) grayscale(100%);
+            position: absolute;
+            top:0px;
+            pointer-events: none;
+        }
+    }
+
+    .selector{ 
+        width:25px;
+        height: 100%;
+        display: flex;
+        gap: 2px;
+        img {
+            width: 20px;
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        .hue-pointer {
+            height: 0;
+            width: 0;
+            background-color: transparent;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-left: 5px solid rgb(196, 196, 196);
+        }
     }
 </style>

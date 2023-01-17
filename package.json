@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@tauri-apps/api": "^1.1.0",
+    "html2canvas": "^1.4.1",
     "node-sass": "^8.0.0",
     "sass": "^1.56.1",
     "svelte-feather-icons": "^4.0.0",
