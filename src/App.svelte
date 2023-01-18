@@ -25,8 +25,6 @@
 </script>
 
 <Toolbar />
-<button on:click={() => console.log($currentColor)}>eee</button>
-<div style="{`background-color:${$currentColor.asHex()}; width:100px; height:100px;`}"></div>
 {#key $windowRerender}
     {#each [...wind] as window}
     <Window id={window[0]}></Window>
