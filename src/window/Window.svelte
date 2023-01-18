@@ -82,7 +82,7 @@ class:isMoving={data.moving}>
     backdrop-filter: blur(12px);
     box-shadow: 0px 0px 5px #000;
     border-radius: 10px;
-
+    z-index: 5;
     .content {
         width: 100%;
         height: calc(100% - 38px);

@@ -39,6 +39,8 @@ onMount(async () => {
         transition: 0.3s all;
         border-bottom-right-radius: 10px;
         border-bottom-left-radius: 10px;
+        
+        z-index: 5;
 
         .left, .right {
             display: flex;

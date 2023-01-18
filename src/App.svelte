@@ -6,6 +6,7 @@
     import { TabType } from "./window/TabType";
     import { currentColor } from "./engine/ColorManager";
     import Canvas from "./canvas/Canvas.svelte";
+    import { processKey } from "./engine/KeybindManager";
     
     let setMousePos = (e) => {
         $mouseDelta = [e.clientX-$mousePos[0], e.clientY-$mousePos[1]]
@@ -17,7 +18,7 @@
     })
     // addWindow(TabType.ColorSelector, TabType.Test)
     // addWindow(TabType.Test)
-    addWindow(TabType.ColorSelector);
+    // addWindow(TabType.ColorSelector);
     $: {
         console.log(wind)   
     }
@@ -33,4 +34,4 @@
 <Canvas></Canvas>
 
 
-<svelte:window on:mousemove={(e) => setMousePos(e)} on:mouseup={() => {$currentWindow="";}}></svelte:window>
+<svelte:window on:mousemove={(e) => setMousePos(e)} on:mouseup={() => {$currentWindow="";}} on:keydown={(e) => processKey(e)}></svelte:window>

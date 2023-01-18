@@ -3,7 +3,7 @@ import type { TabType } from "./window/TabType";
 import WindowData from "./window/WindowData";
 import {v4 as uuidv4} from "uuid";
 
-export let indexCount = writable(1)
+export let indexCount = writable(10)
 export let mousePos = writable([0,0])
 export let mouseDelta = writable([0,0])
 export let currentWindow = writable("")
