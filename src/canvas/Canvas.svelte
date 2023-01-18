@@ -1,9 +1,8 @@
 <script lang="ts">
-    import { currentColor } from "../engine/ColorManager";
     import { onMount } from "svelte";
-    import { getClickLocation, getMappedClickLocation } from "../util";
+    import { getMappedClickLocation } from "../util";
     import { currentTool } from "../engine/tool/ToolManager";
-    import { canvas, canvasBase, ctx, zoom } from "../engine/canvas/Canvas";
+    import { canvas, canvasBase, ctx, transition, zoom } from "../engine/canvas/Canvas";
 
     let isClicked: boolean;
 
@@ -24,18 +23,27 @@
     }
 
     let onWheel = (e) => {
+        $transition = true;
         const mouseLocation = getMappedClickLocation($canvasBase, e);
-        const imagepos = [parseFloat($canvas.style.left.slice(0,-1)),parseFloat($canvas.style.top.slice(0,-1))]
-        console.log(mouseLocation.x*100-imagepos[0], mouseLocation.y*100 - imagepos[1]);
+        let imagepos = [parseFloat($canvas.style.left.slice(0,-1)),parseFloat($canvas.style.top.slice(0,-1))]
+        // console.log($canvasBase.getBoundingClientRect().top, mouseLocation.x, mouseLocation.y);
         const oldZoom = $zoom;
-        $zoom = e.deltaY < 0 ? Math.min(1000, $zoom * -e.deltaY/100) : Math.max(0.01, $zoom / (e.deltaY/100))
-        $canvas.style.left = `${imagepos[0]+(mouseLocation.x*100-imagepos[0])*(oldZoom-$zoom)}%`;
-        $canvas.style.top =  `${imagepos[1]+(mouseLocation.y*100-imagepos[1])*(oldZoom-$zoom)}%`;
+
+
+        $zoom = e.deltaY < 0 ? Math.min(1000, $zoom *1.25) : Math.max(0.01, $zoom /1.25);
+        $canvas.style.left = `${$zoom/oldZoom * (imagepos[0] - mouseLocation.x*100) + mouseLocation.x*100}%`;
+        $canvas.style.top =  `${$zoom/oldZoom * (imagepos[1] - mouseLocation.y*100) + mouseLocation.y*100}%`;
+
+        
+        $canvas.style.scale = `${$zoom} ${$zoom}`
+
     }
 </script>
-<div bind:this={$canvasBase}>
+
+<div bind:this={$canvasBase} on:wheel|passive={(e) => onWheel(e)}>
     <canvas 
-    bind:this={$canvas} 
+    bind:this={$canvas}
+    class:has-transition={$transition}
     width="255" height="255" 
     on:mousedown={() => isClicked = true}
     
@@ -44,7 +52,7 @@
 </div>
 
 
-<svelte:window on:mouseup={() => {isClicked=false}} on:mousemove={(e) => {if(isClicked) handleClick(e)}} on:wheel|passive={(e) => onWheel(e)}/>
+<svelte:window on:mouseup={() => {isClicked=false}} on:mousemove={(e) => {if(isClicked) handleClick(e)}} />
 
 
 <style lang="scss">
@@ -62,6 +70,9 @@
             translate: -50% -50%;
             z-index: 1;
         }
-    }
 
+    }
+    .has-transition {
+        transition: 0.2s all;
+    }
 </style>

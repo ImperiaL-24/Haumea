@@ -27,3 +27,7 @@
             y: Math.max(0,Math.min(rect.height,(event.pageY-Math.floor(rect.top + window.scrollY)+1)))
         }
     }
+
+    export let clamp = (value: number, min: number, max: number): number => {
+        return Math.max(min,Math.min(max,value));
+    }

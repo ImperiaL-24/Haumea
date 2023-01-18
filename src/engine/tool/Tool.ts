@@ -1,7 +1,7 @@
-import { getClickLocation } from "../../util";
+import { clamp, getClickLocation } from "../../util";
 import { get } from "svelte/store";
 import { currentColor } from "../ColorManager";
-import { canvas, canvasBase, ctx, zoom } from "../canvas/Canvas";
+import { canvas, canvasBase, ctx, transition, zoom } from "../canvas/Canvas";
 
 export class Tool {
     onclick: Function
@@ -9,13 +9,16 @@ export class Tool {
 
 export class MoveTool extends Tool {
     onclick = (e) => {
-        
+        transition.set(false);
         const imagepos = [parseFloat(get(canvas).style.left.slice(0,-1)),parseFloat(get(canvas).style.top.slice(0,-1))]
 
         let percentageX = e.movementX * 100 / get(canvasBase).clientWidth;
         let percentageY = e.movementY * 100 / get(canvasBase).clientHeight;
-        get(canvas).style.top = `${Math.max(0,Math.min(100,imagepos[1] + percentageY))}%`;
-        get(canvas).style.left = `${Math.max(get(canvas).clientWidth*get(zoom)*-0.4*100/get(canvasBase).clientWidth,Math.min(100,imagepos[0] + percentageX))}%`;
+        //get(canvas).clientWidth*get(zoom)*-0.4*100/get(canvasBase).clientWidth,Math.min(100,)
+
+        //TODO: CANVAS POS LIMITS
+        get(canvas).style.top = `${clamp(imagepos[1] + percentageY,0,100)}%`;
+        get(canvas).style.left = `${clamp(imagepos[0] + percentageX, 0,100)}%`;
     }
 }
 

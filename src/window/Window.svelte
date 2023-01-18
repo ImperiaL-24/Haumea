@@ -78,7 +78,7 @@ class:isMoving={data.moving}>
     position: fixed;
     height: 400px;
     width: 400px;
-    background-color: rgba($color: #252525, $alpha: 0.6);
+    background-color: rgba($color: #252525, $alpha: 0.8);
     backdrop-filter: blur(12px);
     box-shadow: 0px 0px 5px #000;
     border-radius: 10px;

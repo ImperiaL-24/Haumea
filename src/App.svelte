@@ -18,7 +18,7 @@
     })
     // addWindow(TabType.ColorSelector, TabType.Test)
     // addWindow(TabType.Test)
-    // addWindow(TabType.ColorSelector);
+    addWindow(TabType.ColorSelector);
     $: {
         console.log(wind)   
     }
