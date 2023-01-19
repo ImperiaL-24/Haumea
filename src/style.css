@@ -22,12 +22,32 @@
   --light: #272c30;
   --lighter: #495057;
   --lightest: #707e82;
-  --nav-focused: #343a40;
-  --nav-unfocused: #2c3136;
+  --nav-focused: rgba(52, 58, 64, 0.8);  
+  --nav-unfocused: rgba(44, 49, 54, 0.8);
 
 }
 
 body {
   margin: 0;
   overflow: hidden;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 3px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }

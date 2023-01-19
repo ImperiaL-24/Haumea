@@ -30,17 +30,21 @@ onMount(async () => {
 
 <style lang="scss">
 	nav {
+        position: absolute;
 		background-color: var(--nav-unfocused);
+        backdrop-filter: blur(12px);
 		height: 28px;
-
+        margin-top: 5px;
+        margin-left: 5px;
+        width: calc(100% - 10px);
         display: flex;
         justify-content: space-between;
 
         transition: 0.3s all;
-        border-bottom-right-radius: 10px;
-        border-bottom-left-radius: 10px;
+        border-radius: 5px;
         
-        z-index: 5;
+        user-select: none;
+        z-index: 25;
 
         .left, .right {
             display: flex;
@@ -49,7 +53,7 @@ onMount(async () => {
         }
 
         .left {
-            padding: 0px 10px;
+            padding: 0px 5px;
         }
 
         button {

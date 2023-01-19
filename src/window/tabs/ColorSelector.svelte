@@ -30,15 +30,15 @@
     $: {
         if(pointer) {
             const rect = svSquare.getBoundingClientRect();
-            pointer.style.top = `${(1-colorTarget[2])*rect.height-4}px`;
-            pointer.style.left = `${colorTarget[1]*rect.width-4}px`;
+            pointer.style.top = `${(1-colorTarget[2])*100-400/rect.height}%`;
+            pointer.style.left = `${colorTarget[1]*100-400/rect.width}%`;
         }
     }
 
     $: {
         if(huePointer) {
             const rect = huebar.getBoundingClientRect();
-            huePointer.style.marginTop = `${(1-colorTarget[0]/360)*rect.height-5}px`;
+            huePointer.style.top = `${(1-colorTarget[0]/360)*100-500/rect.height}%`;
         }
     }
 
@@ -148,7 +148,9 @@
         width:25px;
         height: 100%;
         display: flex;
+        position: relative;
         gap: 2px;
+        margin-left: 6px;
         img {
             width: 20px;
             height: 100%;
@@ -156,6 +158,8 @@
         }
 
         .hue-pointer {
+            position: absolute;
+            left: -8px;
             height: 0;
             width: 0;
             background-color: transparent;

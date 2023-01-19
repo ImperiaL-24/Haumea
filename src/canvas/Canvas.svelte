@@ -2,7 +2,7 @@
     import { onMount } from "svelte";
     import { getMappedClickLocation } from "../util";
     import { currentTool } from "../engine/tool/ToolManager";
-    import { canvas, canvasBase, ctx, transition, zoom } from "../engine/canvas/Canvas";
+    import { canvas, canvasBase, ctx, setCanvasPosition, transition, zoom } from "../engine/canvas/Canvas";
 
     let isClicked: boolean;
 
@@ -26,14 +26,11 @@
         $transition = true;
         const mouseLocation = getMappedClickLocation($canvasBase, e);
         let imagepos = [parseFloat($canvas.style.left.slice(0,-1)),parseFloat($canvas.style.top.slice(0,-1))]
-        // console.log($canvasBase.getBoundingClientRect().top, mouseLocation.x, mouseLocation.y);
         const oldZoom = $zoom;
 
-
         $zoom = e.deltaY < 0 ? Math.min(1000, $zoom *1.25) : Math.max(0.01, $zoom /1.25);
-        $canvas.style.left = `${$zoom/oldZoom * (imagepos[0] - mouseLocation.x*100) + mouseLocation.x*100}%`;
-        $canvas.style.top =  `${$zoom/oldZoom * (imagepos[1] - mouseLocation.y*100) + mouseLocation.y*100}%`;
 
+        setCanvasPosition($zoom/oldZoom * (imagepos[0] - mouseLocation.x*100) + mouseLocation.x*100,$zoom/oldZoom * (imagepos[1] - mouseLocation.y*100) + mouseLocation.y*100);
         
         $canvas.style.scale = `${$zoom} ${$zoom}`
 
@@ -58,7 +55,7 @@
 <style lang="scss">
     div {
         position: relative;
-        height: calc(100vh - 28px);
+        height: 100vh;
         width: 100%;
         z-index: 0;
 

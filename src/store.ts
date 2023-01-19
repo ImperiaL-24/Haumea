@@ -6,6 +6,10 @@ import {v4 as uuidv4} from "uuid";
 export let indexCount = writable(10)
 export let mousePos = writable([0,0])
 export let mouseDelta = writable([0,0])
+// delta from mousedown position to current position;
+export let mouseClickDelta = writable([0,0])
+export let isClicking = writable(false);
+
 export let currentWindow = writable("")
 // Map of all current windows on the screen
 export let windows: Writable<Map<string,WindowData>> = writable(new Map())
