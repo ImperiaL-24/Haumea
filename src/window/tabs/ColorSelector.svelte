@@ -30,15 +30,15 @@
     $: {
         if(pointer) {
             const rect = svSquare.getBoundingClientRect();
-            pointer.style.top = `${(1-colorTarget[2])*100-400/rect.height}%`;
-            pointer.style.left = `${colorTarget[1]*100-400/rect.width}%`;
+            pointer.style.top = `${(1-colorTarget[2])*100}%`;
+            pointer.style.left = `${colorTarget[1]*100}%`;
         }
     }
 
     $: {
         if(huePointer) {
             const rect = huebar.getBoundingClientRect();
-            huePointer.style.top = `${(1-colorTarget[0]/360)*100-500/rect.height}%`;
+            huePointer.style.top = `${(1-colorTarget[0]/360)*100}%`;
         }
     }
 
@@ -141,6 +141,7 @@
             position: absolute;
             top:0px;
             pointer-events: none;
+            translate: -4px -4px;
         }
     }
 
@@ -166,6 +167,7 @@
             border-top: 5px solid transparent;
             border-bottom: 5px solid transparent;
             border-left: 5px solid rgb(196, 196, 196);
+            translate: 0px -5px;
         }
     }
 </style>

@@ -36,12 +36,20 @@ export class PencilTool extends Tool {
 
 export enum ToolID {
     MOVE_TOOL,
-    PENCIL_TOOL
+    PENCIL_TOOL,
+    CROP_TOOL,
+    PAINT_BUCKET_TOOL,
+    EYEDROPPER_TOOL,
+    ROTATE_TOOL
 }
 
 export class ToolType {
     public static MOVE_TOOL = new ToolType(ToolID.MOVE_TOOL, new MoveTool());
     public static PENCIL_TOOL = new ToolType(ToolID.PENCIL_TOOL, new PencilTool());
+    public static CROP_TOOL = new ToolType(ToolID.CROP_TOOL, new PencilTool());
+    public static PAINT_BUCKET_TOOL = new ToolType(ToolID.PAINT_BUCKET_TOOL, new PencilTool());
+    public static EYEDROPPER_TOOL = new ToolType(ToolID.EYEDROPPER_TOOL, new PencilTool());
+    public static ROTATE_TOOL = new ToolType(ToolID.ROTATE_TOOL, new PencilTool());
     constructor(public type:ToolID, public tool:Tool) {}
 }
 

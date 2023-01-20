@@ -11,9 +11,6 @@ onMount(async () => {
     });
     return () => unlisten();
 })
-
-// #db8cbf #d92626
-
 </script>
 
 <nav data-tauri-drag-region class:focused>
@@ -34,8 +31,8 @@ onMount(async () => {
 		background-color: var(--nav-unfocused);
         backdrop-filter: blur(12px);
 		height: 28px;
-        margin-top: 5px;
-        margin-left: 5px;
+        top: 5px;
+        left: 5px;
         width: calc(100% - 10px);
         display: flex;
         justify-content: space-between;
@@ -79,7 +76,6 @@ onMount(async () => {
         img {
             height: 22px;
         }
-
 
 	}
 

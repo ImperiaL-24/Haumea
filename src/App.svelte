@@ -1,11 +1,13 @@
 <script lang="ts">
-    import type WindowData from "./window/WindowData";
     import Window from "./window/Window.svelte";
-    import { mousePos, mouseDelta, windows, addWindow, currentWindow, windowRerender, isClicking, mouseClickDelta } from './store'; 
-    import Toolbar from "./global/Toolbar.svelte";
+    import { mousePos, mouseDelta, windows, currentWindow, windowRerender, isClicking, mouseClickDelta } from './store'; 
+    import Navbar from "./global/Navbar.svelte";
     import { TabType } from "./window/TabType";
     import Canvas from "./canvas/Canvas.svelte";
     import { processKey } from "./engine/KeybindManager";
+    import { WindowBuilder } from "./window/Window";
+    import Anchor from "./window/anchor/Anchor.svelte";
+    import { onMount } from "svelte";
     
     let setMousePos = (e) => {
         $mouseDelta = [e.clientX-$mousePos[0], e.clientY-$mousePos[1]]
@@ -14,27 +16,30 @@
             $mouseClickDelta = [$mouseClickDelta[0]+$mouseDelta[0],$mouseClickDelta[1]+$mouseDelta[1]]
         }
     }
-    let wind: Map<string, WindowData>;
-    windows.subscribe(n => {
-        wind=n;
+    onMount(() => {
+        new WindowBuilder(TabType.ColorSelector).add();
+        new WindowBuilder(TabType.Toolbar).resizeable(false).size(40, 255).add();
     })
-    addWindow(false, TabType.ColorSelector, TabType.Test, TabType.Test, TabType.Test, TabType.Test)
-    addWindow(true, TabType.ColorSelector)
-    // addWindow(TabType.Test)
-    // addWindow(TabType.ColorSelector);
-    $: {
-        console.log(wind)   
-    }
 
 </script>
 
-<Toolbar />
-{#key $windowRerender}
-    {#each [...wind] as window}
-    <Window id={window[0]}></Window>
-    {/each}
-{/key}
-<Canvas></Canvas>
-
+<Navbar />
+<div class="test">
+    {#key $windowRerender}
+        {#each [...$windows] as window}
+        <Window id={window[0]}></Window>
+        {/each}
+    {/key}
+    <Canvas></Canvas>
+    <Anchor></Anchor>
+</div>
 
 <svelte:window on:mousemove={(e) => setMousePos(e)} on:mouseup={() => {$currentWindow=""; $isClicking = false}} on:mousedown={() => {$isClicking = true; $mouseClickDelta = [0,0]}}  on:keydown={(e) => processKey(e)}></svelte:window>
+
+<style lang="scss">
+    .test {
+        position: relative;
+        height: calc(100vh - 38px);
+        margin-top: 38px;
+    }
+</style>
