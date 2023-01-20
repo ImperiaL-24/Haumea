@@ -14,10 +14,10 @@ export let currentWindow = writable("")
 // Map of all current windows on the screen
 export let windows: Writable<Map<string,WindowData>> = writable(new Map())
 export let windowRerender = writable(false);
-export let addWindow = (...tabs: TabType[]) => {
+export let addWindow = (tabless:boolean, ...tabs: TabType[]) => {
     let id = uuidv4();
     windows.update(n => {
-        n.set(id, new WindowData(id, ...tabs))
+        n.set(id, new WindowData(id,tabless, ...tabs))
         return n
     })
 }

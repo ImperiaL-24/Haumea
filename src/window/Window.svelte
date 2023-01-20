@@ -19,38 +19,34 @@ let initHeight = 0;
 let initX = 0;
 let initY = 0;
 
+let tabspace: HTMLDivElement;
+
 let move = () => {
     if(!data.moving) return;
     data.x+=$mouseDelta[0]
-    data.y+=$mouseDelta[1]
+    data.y+=$mouseDelta[1];
+    console.log(data.tabless);
 }
 
 let resize = () => {
     if(data.resizing=="none") return;
-    switch(data.resizing) {
-        case "e": {
-            
-            data.width = clamp(initWidth+$mouseClickDelta[0],240,1200);
-            break;
-        }
-        case "w": {
-            data.width = clamp(initWidth-$mouseClickDelta[0],240,1200);
-            if(data.width<1200 && data.width>240)
-            data.x = initX + $mouseClickDelta[0];
-            break;
-        }
-        case "n": {
-            data.height = clamp(initHeight-$mouseClickDelta[1],240,1200);
-            if(data.height<1200 && data.height>240)
-            data.y = initY + $mouseClickDelta[1];
-            break;
-        }
-        case "s": {
-            data.height = clamp(initHeight+$mouseClickDelta[1],240,1200);
-            break;
-        }
+
+    if(data.resizing.includes("e")) {
+        data.width = clamp(initWidth+$mouseClickDelta[0],240,1200);
     }
-    
+    if(data.resizing.includes("w")) {
+        data.width = clamp(initWidth-$mouseClickDelta[0],240,1200);
+        if(data.width<1200 && data.width>240)
+        data.x = initX + $mouseClickDelta[0];
+    }
+    if(data.resizing.includes("n")) {
+        data.height = clamp(initHeight-$mouseClickDelta[1],240,1200);
+        if(data.height<1200 && data.height>240)
+        data.y = initY + $mouseClickDelta[1];
+    }
+    if(data.resizing.includes("s")) {
+        data.height = clamp(initHeight+$mouseClickDelta[1],240,1200);
+    }
 }
 
 let resetPosCache = () => {
@@ -61,20 +57,19 @@ let resetPosCache = () => {
 }
 
 let windowEnter = () => {
-    if($currentWindow=="" || $currentWindow == data.id) return;
+    if($currentWindow=="" || $currentWindow == data.id || data.tabless || $windows.get($currentWindow).tabless) return;
     data.hovered = true;
     $windows.get($currentWindow).hovering = true;
 }
 
 let windowExit = () => {
-    if($currentWindow=="" || $currentWindow == data.id) return;
+    if($currentWindow=="" || $currentWindow == data.id || data.tabless || $windows.get($currentWindow).tabless) return;
     data.hovered = false;
     $windows.get($currentWindow).hovering = false;
 }
 
 let windowDrop = () => {
-    console.log($currentWindow)
-    if(!data.moving) return;
+    if(!data.moving || data.tabless) return;
 
     for(let [_id, newWindow] of $windows) {
         if(!newWindow.hovered) continue;
@@ -87,6 +82,11 @@ let windowDrop = () => {
         $windowRerender = !$windowRerender;
         return;  
     }
+}
+
+let wheel = (e) => {
+    const delta = e.deltaY > 0 ? -50 : 50;
+    tabspace.scrollBy(delta, 0); 
 }
 </script>
 
@@ -105,21 +105,29 @@ class:hovering={data.hovering}>
     on:mouseleave={() => {windowExit()}} 
     class:isHovered={data.hovered}
     class:isMoving={data.moving}
+    class:tabless-nav={data.tabless}
     >
     <div class="bar"></div>
-    <div class="tabspace">
-        {#each data.tabs as tab, i}
-        <WindowButton id={id} index={i} tab={tab}></WindowButton>
-        {/each}
-    </div>
+    {#if !data.tabless}
+        <div class="tabspace" on:wheel={(e) => wheel(e)} bind:this={tabspace}>
+            {#key $windows.get(id).selectedTab}
+                {#each data.tabs as tab, i}
+                <WindowButton tab={tab} selected={data.selectedTab==i} on:click={() => {data.selectedTab = i; console.log("click")}}></WindowButton>
+                {/each}
+            {/key}
+
+        </div>
+    {/if}
     </nav>
 
 
-    <div class="content">
+    <div class="content" class:tabless-content={data.tabless}>
         {#if data.tabs[data.selectedTab].type == TabId.ColorSelector}
             <ColorSelector on:colorchange={(e) => {$currentColor = Color.newFromHSV(e.detail[0], e.detail[1], e.detail[2]); $colorTarget = e.detail}} bind:colorTarget={$colorTarget}></ColorSelector>
         {:else if data.tabs[data.selectedTab].type == TabId.Test}
             <Test></Test>
+        {:else if data.tabs[data.selectedTab].type == TabId.Toolbar}
+            <Toolbar></Toolbar>
         {/if}
     </div>
 
@@ -127,10 +135,44 @@ class:hovering={data.hovering}>
     <div class="resize resize-right" class:resize-hover={data.resizing=="e"} on:mousedown={() => {resetPosCache(); data.resizing = "e"}}></div>
     <div class="resize resize-top" class:resize-hover={data.resizing=="n"}  on:mousedown={() => {resetPosCache(); data.resizing = "n"}}></div>
     <div class="resize resize-bottom" class:resize-hover={data.resizing=="s"} on:mousedown={() => {resetPosCache(); data.resizing = "s"}}></div>
+
+    <div class="resize corner resize-top-left" class:resize-hover={data.resizing=="nw"} on:mousedown={() => {resetPosCache(); data.resizing = "nw"}}></div>
+    <div class="resize corner resize-top-right" class:resize-hover={data.resizing=="ne"} on:mousedown={() => {resetPosCache(); data.resizing = "ne"}}></div>
+    <div class="resize corner resize-bottom-left" class:resize-hover={data.resizing=="sw"} on:mousedown={() => {resetPosCache(); data.resizing = "sw"}}></div>
+    <div class="resize corner resize-bottom-right" class:resize-hover={data.resizing=="se"} on:mousedown={() => {resetPosCache(); data.resizing = "se"}}></div>
 </div>
 <svelte:window on:mousemove={() => {move(); resize()}} on:mouseup={() => { windowDrop(); data.moving = false; data.resizing="none"}}></svelte:window>
 
 <style lang="scss">
+
+.corner {
+    width: 8px;
+    height: 8px;
+}
+
+.resize-top-left {
+    top: -4px;
+    left:-4px;
+    cursor:nw-resize;
+}
+
+.resize-top-right {
+    top: -4px;
+    right:-4px;
+    cursor:ne-resize;
+}
+
+.resize-bottom-left {
+    bottom: -4px;
+    left:-4px;
+    cursor:ne-resize;
+}
+
+.resize-bottom-right {
+    bottom: -4px;
+    right:-4px;
+    cursor:nw-resize;
+}
 
 .resize-left {
     height: 100%;
@@ -167,7 +209,7 @@ class:hovering={data.hovering}>
 .resize {
     position: absolute;
     background-color: #00000000;
-    border-radius: 1px;
+    border-radius: 2px;
     transition: 0.2s background-color;
     
 }
@@ -183,11 +225,11 @@ class:hovering={data.hovering}>
     background-color: rgba($color: #252525, $alpha: 0.8);
     backdrop-filter: blur(12px);
     box-shadow: 0px 0px 5px #000;
-    border-radius: 10px;
+    border-radius: 5px;
     z-index: 5;
     .content {
         width: 100%;
-        height: calc(100% - 38px);
+        height: calc(100% - 45px);
     }
     transition: opacity 0.2s, outline-width 0.1s;
 
@@ -210,6 +252,9 @@ nav {
         height: 15px;
         background-color: none;
         pointer-events: none;
+        background-color: rgba($color: #161616, $alpha: 0.6);
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
     }
 
     .tabspace {
@@ -218,10 +263,20 @@ nav {
         height: 30px;
         overflow-x:overlay;
         width: 100%;
-
-        
+        background: linear-gradient(180deg, rgba(26, 26, 26, 0.6) 0%, rgba(0,0,0,0) 100%);
+        transition: 0.2s all;
     }
+
+
 }
+.tabless-nav {
+    height: 15px!important;
+}
+
+.tabless-content {
+    height: calc(100% - 15px)!important;
+}
+
 
 .isMoving {
     pointer-events: none;

@@ -1,30 +1,17 @@
 <script lang="ts">
-    import { windows } from "../store";
     import type { TabType } from "./TabType";
 
-    export let index: number;
-    export let id: string;
     export let tab: TabType;
+    export let selected: boolean = false;
 
     let isOver = false;
     let highlight: HTMLDivElement;
-    $: {
-        if(highlight) {
-            if(index==$windows.get(id).selectedTab) {
-            highlight.style.opacity = "0.5"
-            } else {
-                highlight.style.opacity = "0.0"
-            }
-        }
-
-    }
-
-let data = $windows.get(id);
+    
 </script>
 
-<div class="button-space" >
-    <button on:mouseenter={() => isOver = true} on:mouseleave={() => isOver = false} on:click={() => {$windows.get(id).selectedTab = index;}} class:selected={index==$windows.get(id).selectedTab}>{tab.title}</button>
-    <div bind:this={highlight} class="highlight" class:is-over={isOver} class:highlight-selected={index==$windows.get(id).selectedTab}></div>
+<div class="button-space">
+    <button on:mouseenter={() => isOver = true} on:mouseleave={() => isOver = false} on:click|preventDefault class:selected={selected}>{tab.title}</button>
+    <div bind:this={highlight} class="highlight" class:is-over={isOver} class:highlight-selected={selected}></div>
 </div>
 
 <style lang="scss">
@@ -34,7 +21,7 @@ let data = $windows.get(id);
         button {
             position: relative;
             border: none;
-            color: var(--lightest);
+            color: var(--lighter);
             font-family: 'Poppins';
             font-size: 16px;
             margin: 0;
@@ -44,6 +31,7 @@ let data = $windows.get(id);
             background: none;
             transition: all 0.2s;
             z-index: 3;
+            outline: none;
         }
 
         .highlight {
@@ -53,7 +41,7 @@ let data = $windows.get(id);
             top:0;
             left: -50%;
             top: 0;
-            background: radial-gradient(ellipse at 50% -200%, rgb(214, 86, 93) 40%, rgba(217,38,38,0) 70%);
+            background: radial-gradient(ellipse at 50% -200%, rgb(214, 86, 93) 20%, rgba(217,38,38,0) 70%);
             background-size: 100% 80%;
             background-repeat: no-repeat;
             mix-blend-mode: color-dodge;
@@ -67,12 +55,13 @@ let data = $windows.get(id);
         }
     }
 
-    .selected {
-        color: var(--lighter);
+    .highlight-selected {
+        opacity: 0.4!important; 
     }
 
-    .highlight-selected {
-        opacity: 0.5; 
+    .selected {
+        color: var(--lightest)!important;
     }
+
 
 </style>

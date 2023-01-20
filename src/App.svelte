@@ -12,16 +12,16 @@
         $mousePos = [e.clientX, e.clientY];
         if($isClicking) {
             $mouseClickDelta = [$mouseClickDelta[0]+$mouseDelta[0],$mouseClickDelta[1]+$mouseDelta[1]]
-            console.log($mouseClickDelta)
         }
     }
     let wind: Map<string, WindowData>;
     windows.subscribe(n => {
         wind=n;
     })
-    // addWindow(TabType.ColorSelector, TabType.Test)
-    addWindow(TabType.Test)
-    addWindow(TabType.ColorSelector);
+    addWindow(false, TabType.ColorSelector, TabType.Test, TabType.Test, TabType.Test, TabType.Test)
+    addWindow(true, TabType.ColorSelector)
+    // addWindow(TabType.Test)
+    // addWindow(TabType.ColorSelector);
     $: {
         console.log(wind)   
     }

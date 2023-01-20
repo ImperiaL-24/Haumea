@@ -10,6 +10,8 @@ export default class WindowData {
     public height: number = 300;
     public width: number = 400;
 
+    //if it is tabless
+    public tabless = false;
     // uuid
     public readonly id: string;
     // all the tabs currently on the window;
@@ -25,8 +27,9 @@ export default class WindowData {
 
     public resizing: "n" | "e" | "s" | "w" | "ne" | "nw" | "se" | "sw" | "none" = "none";
 
-    constructor(_id: string, ..._tabs: TabType[]) {
+    constructor(_id: string, _tabless: boolean, ..._tabs: TabType[]) {
         this.id = _id;
         this.tabs=_tabs;
+        this.tabless = _tabless;
     }
 }
