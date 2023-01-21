@@ -21,7 +21,7 @@ let window: HTMLDivElement;
 <div 
 bind:this={window} 
 class="window"
-style="top: {data.y}px; left: {data.x}px; height:{data.height}px; width:{data.width}px;" 
+style="top: {data.anchored ? !data.resizeable ? "calc(50% - 127.5px)": "0px" : data.y+"px"}; left: {data.anchored ? 0 : data.x}px; height:{data.anchored && data.resizeable ? "100%" : data.height+"px"}; width:{data.anchored && data.resizeable ? "100%" : data.width+"px"};" 
 out:fade="{{duration:200}}"
 on:mousedown={() => {window.style.zIndex=($indexCount+1).toString(); $indexCount++;}} 
 class:isMoving={data.moving}
@@ -39,7 +39,7 @@ class:hovering={data.hovering}>
             <Toolbar></Toolbar>
         {/if}
     </div>
-    {#if data.resizeable}
+    {#if data.resizeable && !data.anchored}
     <WindowResizer bind:data={data}/>
     {/if}
 </div>
@@ -48,7 +48,7 @@ class:hovering={data.hovering}>
 <style lang="scss">
 
 .window {
-    position: fixed;
+    position: absolute;
     background-color: rgba($color: #252525, $alpha: 0.8);
     backdrop-filter: blur(12px);
     box-shadow: 0px 0px 5px #000;

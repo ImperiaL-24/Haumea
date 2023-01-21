@@ -3,11 +3,23 @@ import { get } from "svelte/store";
 import { currentColor } from "../ColorManager";
 import { canvas, canvasBase, ctx, setCanvasPosition, transition, zoom } from "../canvas/Canvas";
 
+
+export class ToolID {
+    public static MOVE_TOOL = "MOVE_TOOL"
+    public static PENCIL_TOOL = "PENCIL_TOOL"
+    public static CROP_TOOL = "CROP_TOOL"
+    public static PAINT_BUCKET_TOOL = "PAINT_BUCKET_TOOL"
+    public static EYEDROPPER_TOOL = "EYEDROPPER_TOOL"
+    public static ROTATE_TOOL = "ROTATE_TOOL"
+}
+
 export class Tool {
     onclick: Function
+    constructor(public type: string) {};
 }
 
 export class MoveTool extends Tool {
+    constructor() {super(ToolID.MOVE_TOOL)}
     onclick = (e) => {
         transition.set(false);
         const imagepos = [parseFloat(get(canvas).style.left.slice(0,-1)),parseFloat(get(canvas).style.top.slice(0,-1))]
@@ -20,6 +32,7 @@ export class MoveTool extends Tool {
 }
 
 export class PencilTool extends Tool {
+    constructor() {super(ToolID.PENCIL_TOOL)}
     onclick = (e) => {
         if(e.altKey) console.log("Food Please!");
         const color = get(currentColor).asRGB();
@@ -34,22 +47,19 @@ export class PencilTool extends Tool {
     }
 }
 
-export enum ToolID {
-    MOVE_TOOL,
-    PENCIL_TOOL,
-    CROP_TOOL,
-    PAINT_BUCKET_TOOL,
-    EYEDROPPER_TOOL,
-    ROTATE_TOOL
-}
+
 
 export class ToolType {
-    public static MOVE_TOOL = new ToolType(ToolID.MOVE_TOOL, new MoveTool());
-    public static PENCIL_TOOL = new ToolType(ToolID.PENCIL_TOOL, new PencilTool());
-    public static CROP_TOOL = new ToolType(ToolID.CROP_TOOL, new PencilTool());
-    public static PAINT_BUCKET_TOOL = new ToolType(ToolID.PAINT_BUCKET_TOOL, new PencilTool());
-    public static EYEDROPPER_TOOL = new ToolType(ToolID.EYEDROPPER_TOOL, new PencilTool());
-    public static ROTATE_TOOL = new ToolType(ToolID.ROTATE_TOOL, new PencilTool());
-    constructor(public type:ToolID, public tool:Tool) {}
+    public static MOVE_TOOL = new ToolType(ToolID.MOVE_TOOL, new MoveTool(), "tools/move.svg");
+    public static PENCIL_TOOL = new ToolType(ToolID.PENCIL_TOOL, new PencilTool(), "tools/pencil.svg");
+    public static CROP_TOOL = new ToolType(ToolID.CROP_TOOL, new PencilTool(), "tools/crop.svg");
+    public static PAINT_BUCKET_TOOL = new ToolType(ToolID.PAINT_BUCKET_TOOL, new PencilTool(), "tools/paint_bucket.svg");
+    public static EYEDROPPER_TOOL = new ToolType(ToolID.EYEDROPPER_TOOL, new PencilTool(), "tools/eyedropper.svg");
+    public static ROTATE_TOOL = new ToolType(ToolID.ROTATE_TOOL, new PencilTool(), "tools/rotate.svg");
+    constructor(public type:string, public tool:Tool, public icon:string) {}
 }
+
+
+
+
 

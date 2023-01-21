@@ -3,6 +3,8 @@
     import { getMappedClickLocation } from "../util";
     import { currentTool } from "../engine/tool/ToolManager";
     import { canvas, canvasBase, ctx, setCanvasPosition, transition, zoom } from "../engine/canvas/Canvas";
+    import { innerRect } from "../store";
+    import Cursor from "./Cursor.svelte";
 
     let isClicked: boolean;
 
@@ -35,9 +37,10 @@
         $canvas.style.scale = `${$zoom} ${$zoom}`
 
     }
+
 </script>
 
-<div bind:this={$canvasBase} on:wheel|passive={(e) => onWheel(e)}>
+<div bind:this={$canvasBase} style="width:calc(100% - {$innerRect.width}px); margin-left:{$innerRect.x}px; height:calc(100vh - {$innerRect.height}px)" on:wheel|passive={(e) => onWheel(e)}>
     <canvas 
     bind:this={$canvas}
     class:has-transition={$transition}
@@ -47,7 +50,7 @@
     style="top: 50%; left:50%;"
     ></canvas>
 </div>
-
+<Cursor></Cursor>
 
 <svelte:window on:mouseup={() => {isClicked=false}} on:mousemove={(e) => {if(isClicked) handleClick(e)}} />
 
@@ -58,7 +61,7 @@
         height: 100vh;
         width: 100%;
         z-index: 0;
-
+        cursor: none;
         canvas {
             position: absolute;
             box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;

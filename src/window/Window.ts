@@ -11,6 +11,8 @@ export default class Window {
     public height: number = 300;
     public width: number = 400;
 
+    public anchored:boolean = false;
+
     //if it can hold more than 1 tab
     public tabbed = false;
     //if it is resizeable

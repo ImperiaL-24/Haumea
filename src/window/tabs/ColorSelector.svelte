@@ -2,6 +2,7 @@
     import { Color } from "../../engine/Color";
     import { createEventDispatcher } from 'svelte';
     import { getMappedClickLocation } from "../../util";
+    import { windows } from "../../store";
 
     const dispatch = createEventDispatcher();
 
@@ -29,7 +30,6 @@
     // Change Pointer Locations
     $: {
         if(pointer) {
-            const rect = svSquare.getBoundingClientRect();
             pointer.style.top = `${(1-colorTarget[2])*100}%`;
             pointer.style.left = `${colorTarget[1]*100}%`;
         }
@@ -37,7 +37,6 @@
 
     $: {
         if(huePointer) {
-            const rect = huebar.getBoundingClientRect();
             huePointer.style.top = `${(1-colorTarget[0]/360)*100}%`;
         }
     }
@@ -48,10 +47,11 @@
         let location = getMappedClickLocation(svSquare,e);
         colorTarget = [colorTarget[0],location.x, 1-location.y]
         dispatch("colorchange", colorTarget)
+        console.log($windows)
         
     }
     let handleHueClick = (e) => {
-        const hue = Math.round((1-getMappedClickLocation(huebar,e).y)*360);
+        const hue = (1-getMappedClickLocation(huebar,e).y)*360;
         colorTarget = [hue, colorTarget[1], colorTarget[2]]
         dispatch("colorchange", colorTarget)
         
