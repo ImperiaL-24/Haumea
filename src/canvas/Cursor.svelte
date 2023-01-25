@@ -19,5 +19,6 @@
         width: 25px;
         cursor: none;
         pointer-events: none;
+        user-select: none;
     }
 </style>

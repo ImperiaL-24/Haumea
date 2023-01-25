@@ -15,7 +15,7 @@
         $ctx.fillRect(0,0,256, 256)
     })
     let handleClick = (e) => {
-        $currentTool.onclick(e);
+        $currentTool.onmousedown(e);
     }
 
     $: {
@@ -45,7 +45,7 @@
     bind:this={$canvas}
     class:has-transition={$transition}
     width="255" height="255" 
-    on:mousedown={() => isClicked = true}
+    on:mousedown={(e) => {isClicked = true; handleClick(e)}}
     
     style="top: 50%; left:50%;"
     ></canvas>
