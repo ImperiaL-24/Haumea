@@ -32,7 +32,7 @@ class:hovering={data.hovering}>
 
     <div class="content" class:tabless-content={!data.tabbed}>
         {#if data.tabs[data.selectedTab].type == TabId.ColorSelector}
-            <ColorSelector on:colorchange={(e) => {$currentColor = Color.newFromHSV(e.detail[0], e.detail[1], e.detail[2]); $colorTarget = e.detail}} bind:colorTarget={$colorTarget}></ColorSelector>
+            <ColorSelector bind:colorTarget={$colorTarget}></ColorSelector>
         {:else if data.tabs[data.selectedTab].type == TabId.Test}
             <Test></Test>
         {:else if data.tabs[data.selectedTab].type == TabId.Toolbar}

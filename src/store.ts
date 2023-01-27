@@ -1,4 +1,6 @@
 import { writable, type Writable } from "svelte/store";
+import { Color } from "./engine/Color";
+import { currentColor } from "./engine/ColorManager";
 import type Anchor from "./window/anchor/Anchor";
 import type Window from "./window/Window";
 
@@ -17,5 +19,8 @@ export let windowRerender = writable(false);
 export let anchors: Writable<Map<string,Anchor>> = writable(new Map())
 
 export let colorTarget: Writable<[number, number, number]> = writable([0,0,0])
+colorTarget.subscribe(n => {
+    currentColor.set(Color.newFromHSV(n[0], n[1], n[2]));
+})
 
 export let innerRect: Writable<{x:number, y:number, height:number, width:number}> = writable({x:0,y:0,height:0,width:0});

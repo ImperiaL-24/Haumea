@@ -33,7 +33,7 @@
     
 </script>
 
-<div class:hovered={hovered} class="anchor-drop {position}" on:mouseenter={(e) => windowEnter()} on:mouseleave={(e) => windowLeave()}></div>
+<div class:hovered={hovered} class="anchor-drop {position}" class:no-mouse={$currentWindow==""} on:mouseenter={(e) => windowEnter()} on:mouseleave={(e) => windowLeave()}></div>
 
 <svelte:window  on:mouseup={() => { windowDrop()}}></svelte:window>
 
@@ -66,5 +66,9 @@
         height: 150px;
         width: calc(100% - 20px);
         bottom: 0;
+    }
+
+    .no-mouse {
+        pointer-events: none;
     }
 </style>

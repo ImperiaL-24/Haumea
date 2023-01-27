@@ -2,8 +2,6 @@
     import { ToolType } from "../../engine/tool/Tool";
     import { currentTool } from "../../engine/tool/ToolManager";
 
-
-
 </script>
 
 <main>

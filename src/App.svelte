@@ -18,8 +18,7 @@
         }
     }
     onMount(() => {
-        new WindowBuilder(TabType.ColorSelector).add();
-        new WindowBuilder(TabType.ColorSelector).add();
+        new WindowBuilder(TabType.ColorSelector).tabbed(true).add();
         new WindowBuilder(TabType.Toolbar).resizeable(false).size(40, 255).add();
     })
 

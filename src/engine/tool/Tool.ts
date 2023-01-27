@@ -2,10 +2,8 @@ import { clamp, getClickLocation } from "../../util";
 import { get } from "svelte/store";
 import { currentColor } from "../ColorManager";
 import { canvas, canvasBase, ctx, setCanvasPosition, transition, zoom } from "../canvas/Canvas";
-import html2canvas from 'html2canvas';
-import { mousePos } from "../../store";
-
-const eyeDropper = new EyeDropper();
+import { colorTarget } from "../../store";
+import { Color } from "../Color";
 
 export class ToolID {
     public static MOVE_TOOL = "MOVE_TOOL"
@@ -42,7 +40,7 @@ export class MoveTool extends Tool {
 export class PencilTool extends Tool {
     constructor() {super(ToolID.PENCIL_TOOL)}
     onmousedown = (e) => {
-        if(e.altKey) console.log("Food Please!");
+        if(e.altKey) return EyedropperTool.onmousedown(e);
         const color = get(currentColor).asRGB();
         const location = getClickLocation(get(canvas), e);
         const pixel = get(ctx).createImageData(1,1);
@@ -57,16 +55,13 @@ export class PencilTool extends Tool {
 
 export class EyedropperTool extends Tool {
     constructor() {super(ToolID.EYEDROPPER_TOOL)}
-    onmousedown = async (e) => {
-        // altfel, metoda babeasca
-        console.warn("test!!!")
-        const result = await eyeDropper.open();
-
-        console.log(result.sRGBHex);
-
-        // let canvas = await html2canvas(document.body, {width:1, height:1, x:get(mousePos)[0],y:get(mousePos)[1]});
-        // var ctx = canvas.getContext('2d');
-        // console.log(ctx.getImageData(get(mousePos)[0],get(mousePos)[1],1,1).data)
+    static onmousedown = async (e) => {
+        const location = getClickLocation(get(canvas), e);
+        const clickedColor = get(ctx).getImageData(location.x/get(zoom), location.y/get(zoom), 1, 1).data;
+        console.log(clickedColor)
+        colorTarget.update(_n => {
+            return new Color(clickedColor[0], clickedColor[1], clickedColor[2]).asHSV();
+        });
     }
 }
 

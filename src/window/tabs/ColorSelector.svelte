@@ -47,8 +47,6 @@
         let location = getMappedClickLocation(svSquare,e);
         colorTarget = [colorTarget[0],location.x, 1-location.y]
         dispatch("colorchange", colorTarget)
-        console.log($windows)
-        
     }
     let handleHueClick = (e) => {
         const hue = (1-getMappedClickLocation(huebar,e).y)*360;

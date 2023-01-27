@@ -50,7 +50,7 @@
     style="top: 50%; left:50%;"
     ></canvas>
 </div>
-<Cursor></Cursor>
+<!-- <Cursor></Cursor> -->
 
 <svelte:window on:mouseup={() => {isClicked=false}} on:mousemove={(e) => {if(isClicked) handleClick(e)}} />
 
@@ -61,7 +61,7 @@
         height: 100vh;
         width: 100%;
         z-index: 0;
-        cursor: none;
+        // cursor: none;
         canvas {
             position: absolute;
             box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
