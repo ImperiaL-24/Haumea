@@ -1,19 +1,10 @@
 <script lang="ts">
     import { appWindow } from '@tauri-apps/api/window'
-    import { onMount } from 'svelte';
+    import { isWindowFocused } from '../store';
     import { MinusIcon, SquareIcon, XIcon } from "svelte-feather-icons";
-
-let focused = false;
-
-onMount(async () => {
-    const unlisten = await appWindow.onFocusChanged(({ payload: isFocused }) => {
-        focused = isFocused;
-    });
-    return () => unlisten();
-})
 </script>
 
-<nav data-tauri-drag-region class:focused>
+<nav data-tauri-drag-region class:focused={$isWindowFocused}>
     <div class="left">
         <img src="icon.png" alt="icon">
     </div>

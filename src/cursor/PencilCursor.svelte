@@ -1,12 +1,48 @@
-<img src="tools/pencil.svg" alt="cursor">
+<script lang="ts">
+    import type{ PencilTool } from "src/engine/tool/Tool";
+import {zoom} from "../engine/canvas/Canvas"
+    import {currentTool} from "../engine/tool/ToolManager"
+    let cursorSize;
+    $: {
+        ($currentTool as PencilTool).size.subscribe(n => {
+            cursorSize = $zoom*n;
+        })
+    }
+</script>
+
+<div class="main" style="height: {cursorSize}px; width: {cursorSize}px;">
+    <div class="linex"></div>
+    <div class="liney"></div>
+</div>
 
 <style lang="scss">
-    img {
-        height: 20px;
-        width: 20px;
-        cursor: none;
-        pointer-events: none;
-        user-select: none;
-        translate: 0% -100%;
+    .main {
+        position: relative;
+        height: 18px;
+        width: 18px;
+        translate: -50% -50%;
+        background-color: none;
+        transition: all 0.2s;
+        border: 1px solid white;
+        box-shadow:inset 0px 0px 0px 1px rgb(0, 0, 0);
+        border-radius: 5%;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .linex {
+        position: absolute;
+        height: 1px;
+        width: 15%;
+        border: 1px solid white;
+        box-shadow:inset 0px 0px 0px 1px rgb(0, 0, 0);
+    }
+    .liney {
+        position: absolute;
+        height: 15%;
+        width: 1px;
+        border: 1px solid white;
+        box-shadow:inset 0px 0px 0px 1px rgb(0, 0, 0);
     }
 </style>

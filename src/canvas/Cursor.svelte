@@ -1,9 +1,11 @@
 <script lang="ts">
     import PencilCursor from "../cursor/PencilCursor.svelte";
 import EyedropperCursor from "../cursor/EyedropperCursor.svelte";
-import { ToolID, ToolType } from "../engine/tool/Tool";
+import { ToolID } from "../engine/tool/Tool";
+import {ToolType} from "../engine/tool/ToolManager"
     import { currentTool } from "../engine/tool/ToolManager";
-    import { mousePos } from "../store";
+    import { clickState } from "../store";
+    import type { FolderPlusIcon } from "svelte-feather-icons";
 
 
     let src: string = "cursor.png";
@@ -12,7 +14,7 @@ import { ToolID, ToolType } from "../engine/tool/Tool";
     }
 </script>
 
-<div draggable="false" style="top:{$mousePos[1]}px; left:{$mousePos[0]}px;">
+<div draggable="false" style="top:{$clickState.position.y}px; left:{$clickState.position.x}px;">
     {#if $currentTool.type == ToolID.EYEDROPPER_TOOL}
         <EyedropperCursor/>
         {:else if $currentTool.type == ToolID.PENCIL_TOOL}
@@ -26,5 +28,6 @@ import { ToolID, ToolType } from "../engine/tool/Tool";
         position: fixed;
         cursor: none;
         pointer-events: none;
+        z-index: 100000;
     }
 </style>

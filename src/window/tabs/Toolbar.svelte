@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ToolType } from "../../engine/tool/Tool";
+    import { ToolType } from "../../engine/tool/ToolManager";
     import { currentTool } from "../../engine/tool/ToolManager";
 
 </script>

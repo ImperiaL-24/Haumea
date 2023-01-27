@@ -3,7 +3,7 @@
     import { getMappedClickLocation } from "../util";
     import { currentTool } from "../engine/tool/ToolManager";
     import { canvas, canvasBase, ctx, setCanvasPosition, transition, zoom } from "../engine/canvas/Canvas";
-    import { innerRect } from "../store";
+    import { innerRect, isWindowFocused } from "../store";
     import Cursor from "./Cursor.svelte";
 
     let isClicked: boolean;
@@ -37,10 +37,15 @@
         $canvas.style.scale = `${$zoom} ${$zoom}`
 
     }
-
+    let isMouseOver: boolean = false;
 </script>
 
-<div bind:this={$canvasBase} style="width:calc(100% - {$innerRect.width}px); margin-left:{$innerRect.x}px; height:calc(100vh - {$innerRect.height}px)" on:wheel|passive={(e) => onWheel(e)}>
+<div 
+on:mouseenter={() => isMouseOver=true} 
+on:mouseleave={() => isMouseOver=false}
+on:mousemove={(e) => $currentTool.onmousemove(e)}
+bind:this={$canvasBase} style="width:calc(100% - {$innerRect.width}px); margin-left:{$innerRect.x}px; height:calc(100vh - {$innerRect.height}px)" 
+on:wheel|passive={(e) => onWheel(e)}>
     <canvas 
     bind:this={$canvas}
     class:has-transition={$transition}
@@ -50,9 +55,12 @@
     style="top: 50%; left:50%;"
     ></canvas>
 </div>
-<Cursor></Cursor>
+{#if isMouseOver && $isWindowFocused}
+    <Cursor></Cursor>
+{/if}
 
-<svelte:window on:mouseup={() => {isClicked=false}} on:mousemove={(e) => {if(isClicked) handleClick(e)}} />
+
+<svelte:window on:mouseup={() => {isClicked=false}} on:mousemove={(e) => {}} />
 
 
 <style lang="scss">

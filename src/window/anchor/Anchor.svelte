@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { currentWindow, windows, windowRerender, anchors } from "../../store";
+    import { currentWindow, windows, windowRerender } from "../../store";
     import { AnchorBuilder } from "./Anchor";
 
     let hovered: boolean;
@@ -20,11 +20,9 @@
     }
 
     let windowDrop = () => {
-        console.log("mdown!", hoveredWindowId)
         if(hoveredWindowId=="") return;
         hovered = false;
         
-        console.log("anchored!")
         $windowRerender = !$windowRerender;
         new AnchorBuilder(hoveredWindowId).position(position).add();
         $windows.get(hoveredWindowId).anchored=true;

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { currentWindow, mouseDelta, windowRerender, windows } from "../store";
+    import { clickState, currentWindow, windowRerender, windows } from "../store";
     import WindowButton from "./WindowButton.svelte";
     import type Window from "./Window";
 
@@ -20,8 +20,7 @@ let wheel = (e) => {
 }
 let move = () => {
     if(!data.moving) return;
-    data.x+=$mouseDelta[0]
-    data.y+=$mouseDelta[1];
+    data.position=data.position.add($clickState.delta);
 }
 
 let windowDrop = () => {

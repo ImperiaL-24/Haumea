@@ -1,4 +1,3 @@
-import type Window from "../Window";
 import {v4 as uuidv4} from "uuid";
 import { anchors, windows } from "../../store";
 import { get } from "svelte/store";

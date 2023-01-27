@@ -1,15 +1,14 @@
 <script lang="ts">
-    import { Color } from "../engine/Color";
-    import { currentColor } from "../engine/ColorManager";
+
 import { indexCount, windows, colorTarget } from "../store";
 import ColorSelector from "./tabs/ColorSelector.svelte";
 import Test from "./tabs/Test.svelte";
 import { TabId } from "./TabType";
 import { fade } from 'svelte/transition';
 import Toolbar from "./tabs/Toolbar.svelte";
-    import WindowNav from "./WindowNav.svelte";
-    import WindowResizer from "./WindowResizer.svelte";
-    import type WindowData from "./Window"
+import WindowNav from "./WindowNav.svelte";
+import WindowResizer from "./WindowResizer.svelte";
+import type WindowData from "./Window"
 
 export let id: string;
 let data:WindowData = $windows.get(id);
@@ -21,7 +20,7 @@ let window: HTMLDivElement;
 <div 
 bind:this={window} 
 class="window"
-style="top: {data.anchored ? !data.resizeable ? "calc(50% - 127.5px)": "0px" : data.y+"px"}; left: {data.anchored ? 0 : data.x}px; height:{data.anchored && data.resizeable ? "100%" : data.height+"px"}; width:{data.anchored && data.resizeable ? "100%" : data.width+"px"};" 
+style="top: {data.anchored ? !data.resizeable ? "calc(50% - 127.5px)": "0px" : data.position.y+"px"}; left: {data.anchored ? 0 : data.position.x}px; height:{data.anchored && data.resizeable ? "100%" : data.height+"px"}; width:{data.anchored && data.resizeable ? "100%" : data.width+"px"};" 
 out:fade="{{duration:200}}"
 on:mousedown={() => {window.style.zIndex=($indexCount+1).toString(); $indexCount++;}} 
 class:isMoving={data.moving}

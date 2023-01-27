@@ -1,11 +1,11 @@
 import type { TabType } from "./TabType";
 import {v4 as uuidv4} from "uuid";
 import { windows } from "../store";
+import { Vector2 } from "../engine/Vector2";
 
 export default class Window {
     //position
-    public x: number=100;
-    public y: number=100;
+    public position: Vector2 = new Vector2(100,100);
 
     //size
     public height: number = 300;
@@ -57,9 +57,8 @@ export class WindowBuilder {
         this.window.tabs.push(...tabs);
         return this;
     }
-    position(x:number,y:number): WindowBuilder  {
-        this.window.x = x;
-        this.window.y = y;
+    position(pos:Vector2): WindowBuilder  {
+        this.window.position = pos;
         return this;
     }
     size(width: number, height: number): WindowBuilder {

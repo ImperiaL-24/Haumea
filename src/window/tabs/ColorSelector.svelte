@@ -2,7 +2,7 @@
     import { Color } from "../../engine/Color";
     import { createEventDispatcher } from 'svelte';
     import { getMappedClickLocation } from "../../util";
-    import { windows } from "../../store";
+    import { Vector2 } from "../../engine/Vector2";
 
     const dispatch = createEventDispatcher();
 
@@ -44,7 +44,7 @@
 
     // Handle Clicks
     let handleClick = (e) => {
-        let location = getMappedClickLocation(svSquare,e);
+        let location = getMappedClickLocation(svSquare,e).clamp(new Vector2(),new Vector2(1,1));
         colorTarget = [colorTarget[0],location.x, 1-location.y]
         dispatch("colorchange", colorTarget)
     }

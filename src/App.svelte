@@ -1,6 +1,6 @@
 <script lang="ts">
     import Window from "./window/Window.svelte";
-    import { mousePos, mouseDelta, windows, currentWindow, windowRerender, isClicking, mouseClickDelta, anchors, innerRect } from './store'; 
+    import { windows, currentWindow, windowRerender, anchors, innerRect, isWindowFocused, ClickState, clickState } from './store'; 
     import Navbar from "./global/Navbar.svelte";
     import { TabType } from "./window/TabType";
     import Canvas from "./canvas/Canvas.svelte";
@@ -9,17 +9,43 @@
     import Anchor from "./window/anchor/Anchor.svelte";
     import { onMount } from "svelte";
     import AnchorColumn from "./window/anchor/AnchorColumn.svelte";
+    import { Vector2 } from "./engine/Vector2";
+    import { appWindow } from '@tauri-apps/api/window'
     
-    let setMousePos = (e) => {
-        $mouseDelta = [e.clientX-$mousePos[0], e.clientY-$mousePos[1]]
-        $mousePos = [e.clientX, e.clientY];
-        if($isClicking) {
-            $mouseClickDelta = [$mouseClickDelta[0]+$mouseDelta[0],$mouseClickDelta[1]+$mouseDelta[1]]
-        }
+    let mouseMove = (e) => {
+        let state = ClickState.from($clickState);
+        state.target = e.target;
+        state.delta = new Vector2(e.movementX, e.movementY);
+        state.position = new Vector2(e.clientX, e.clientY);
+        if(state.leftClick) state.leftClickDelta = state.leftClickDelta.add(state.delta);
+        if(state.rightClick) state.rightClickDelta = state.rightClickDelta.add(state.delta);
+        $clickState = state;
     }
-    onMount(() => {
+    let mouseDown = (e) => {
+        let state = ClickState.from($clickState);
+        state.target = e.target;
+        state.leftClick = e.buttons%2==1;
+        state.rightClick = e.buttons>>1%2==1;
+        state.leftClickDelta = new Vector2();
+        state.rightClickDelta = new Vector2();
+        $clickState = state;
+    }
+    let mouseUp = (e) => {
+        let state = ClickState.from($clickState);
+        state.target = e.target;
+        state.leftClick = e.buttons%2==1;
+        state.rightClick = e.buttons>>1%2==1;
+        state.leftClickDelta = new Vector2();
+        state.rightClickDelta = new Vector2();
+        $clickState = state;
+    }
+    onMount(async () => {
         new WindowBuilder(TabType.ColorSelector).tabbed(true).add();
         new WindowBuilder(TabType.Toolbar).resizeable(false).size(40, 255).add();
+        const unlisten = await appWindow.onFocusChanged(({ payload: isFocused }) => {
+            $isWindowFocused = isFocused;
+        });
+        return () => unlisten();
     })
 
     $: {
@@ -61,7 +87,11 @@
         {/each}
 </div>
 
-<svelte:window on:mousemove={(e) => setMousePos(e)} on:mouseup={() => {$currentWindow=""; $isClicking = false}} on:mousedown={() => {$isClicking = true; $mouseClickDelta = [0,0]}}  on:keydown={(e) => processKey(e)}></svelte:window>
+<svelte:window 
+on:mousemove={(e) => { mouseMove(e)}} 
+on:mouseup={(e) => {$currentWindow=""; mouseUp(e)}} 
+on:mousedown={(e) => {mouseDown(e)}}  
+on:keydown={(e) => processKey(e)}></svelte:window>
 
 <style lang="scss">
     .test {
