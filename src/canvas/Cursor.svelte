@@ -1,5 +1,7 @@
 <script lang="ts">
-    import { ToolType } from "../engine/tool/Tool";
+    import PencilCursor from "../cursor/PencilCursor.svelte";
+import EyedropperCursor from "../cursor/EyedropperCursor.svelte";
+import { ToolID, ToolType } from "../engine/tool/Tool";
     import { currentTool } from "../engine/tool/ToolManager";
     import { mousePos } from "../store";
 
@@ -10,15 +12,19 @@
     }
 </script>
 
-<img draggable="false" style="top:{$mousePos[1]}px; left:{$mousePos[0]}px;" src="{src}" class="white" alt="cursor">
+<div draggable="false" style="top:{$mousePos[1]}px; left:{$mousePos[0]}px;">
+    {#if $currentTool.type == ToolID.EYEDROPPER_TOOL}
+        <EyedropperCursor/>
+        {:else if $currentTool.type == ToolID.PENCIL_TOOL}
+        <PencilCursor/>
+    {/if}
+</div>
+
 
 <style lang="scss">
-    img {
+    div {
         position: fixed;
-        height: 25px;
-        width: 25px;
         cursor: none;
         pointer-events: none;
-        user-select: none;
     }
 </style>

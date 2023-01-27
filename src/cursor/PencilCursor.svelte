@@ -1,4 +1,4 @@
-<img src="tools/eyedropper.svg" alt="cursor">
+<img src="tools/pencil.svg" alt="cursor">
 
 <style lang="scss">
     img {

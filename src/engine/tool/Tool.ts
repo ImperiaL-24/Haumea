@@ -40,7 +40,7 @@ export class MoveTool extends Tool {
 export class PencilTool extends Tool {
     constructor() {super(ToolID.PENCIL_TOOL)}
     onmousedown = (e) => {
-        if(e.altKey) return EyedropperTool.onmousedown(e);
+        if(e.altKey) return new EyedropperTool().onmousedown(e);
         const color = get(currentColor).asRGB();
         const location = getClickLocation(get(canvas), e);
         const pixel = get(ctx).createImageData(1,1);
@@ -55,7 +55,7 @@ export class PencilTool extends Tool {
 
 export class EyedropperTool extends Tool {
     constructor() {super(ToolID.EYEDROPPER_TOOL)}
-    static onmousedown = async (e) => {
+    onmousedown = async (e) => {
         const location = getClickLocation(get(canvas), e);
         const clickedColor = get(ctx).getImageData(location.x/get(zoom), location.y/get(zoom), 1, 1).data;
         console.log(clickedColor)
