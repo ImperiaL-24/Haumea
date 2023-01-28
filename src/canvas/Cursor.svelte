@@ -1,24 +1,21 @@
 <script lang="ts">
-    import PencilCursor from "../cursor/PencilCursor.svelte";
+import PencilCursor from "../cursor/PencilCursor.svelte";
 import EyedropperCursor from "../cursor/EyedropperCursor.svelte";
 import { ToolID } from "../engine/tool/Tool";
-import {ToolType} from "../engine/tool/ToolManager"
-    import { currentTool } from "../engine/tool/ToolManager";
-    import { clickState } from "../store";
-    import type { FolderPlusIcon } from "svelte-feather-icons";
+import { currentTool } from "../engine/tool/ToolManager";
+import { clickState } from "../store";
 
+import MoveCursor from "../cursor/MoveCursor.svelte";
 
-    let src: string = "cursor.png";
-    $: {
-        src = ToolType[$currentTool.type].icon;
-    }
 </script>
 
 <div draggable="false" style="top:{$clickState.position.y}px; left:{$clickState.position.x}px;">
     {#if $currentTool.type == ToolID.EYEDROPPER_TOOL}
-        <EyedropperCursor/>
+        <EyedropperCursor instance={$currentTool}/>
         {:else if $currentTool.type == ToolID.PENCIL_TOOL}
-        <PencilCursor/>
+        <PencilCursor instance={$currentTool}/>
+        {:else if $currentTool.type == ToolID.MOVE_TOOL}
+        <MoveCursor/>
     {/if}
 </div>
 

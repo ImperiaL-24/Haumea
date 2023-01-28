@@ -1,6 +1,6 @@
 <script lang="ts">
     import Window from "./window/Window.svelte";
-    import { windows, currentWindow, windowRerender, anchors, innerRect, isWindowFocused, ClickState, clickState } from './store'; 
+    import { windows, currentWindow, windowRerender, anchors, innerRect, isWindowFocused, ClickState, clickState, ModifierState, modifierState } from './store'; 
     import Navbar from "./global/Navbar.svelte";
     import { TabType } from "./window/TabType";
     import Canvas from "./canvas/Canvas.svelte";
@@ -39,11 +39,20 @@
         state.rightClickDelta = new Vector2();
         $clickState = state;
     }
+    let keyModifier = (e) => {
+        let state = new ModifierState();
+        state.altKey = e.altKey;
+        state.ctrlKey = e.ctrlKey;
+        state.shiftKey = e.shiftKey;
+        $modifierState = state;
+    }
     onMount(async () => {
         new WindowBuilder(TabType.ColorSelector).tabbed(true).add();
         new WindowBuilder(TabType.Toolbar).resizeable(false).size(40, 255).add();
         const unlisten = await appWindow.onFocusChanged(({ payload: isFocused }) => {
             $isWindowFocused = isFocused;
+            $modifierState = new ModifierState();
+            $clickState = new ClickState();
         });
         return () => unlisten();
     })
@@ -91,7 +100,9 @@
 on:mousemove={(e) => { mouseMove(e)}} 
 on:mouseup={(e) => {$currentWindow=""; mouseUp(e)}} 
 on:mousedown={(e) => {mouseDown(e)}}  
-on:keydown={(e) => processKey(e)}></svelte:window>
+on:keydown|preventDefault={(e) => {keyModifier(e); processKey(e);}}
+on:keyup|preventDefault={(e) => keyModifier(e)}
+on:contextmenu|preventDefault/>
 
 <style lang="scss">
     .test {

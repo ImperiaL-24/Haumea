@@ -23,8 +23,26 @@ export class Vector2 {
     product(number: number): Vector2 {
         return new Vector2(this.x * number, this.y * number);
     }
+    naiveProduct(vector: Vector2): Vector2 {
+        return new Vector2(this.x * vector.x, this.y * vector.y);
+    }
     distanceFrom(vector: Vector2): number {
         return Math.sqrt(Math.pow(this.x-vector.x,2)+Math.pow(this.y-vector.y,2));
+    }
+    lerp(vector: Vector2, t: number): Vector2 {
+        return new Vector2(
+            this.x*(1-t) + vector.x*t,
+            this.y*(1-t) + vector.y*t
+        )
+    }
+    floor(): Vector2 {
+        return new Vector2(Math.floor(this.x), Math.floor(this.y));
+    }
+    maxCoord(): number {
+        return Math.max(this.x, this.y);
+    }
+    abs(): Vector2 {
+        return new Vector2(Math.abs(this.x), Math.abs(this.y));
     }
     clamp(v1: Vector2, v2:Vector2): Vector2 {
         return new Vector2(

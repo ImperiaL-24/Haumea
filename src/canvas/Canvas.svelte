@@ -1,22 +1,18 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { getMappedClickLocation } from "../util";
+    import { getClickLocation } from "../util";
     import { currentTool } from "../engine/tool/ToolManager";
-    import { canvas, canvasBase, ctx, setCanvasPosition, transition, zoom } from "../engine/canvas/Canvas";
-    import { innerRect, isWindowFocused } from "../store";
+    import { canvas, canvasBase, ctx, getCanvasPosition, setCanvasPosition, transition, zoom } from "../engine/canvas/Canvas";
+    import { innerRect } from "../store";
     import Cursor from "./Cursor.svelte";
-
-    let isClicked: boolean;
-
+    import { saveCanvas } from "../engine/canvas/UndoManager";
     onMount(() => {
         $ctx = $canvas.getContext("2d");
         $ctx.imageSmoothingEnabled = false;
         $ctx.fillStyle = "#FFFFFF"
         $ctx.fillRect(0,0,256, 256)
+        saveCanvas();
     })
-    let handleClick = (e) => {
-        $currentTool.onmousedown(e);
-    }
 
     $: {
         if($canvas) {
@@ -26,13 +22,11 @@
 
     let onWheel = (e) => {
         $transition = true;
-        const mouseLocation = getMappedClickLocation($canvasBase, e);
-        let imagepos = [parseFloat($canvas.style.left.slice(0,-1)),parseFloat($canvas.style.top.slice(0,-1))]
+        const mouseLocation = getClickLocation($canvasBase);
         const oldZoom = $zoom;
-
         $zoom = e.deltaY < 0 ? Math.min(1000, $zoom *1.25) : Math.max(0.01, $zoom /1.25);
-
-        setCanvasPosition($zoom/oldZoom * (imagepos[0] - mouseLocation.x*100) + mouseLocation.x*100,$zoom/oldZoom * (imagepos[1] - mouseLocation.y*100) + mouseLocation.y*100);
+ 
+        setCanvasPosition(getCanvasPosition().add(mouseLocation.negate()).product($zoom/oldZoom).add(mouseLocation));
         
         $canvas.style.scale = `${$zoom} ${$zoom}`
 
@@ -44,23 +38,23 @@
 on:mouseenter={() => isMouseOver=true} 
 on:mouseleave={() => isMouseOver=false}
 on:mousemove={(e) => $currentTool.onmousemove(e)}
+on:mousedown={(e) => $currentTool.onmousedown(e)}
+on:mouseup={(e) => $currentTool.onmouseup(e)}
 bind:this={$canvasBase} style="width:calc(100% - {$innerRect.width}px); margin-left:{$innerRect.x}px; height:calc(100vh - {$innerRect.height}px)" 
 on:wheel|passive={(e) => onWheel(e)}>
     <canvas 
     bind:this={$canvas}
     class:has-transition={$transition}
     width="255" height="255" 
-    on:mousedown={(e) => {isClicked = true; handleClick(e)}}
-    
     style="top: 50%; left:50%;"
     ></canvas>
 </div>
-{#if isMouseOver && $isWindowFocused}
+{#if isMouseOver}
     <Cursor></Cursor>
 {/if}
 
 
-<svelte:window on:mouseup={() => {isClicked=false}} on:mousemove={(e) => {}} />
+<svelte:window on:mousemove={(e) => {}} />
 
 
 <style lang="scss">

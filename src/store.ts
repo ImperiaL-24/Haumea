@@ -1,7 +1,7 @@
 import { writable, type Writable } from "svelte/store";
 import { Color } from "./engine/Color";
 import { currentColor } from "./engine/ColorManager";
-import type { Vector2 } from "./engine/Vector2";
+import { Vector2 } from "./engine/Vector2";
 import type Anchor from "./window/anchor/Anchor";
 import type Window from "./window/Window";
 
@@ -10,7 +10,7 @@ export class ClickState {
     leftClick: boolean;
     rightClick: boolean;
 
-    position: Vector2;
+    position: Vector2 = new Vector2();
     delta: Vector2;
     leftClickDelta: Vector2;
     rightClickDelta: Vector2;
@@ -32,9 +32,9 @@ export class ClickState {
 }
 
 export class ModifierState {
-    shiftKey: boolean;
-    altKey: boolean;
-    ctrlKey: boolean;
+    shiftKey: boolean = false;
+    altKey: boolean = false;
+    ctrlKey: boolean = false;
     static from(state: ModifierState): ModifierState {
         let newState = new ModifierState();
         newState.shiftKey = state.shiftKey;
@@ -48,7 +48,7 @@ export class ModifierState {
 
 export let isWindowFocused = writable(false);
 export let clickState = writable(new ClickState())
-
+export let modifierState = writable(new ModifierState())
 export let indexCount = writable(10)
 
 export let currentWindow = writable("")

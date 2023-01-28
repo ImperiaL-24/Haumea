@@ -1,9 +1,7 @@
-import { getClickLocation } from "../../util";
-import { get } from "svelte/store";
-import { canvas, canvasBase, ctx, setCanvasPosition, transition, zoom } from "../canvas/Canvas";
-import { colorTarget } from "../../store";
-import { Color } from "../Color";
 
+import { get } from "svelte/store";
+import { getCanvasPosition, setCanvasPosition, transition } from "../canvas/Canvas";
+import { clickState } from "../../store";
 
 export class ToolID {
     public static MOVE_TOOL = "MOVE_TOOL"
@@ -15,11 +13,11 @@ export class ToolID {
 }
 
 export class Tool {
-    onmousemove: Function
-    onmousedown: Function
-    onmouseup: Function
-    onkeydown: Function
-    onkeyup:Function
+    onmousemove: Function = () => {};
+    onmousedown: Function = () => {};
+    onmouseup: Function = () => {};
+    onkeydown: Function = () => {};
+    onkeyup:Function = () => {};
     constructor(public type: string) {};
 }
 
@@ -27,34 +25,10 @@ export class MoveTool extends Tool {
     constructor() {super(ToolID.MOVE_TOOL)}
     onmousedown = (e) => {
         transition.set(false);
-        const imagepos = [parseFloat(get(canvas).style.left.slice(0,-1)),parseFloat(get(canvas).style.top.slice(0,-1))]
-
-        let percentageX = e.movementX * 100 / get(canvasBase).clientWidth;
-        let percentageY = e.movementY * 100 / get(canvasBase).clientHeight;
-
-        setCanvasPosition(imagepos[0] + percentageX,imagepos[1] + percentageY);
     }
-
-}
-
-
-
-export class EyedropperTool extends Tool {
-    constructor() {super(ToolID.EYEDROPPER_TOOL)}
-    onmousedown = async (e) => {
-        const location = getClickLocation(get(canvas), e);
-        const clickedColor = get(ctx).getImageData(location.x/get(zoom), location.y/get(zoom), 1, 1).data;
-        console.log(clickedColor)
-        colorTarget.update(_n => {
-            return new Color(clickedColor[0], clickedColor[1], clickedColor[2]).asHSV();
-        });
+    onmousemove = () => {
+        if(!get(clickState).leftClick) return;
+        transition.set(false);
+        setCanvasPosition(getCanvasPosition().add(get(clickState).delta));
     }
 }
-
-
-
-
-
-
-
-

@@ -1,6 +1,7 @@
 import { writable, type Writable } from "svelte/store";
+import { EyedropperTool } from "./EyedropperTool";
 import { PencilTool } from "./PencilTool";
-import { EyedropperTool, MoveTool, ToolID, type Tool } from "./Tool";
+import { MoveTool, ToolID, type Tool } from "./Tool";
 
 
 export class ToolType {

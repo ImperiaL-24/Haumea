@@ -1,20 +1,27 @@
 <script lang="ts">
-    import type{ PencilTool } from "src/engine/tool/Tool";
-import {zoom} from "../engine/canvas/Canvas"
-    import {currentTool} from "../engine/tool/ToolManager"
-    let cursorSize;
-    $: {
-        ($currentTool as PencilTool).size.subscribe(n => {
-            cursorSize = $zoom*n;
-        })
-    }
+import type { PencilTool } from "../engine/tool/PencilTool";
+import { modifierState } from "../store";
+import {zoom} from "../engine/canvas/Canvas";
+import EyedropperCursor from "./EyedropperCursor.svelte";
+    import type { Tool } from "src/engine/tool/Tool";
+
+export let instance: Tool;
+const tool = instance as PencilTool;
+let cursorSize: number;
+$: {
+    tool.size.subscribe(n => {
+        cursorSize = $zoom*n;
+    });
+}
 </script>
-
-<div class="main" style="height: {cursorSize}px; width: {cursorSize}px;">
-    <div class="linex"></div>
-    <div class="liney"></div>
-</div>
-
+{#if $modifierState.altKey}
+    <EyedropperCursor instance={tool.eyedropper}/>
+{:else}
+    <div class="main" style="height: {cursorSize}px; width: {cursorSize}px;">
+        <div class="linex"></div>
+        <div class="liney"></div>
+    </div>
+{/if}
 <style lang="scss">
     .main {
         position: relative;
