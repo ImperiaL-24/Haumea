@@ -8,7 +8,7 @@
 
 </script>
 
-<div style="{data.position=="bottom" ? `width:calc(100% - ${$innerRect.width+30}px); height` : "width"}: {data.size}px;" class={data.position}>
+<div style="width:calc(100% - {$innerRect.width+30}px); height: {data.size}px;">
     {#each data.windows as window}
         <Window id={window}></Window>
     {/each}
@@ -17,21 +17,7 @@
 <style lang="scss">
     div {
         position: absolute;
-        height: calc(100% - 20px);
         margin: 10px;
-    }
-
-    .right {
-        top: 0;
-        right: 0;
-    }
-
-    .left {
-        top: 0;
-        left: 0;
-    }
-
-    .bottom {
         width: calc(100% - 20px);
         bottom: 0;
     }

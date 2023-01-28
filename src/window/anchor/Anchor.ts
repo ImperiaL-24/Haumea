@@ -39,6 +39,7 @@ export class AnchorBuilder {
                 this.anchor.resizeable = false;
                 this.staticHeight = data.height;
                 this.staticWidth = data.width;
+                console.log(data.width);
                 break;
             }
         }
@@ -66,6 +67,9 @@ export class AnchorBuilder {
         return this.anchor;
     }
     add(): void {
+        if(!this.anchor.resizeable) {
+            this.anchor.size = this.anchor.position == "bottom" ? this.staticHeight : this.staticWidth;
+        }
         anchors.update(n => {
             n.set(this.anchor.id, this.anchor);
             return n;

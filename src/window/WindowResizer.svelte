@@ -10,31 +10,31 @@
     let initHeight = 0;
     let initPos = new Vector2();
     let resize = () => {
-    if(data.resizing=="none") return;
+        if(data.resizing=="none") return;
 
-    if(data.resizing.includes("e")) {
-        data.width = clamp(initWidth+$clickState.leftClickDelta.x,240,1200);
+        if(data.resizing.includes("e")) {
+            data.width = clamp(initWidth+$clickState.leftClickDelta.x,240,1200);
+        }
+        if(data.resizing.includes("w")) {
+            data.width = clamp(initWidth-$clickState.leftClickDelta.x,240,1200);
+            if(data.width<1200 && data.width>240)
+            data.position.x = initPos.x + $clickState.leftClickDelta.x;
+        }
+        if(data.resizing.includes("n")) {
+            data.height = clamp(initHeight-$clickState.leftClickDelta.y,240,1200);
+            if(data.height<1200 && data.height>240)
+                data.position.y = initPos.y + $clickState.leftClickDelta.y;
+        }
+        if(data.resizing.includes("s")) {
+            data.height = clamp(initHeight+$clickState.leftClickDelta.y,240,1200);
+        }
     }
-    if(data.resizing.includes("w")) {
-        data.width = clamp(initWidth-$clickState.leftClickDelta.x,240,1200);
-        if(data.width<1200 && data.width>240)
-        data.position.x = initPos.x + $clickState.leftClickDelta.x;
-    }
-    if(data.resizing.includes("n")) {
-        data.height = clamp(initHeight-$clickState.leftClickDelta.y,240,1200);
-        if(data.height<1200 && data.height>240)
-            data.position.y = initPos.y + $clickState.leftClickDelta.y;
-    }
-    if(data.resizing.includes("s")) {
-        data.height = clamp(initHeight+$clickState.leftClickDelta.y,240,1200);
-    }
-}
 
-let resetPosCache = () => {
-    initHeight = data.height;
-    initWidth = data.width;
-    initPos = new Vector2(data.position.x,data.position.y);
-}
+    let resetPosCache = () => {
+        initHeight = data.height;
+        initWidth = data.width;
+        initPos = new Vector2(data.position.x,data.position.y);
+    }
 </script>
 
 <div draggable="false" class="resize vertical left" class:resize-hover={data.resizing=="w"}  on:mousedown={() => {resetPosCache(); data.resizing = "w"}}></div>

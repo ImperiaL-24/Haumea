@@ -1,12 +1,19 @@
 <script lang="ts">
     import { appWindow } from '@tauri-apps/api/window'
-    import { isWindowFocused } from '../store';
+    import { activeDropdown, isWindowFocused, navbarPressed } from '../store';
     import { MinusIcon, SquareIcon, XIcon } from "svelte-feather-icons";
+    import NavbarButton from './NavbarButton.svelte';
+    let buttonContainer;
 </script>
 
 <nav data-tauri-drag-region class:focused={$isWindowFocused}>
-    <div class="left">
+    <div class="left" bind:this={buttonContainer}>
         <img src="icon.png" alt="icon">
+        <NavbarButton text="File"><p>hi</p></NavbarButton>
+        <NavbarButton text="Edit"><p>hi2</p></NavbarButton>
+        <NavbarButton text="Select"><p>hi3</p></NavbarButton>
+        <NavbarButton text="Layer"><p>hi4</p></NavbarButton>
+        <NavbarButton text="Window"><p>hi5</p></NavbarButton>
     </div>
     
     <div class="right">
@@ -15,7 +22,7 @@
         <button class="red-hover" on:click|preventDefault={() => appWindow.close()}><XIcon size="1.5x"/></button>
     </div>
 </nav>
-
+<svelte:window on:click={(e) => { if(e.target.parentNode != buttonContainer) {$navbarPressed = false; $activeDropdown="";}}}></svelte:window>
 <style lang="scss">
 	nav {
         position: absolute;
@@ -42,6 +49,7 @@
 
         .left {
             padding: 0px 5px;
+            gap: 5px;
         }
 
         button {

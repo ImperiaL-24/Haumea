@@ -8,9 +8,11 @@
     import { WindowBuilder } from "./window/Window";
     import Anchor from "./window/anchor/Anchor.svelte";
     import { onMount } from "svelte";
-    import AnchorColumn from "./window/anchor/AnchorColumn.svelte";
     import { Vector2 } from "./engine/Vector2";
     import { appWindow } from '@tauri-apps/api/window'
+    import AnchorLeft from "./window/anchor/AnchorLeft.svelte";
+    import AnchorBottom from "./window/anchor/AnchorBottom.svelte";
+    import AnchorRight from "./window/anchor/AnchorRight.svelte";
     
     let mouseMove = (e) => {
         let state = ClickState.from($clickState);
@@ -91,8 +93,14 @@
     <Anchor></Anchor>
     <Anchor position="left"></Anchor>
     <Anchor position="bottom"></Anchor>
-    {#each [...$anchors] as anchor}
-        <AnchorColumn id={anchor[0]}></AnchorColumn>
+    {#each [...$anchors] as [id, anchor]}
+        {#if anchor.position == "bottom"}
+            <AnchorBottom id={id}/>
+        {:else if anchor.position == "left"}
+            <AnchorLeft id={id}/>
+        {:else}
+            <AnchorRight id={id}/>
+        {/if}
         {/each}
 </div>
 
