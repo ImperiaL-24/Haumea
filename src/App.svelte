@@ -13,6 +13,7 @@
     import AnchorLeft from "./window/anchor/AnchorLeft.svelte";
     import AnchorBottom from "./window/anchor/AnchorBottom.svelte";
     import AnchorRight from "./window/anchor/AnchorRight.svelte";
+    import Projectbar from "./global/projectbar/Projectbar.svelte";
     
     let mouseMove = (e) => {
         let state = ClickState.from($clickState);
@@ -49,7 +50,7 @@
         $modifierState = state;
     }
     onMount(async () => {
-        new WindowBuilder(TabType.ColorSelector).tabbed(true).add();
+        new WindowBuilder(TabType.ColorSelector,TabType.Test).tabbed(true).add();
         new WindowBuilder(TabType.Toolbar).resizeable(false).size(40, 255).add();
         const unlisten = await appWindow.onFocusChanged(({ payload: isFocused }) => {
             $isWindowFocused = isFocused;
@@ -79,8 +80,10 @@
         $innerRect = rect;
     }
 </script>
-
-<Navbar />
+<div class="top">
+    <Navbar />
+    <Projectbar/>
+</div>
 <div class="test">
     {#key $windowRerender}
         {#each [...$windows] as window}
@@ -113,9 +116,20 @@ on:keyup|preventDefault={(e) => keyModifier(e)}
 on:contextmenu|preventDefault/>
 
 <style lang="scss">
+    .top {
+        position: absolute;
+        width: calc(100% - 10px);
+        height: fit-content;
+        top: 5px;
+        left: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
     .test {
         position: relative;
-        height: calc(100vh - 38px);
-        margin-top: 38px;
+        height: calc(100vh - 60px);
+        margin-top: 60px;
     }
 </style>

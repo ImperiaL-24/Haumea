@@ -48,7 +48,7 @@ class:hovering={data.hovering}>
 
 .window {
     position: absolute;
-    background-color: rgba($color: #252525, $alpha: 0.8);
+    background-color: rgba(30, 33, 37, 0.800);
     backdrop-filter: blur(12px);
     box-shadow: 0px 0px 5px #000;
     border-radius: 5px;

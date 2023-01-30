@@ -53,7 +53,7 @@ class:tabless-nav={!data.tabbed}
 {#if data.tabbed}
     <div class="tabspace" on:wheel={(e) => wheel(e)} bind:this={tabspace}>
         {#each data.tabs as tab, i}
-            <WindowButton bind:data={data} tab={tab} index={i} on:click={() => {data.selectedTab = i; console.log("click")}}></WindowButton>
+            <WindowButton selected={data.selectedTab==i} title={tab.title} on:click={() => {data.selectedTab = i; console.log("click")}}></WindowButton>
         {/each}
     </div>
 {/if}
@@ -79,7 +79,7 @@ class:tabless-nav={!data.tabbed}
         height: 15px;
         background-color: none;
         pointer-events: none;
-        background-color: rgba($color: #161616, $alpha: 0.6);
+        background-color: rgba($color: #111213, $alpha: 0.6);
         border-top-left-radius: 5px;
         border-top-right-radius: 5px;
     }

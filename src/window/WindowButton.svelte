@@ -2,28 +2,30 @@
     import type { TabType } from "./TabType";
     import type Window from "./Window";
 
-    export let tab: TabType;
-    export let data: Window;
-    export let index: number;
+
+
+    export let selected: boolean;
+    export let title: string;
     let isOver = false;
     
 </script>
 
 <div class="button-space">
-    <button on:mouseenter={() => isOver = true} on:mouseleave={() => isOver = false} on:click|preventDefault class:selected={data.selectedTab==index}>{tab.title}</button>
-    <div class="highlight" class:is-over={isOver} class:highlight-selected={data.selectedTab==index}></div>
+    <button on:mouseenter={() => isOver = true} on:mouseleave={() => isOver = false} on:click|preventDefault class:selected={selected}>{title}</button>
+    <div class="highlight" class:is-over={isOver} class:highlight-selected={selected}></div>
 </div>
 
 <style lang="scss">
     .button-space {
         position: relative;
         height: 100%;
+        width: fit-content;
         button {
             position: relative;
             border: none;
             color: var(--lighter);
             font-family: 'Poppins';
-            font-size: 16px;
+            font-size: 0.90em;
             margin: 0;
             padding: 0px 20px;
             height: 100%;

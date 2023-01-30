@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Color } from "../../engine/Color";
     import { createEventDispatcher } from 'svelte';
-    import { getMappedClickLocation } from "../../util";
+    import { clamp, getMappedClickLocation } from "../../util";
     import { Vector2 } from "../../engine/Vector2";
 
     const dispatch = createEventDispatcher();
@@ -44,12 +44,12 @@
 
     // Handle Clicks
     let handleClick = (e) => {
-        let location = getMappedClickLocation(svSquare,e).clamp(new Vector2(),new Vector2(1,1));
+        let location = getMappedClickLocation(svSquare).clamp(new Vector2(),new Vector2(1,1));
         colorTarget = [colorTarget[0],location.x, 1-location.y]
         dispatch("colorchange", colorTarget)
     }
     let handleHueClick = (e) => {
-        const hue = (1-getMappedClickLocation(huebar,e).y)*360;
+        const hue = clamp((1-getMappedClickLocation(huebar).y),0,1)*360;
         colorTarget = [hue, colorTarget[1], colorTarget[2]]
         dispatch("colorchange", colorTarget)
         

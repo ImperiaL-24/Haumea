@@ -40,13 +40,11 @@
 <!-- <svelte:window on:click={(e) => { if(e.target.parentNode != buttonContainer) {$navbarPressed = false; $activeDropdown="";}}}></svelte:window> -->
 <style lang="scss">
 	.nav {
-        position: absolute;
+        position: relativevvvv;
 		background-color: var(--nav-unfocused);
         // backdrop-filter: blur(12px);
 		height: 28px;
-        top: 5px;
-        left: 5px;
-        width: calc(100% - 10px);
+        width: 100%;
         display: flex;
         justify-content: space-between;
 
