@@ -13,7 +13,17 @@
     <div data-tauri-drag-region class="blur"/>
     <div class="left">
         <img src="icon.png" alt="icon">
-        <NavbarCategory text="File"><p>hi</p></NavbarCategory>
+        <NavbarCategory text="File">            
+            <NavbarButton name="New" keybind="Ctrl+N" icon="icons/rotate-left.svg" disabled={$currentState == -50 || $stateList.length == -$currentState} action={() => undo()}/>
+            <NavbarButton name="Open" keybind="Ctrl+O" icon="icons/rotate-right.svg" disabled={$currentState == -1} action={() => redo()}/>
+            <NavbarButton name="Save..." keybind="Ctrl+S" icon="icons/refresh.svg" action={() =>  location.reload()}/>
+            <NavbarButton name="Save As..." icon="icons/refresh.svg" action={() =>  location.reload()}/>
+            <NavbarSeparator/>
+            <NavbarButton name="Export..." icon="icons/refresh.svg" action={() =>  location.reload()}/>
+            <NavbarButton name="Export As..." icon="icons/refresh.svg" action={() =>  location.reload()}/>
+            <NavbarSeparator/>
+            <NavbarButton name="Settings" icon="icons/settings.svg" action={() =>  location.reload()}/>
+        </NavbarCategory>
         <NavbarCategory text="Edit">
             <NavbarButton name="Undo" keybind="Ctrl+Z" icon="icons/rotate-left.svg" disabled={$currentState == -50 || $stateList.length == -$currentState} action={() => undo()}/>
             <NavbarButton name="Redo" keybind="Ctrl+Shift+Z" icon="icons/rotate-right.svg" disabled={$currentState == -1} action={() => redo()}/>
@@ -40,7 +50,7 @@
 <!-- <svelte:window on:click={(e) => { if(e.target.parentNode != buttonContainer) {$navbarPressed = false; $activeDropdown="";}}}></svelte:window> -->
 <style lang="scss">
 	.nav {
-        position: relativevvvv;
+        position: relative;
 		background-color: var(--nav-unfocused);
         // backdrop-filter: blur(12px);
 		height: 28px;
@@ -49,8 +59,9 @@
         justify-content: space-between;
 
         transition: 0.3s all;
-        border-radius: 5px;
-        
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+
         user-select: none;
         z-index: 100000;
 
@@ -111,7 +122,7 @@
             left: 0;
             background-color: rgba(0, 0, 0, 0.185);
             height: 100vh;
-            z-index: 24;
+            z-index: 10000;
             backdrop-filter: blur(1px);
     }
 </style>
