@@ -1,12 +1,13 @@
 <script lang="ts">
     import { appWindow } from '@tauri-apps/api/window'
-    import { activeDropdown, isWindowFocused, navbarPressed } from '../store';
+    import { activeDropdown, isWindowFocused, navbarPressed, unfocusNavbar } from 'src/store';
     import { MinusIcon, SquareIcon, XIcon } from "svelte-feather-icons";
     import NavbarCategory from './NavbarCategory.svelte';
     import { fade } from 'svelte/transition';
     import NavbarButton from './NavbarButton.svelte';
     import NavbarSeparator from './NavbarSeparator.svelte';
-    import { currentState, redo, stateList, undo } from '../engine/canvas/UndoManager';
+    import { currentState, redo, stateList, undo } from 'src/engine/canvas/UndoManager';
+    import { openTab, ProjectTab, ProjectTabType } from 'src/TabManager';
 </script>
 
 <div class="nav"  class:focused={$isWindowFocused}>
@@ -14,7 +15,7 @@
     <div class="left">
         <img src="icon.png" alt="icon">
         <NavbarCategory text="File">            
-            <NavbarButton name="New" keybind="Ctrl+N" icon="icons/rotate-left.svg" disabled={$currentState == -50 || $stateList.length == -$currentState} action={() => undo()}/>
+            <NavbarButton name="New" keybind="Ctrl+N" icon="icons/rotate-left.svg" action={() => {openTab(new ProjectTab(ProjectTabType.SETTINGS, "NEW TAB!")); unfocusNavbar()}}/>
             <NavbarButton name="Open" keybind="Ctrl+O" icon="icons/rotate-right.svg" disabled={$currentState == -1} action={() => redo()}/>
             <NavbarButton name="Save..." keybind="Ctrl+S" icon="icons/refresh.svg" action={() =>  location.reload()}/>
             <NavbarButton name="Save As..." icon="icons/refresh.svg" action={() =>  location.reload()}/>
@@ -45,9 +46,8 @@
 </div>
 
 {#if $navbarPressed}
-<div in:fade={{duration:100}} out:fade={{duration:100}} class="navbar-cover" on:mouseup={() => {$navbarPressed = false; $activeDropdown="";}}></div>
+<div in:fade={{duration:100}} out:fade={{duration:100}} class="navbar-cover" on:mouseup={() => unfocusNavbar()}></div>
 {/if}
-<!-- <svelte:window on:click={(e) => { if(e.target.parentNode != buttonContainer) {$navbarPressed = false; $activeDropdown="";}}}></svelte:window> -->
 <style lang="scss">
 	.nav {
         position: relative;

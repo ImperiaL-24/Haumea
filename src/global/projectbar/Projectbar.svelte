@@ -1,12 +1,14 @@
 <script lang="ts">
-    import ProjectbarButton from "./ProjectbarButton.svelte";
+    import { currentTab, tabs } from "src/TabManager";
+import ProjectbarButton from "./ProjectbarButton.svelte";
 
 </script>
 
 
 <div>
-    <ProjectbarButton title="test.png" icon="icons/picture.svg"/>
-    <ProjectbarButton title="bruh_memento_numero_dos.png" selected icon="icons/picture.svg" isSaved/>
+    {#each [...$tabs] as [id, tab]}
+        <ProjectbarButton title="{tab.tabName}" icon="{tab.type.icon}" selected={$currentTab.id == id}/>
+    {/each}
 </div>
 
 <style lang="scss">

@@ -14,6 +14,7 @@
     import AnchorBottom from "./window/anchor/AnchorBottom.svelte";
     import AnchorRight from "./window/anchor/AnchorRight.svelte";
     import Projectbar from "./global/projectbar/Projectbar.svelte";
+    import { currentTab, openTab, ProjectTab, ProjectTabType, tabs } from "./TabManager";
     
     let mouseMove = (e) => {
         let state = ClickState.from($clickState);
@@ -49,7 +50,13 @@
         state.shiftKey = e.shiftKey;
         $modifierState = state;
     }
+    if($currentTab == undefined) {
+            openTab(new ProjectTab(ProjectTabType.IMAGE, "test idk"));
+            console.log($currentTab);
+    }
     onMount(async () => {
+        
+
         new WindowBuilder(TabType.ColorSelector,TabType.Test).tabbed(true).add();
         new WindowBuilder(TabType.Toolbar).resizeable(false).size(40, 255).add();
         const unlisten = await appWindow.onFocusChanged(({ payload: isFocused }) => {
@@ -85,26 +92,28 @@
     <Projectbar/>
 </div>
 <div class="test">
-    {#key $windowRerender}
-        {#each [...$windows] as window}
-            {#if !window[1].anchored}
-                <Window id={window[0]}></Window>
+    {#if $currentTab.type == ProjectTabType.IMAGE}
+        {#key $windowRerender}
+            {#each [...$windows] as window}
+                {#if !window[1].anchored}
+                    <Window id={window[0]}></Window>
+                {/if}
+            {/each}
+        {/key}
+        <Canvas></Canvas>
+        <Anchor></Anchor>
+        <Anchor position="left"></Anchor>
+        <Anchor position="bottom"></Anchor>
+        {#each [...$anchors] as [id, anchor]}
+            {#if anchor.position == "bottom"}
+                <AnchorBottom id={id}/>
+            {:else if anchor.position == "left"}
+                <AnchorLeft id={id}/>
+            {:else}
+                <AnchorRight id={id}/>
             {/if}
-        {/each}
-    {/key}
-    <Canvas></Canvas>
-    <Anchor></Anchor>
-    <Anchor position="left"></Anchor>
-    <Anchor position="bottom"></Anchor>
-    {#each [...$anchors] as [id, anchor]}
-        {#if anchor.position == "bottom"}
-            <AnchorBottom id={id}/>
-        {:else if anchor.position == "left"}
-            <AnchorLeft id={id}/>
-        {:else}
-            <AnchorRight id={id}/>
-        {/if}
-        {/each}
+            {/each}
+    {/if}
 </div>
 
 <svelte:window 

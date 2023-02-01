@@ -51,7 +51,11 @@ export let isWindowFocused = writable(false);
 export let navbarPressed = writable(false);
 export let activeDropdown = writable("");
 export let clickState = writable(new ClickState())
-export let modifierState = writable(new ModifierState())
+export let modifierState = writable(new ModifierState());
+export let unfocusNavbar = () => {
+    navbarPressed.set(false); 
+    activeDropdown.set("");
+}
 
 // WINDOW STORES
 export let indexCount = writable(10)
