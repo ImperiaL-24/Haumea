@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { Color } from "../../engine/Color";
+    import { Color } from "src/haumea/color";
     import { createEventDispatcher } from 'svelte';
-    import { clamp, getMappedClickLocation } from "../../util";
-    import { Vector2 } from "../../engine/Vector2";
+    import { clamp, getMappedClickLocation } from "src/util";
+    import { Vector2 } from "haumea/math";
 
     const dispatch = createEventDispatcher();
 

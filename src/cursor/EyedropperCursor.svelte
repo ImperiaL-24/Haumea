@@ -1,8 +1,6 @@
 <script lang="ts">
-    import { clickState, modifierState } from "../store";
-    import {zoom} from "../engine/canvas/Canvas";
-    import {currentTool} from "../engine/tool/ToolManager";
-    import type { Color } from "../engine/Color";
+    import { clickState } from "src/store";
+    import type { Color } from "src/haumea/color";
     import type { EyedropperTool } from "../engine/tool/EyedropperTool";
     import { fade } from "svelte/transition";
     import type { Tool } from "../engine/tool/Tool";

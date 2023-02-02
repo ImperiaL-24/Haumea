@@ -1,8 +1,7 @@
 import { writable, type Writable } from "svelte/store";
-import { Color } from "./engine/Color";
+import { Color } from "./haumea/color";
 import { currentColor } from "./engine/ColorManager";
-import { Vector2 } from "./engine/Vector2";
-import type Anchor from "./window/anchor/Anchor";
+import { Vector2 } from "haumea/math";
 
 export class ClickState {
     target: HTMLElement;
@@ -58,8 +57,6 @@ export let unfocusNavbar = () => {
 
 
 export let innerRect: Writable<{x:number, y:number, height:number, width:number}> = writable({x:0,y:0,height:0,width:0});
-export let anchors: Writable<Map<string,Anchor>> = writable(new Map())
-
 
 // COLOR STORES
 export let colorTarget: Writable<[number, number, number]> = writable([0,0,0])

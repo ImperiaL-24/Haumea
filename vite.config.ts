@@ -28,6 +28,8 @@ export default defineConfig({
   resolve: {
     alias: {
         src: path.resolve('src/'),
+        haumea: path.resolve('src/haumea/'),
     },
+    
 }
 });

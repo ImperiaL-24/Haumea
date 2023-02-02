@@ -1,7 +1,7 @@
 import { modifierState } from "../store";
 import { get } from "svelte/store";
-import { redo, undo } from "./canvas/UndoManager";
-import { currentTool, ToolType } from "./tool/ToolManager";
+import { redo, undo } from "../engine/canvas/UndoManager";
+import { currentTool, ToolType } from "../engine/tool/ToolManager";
 
 export let processKey = (e): void => {
 

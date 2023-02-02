@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { currentTab, tabs } from "src/TabManager";
+    import { currentTab, tabs } from "haumea/tab";
 import ProjectbarButton from "./ProjectbarButton.svelte";
 
 </script>

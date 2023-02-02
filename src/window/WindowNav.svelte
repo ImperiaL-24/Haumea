@@ -1,19 +1,20 @@
 <script lang="ts">
     import { clickState } from "src/store";
     import WindowButton from "./WindowButton.svelte";
-    import {currentWindow,currentWindowId, removeWindow, windowRerender, windows, type WindowData} from 'src/haumea/window'
+    import {currentWindow,currentWindowId, removeWindow, windows, type WindowData} from 'haumea/window'
 
     let windowEnter = () => {
     if($currentWindow == undefined || $currentWindow.id == data.id || !data.tabbed || !$currentWindow.tabbed) return;
     data.hovered = true;
     // update this somehow;
-    $currentWindow.hovering = true;
+    $windows.get($currentWindowId)
+    $windows.get($currentWindowId).hovering = true;
 }
 
 let windowExit = () => {
     if($currentWindow== undefined || $currentWindow.id == data.id || !data.tabbed || !$currentWindow.tabbed) return;
     data.hovered = false;
-    $currentWindow.hovering = false;
+    $windows.get($currentWindowId).hovering = false;
 }
 let wheel = (e) => {
     const delta = e.deltaY > 0 ? -50 : 50;
@@ -34,7 +35,6 @@ let windowDrop = () => {
         removeWindow(data);
         // $windows.delete(data.id)
         console.log("new window!", newWindow)
-        // $windowRerender = !$windowRerender;
         return;  
     }
 }

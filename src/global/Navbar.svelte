@@ -7,7 +7,7 @@
     import NavbarButton from './NavbarButton.svelte';
     import NavbarSeparator from './NavbarSeparator.svelte';
     import { currentState, redo, stateList, undo } from 'src/engine/canvas/UndoManager';
-    import { openTab, ProjectTab, ProjectTabType } from 'src/TabManager';
+    import { openTab, ProjectTab, ProjectTabType } from 'haumea/tab';
 </script>
 
 <div class="nav"  class:focused={$isWindowFocused}>
@@ -15,7 +15,7 @@
     <div class="left">
         <img src="icon.png" alt="icon">
         <NavbarCategory text="File">            
-            <NavbarButton name="New" keybind="Ctrl+N" icon="icons/rotate-left.svg" action={() => {openTab(new ProjectTab(ProjectTabType.SETTINGS, "NEW TAB!")); unfocusNavbar()}}/>
+            <NavbarButton name="New" keybind="Ctrl+N" icon="icons/rotate-left.svg" action={() => {openTab(new ProjectTab(ProjectTabType.IMAGE, "NEW TAB!")); unfocusNavbar()}}/>
             <NavbarButton name="Open" keybind="Ctrl+O" icon="icons/rotate-right.svg" disabled={$currentState == -1} action={() => redo()}/>
             <NavbarButton name="Save..." keybind="Ctrl+S" icon="icons/refresh.svg" action={() =>  location.reload()}/>
             <NavbarButton name="Save As..." icon="icons/refresh.svg" action={() =>  location.reload()}/>

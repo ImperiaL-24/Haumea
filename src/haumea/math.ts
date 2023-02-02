@@ -1,4 +1,4 @@
-import { clamp } from "../util";
+import { clamp } from "src/util";
 
 export class Vector2 {
     x: number;
@@ -48,6 +48,36 @@ export class Vector2 {
         return new Vector2(
             clamp(this.x, v1.x, v2.x),
             clamp(this.y, v1.y, v2.y)
+        )
+    }
+    asPixelPos(): PixelPos {
+        return new PixelPos(this.x, this.y);
+    }
+    asPercentagePos(): PercentagePos {
+        return new PercentagePos(this.x, this.y);
+    }
+}
+
+export class PercentagePos extends Vector2 {
+    constructor(x:number=0,y:number=0) {
+        super(x,y);
+    }
+    toPixelPos(element: HTMLElement): PixelPos {
+        return new PixelPos(
+            this.x/100*element.clientWidth,
+            this.y/100*element.clientHeight
+        )
+    }
+}
+
+export class PixelPos extends Vector2 {
+    constructor(x:number=0,y:number=0) {
+        super(x,y);
+    }
+    toPercentagePos(element: HTMLElement): PercentagePos {
+        return new PercentagePos(
+            this.x/element.clientWidth*100,
+            this.y/element.clientHeight*100
         )
     }
 }

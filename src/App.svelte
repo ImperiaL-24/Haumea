@@ -1,19 +1,20 @@
 <script lang="ts">
     import Window from "./window/Window.svelte";
-    import { anchors, innerRect, isWindowFocused, ClickState, clickState, ModifierState, modifierState } from './store'; 
-    import {TabType, WindowBuilder, windows, currentWindowId, windowRerender, addWindow} from 'src/haumea/window'
+    import { innerRect, isWindowFocused, ClickState, clickState, ModifierState, modifierState } from './store'; 
+    import {TabType, WindowBuilder, windows, currentWindowId, addWindow} from 'haumea/window'
     import Navbar from "./global/Navbar.svelte";
     import Canvas from "./canvas/Canvas.svelte";
-    import { processKey } from "./engine/KeybindManager";
+    import { processKey } from "haumea/keybind";
     import Anchor from "./window/anchor/Anchor.svelte";
     import { onMount } from "svelte";
-    import { Vector2 } from "./engine/Vector2";
+    import { Vector2 } from "haumea/math";
     import { appWindow } from '@tauri-apps/api/window'
     import AnchorLeft from "./window/anchor/AnchorLeft.svelte";
     import AnchorBottom from "./window/anchor/AnchorBottom.svelte";
     import AnchorRight from "./window/anchor/AnchorRight.svelte";
     import Projectbar from "./global/projectbar/Projectbar.svelte";
-    import { currentTab, openTab, ProjectTab, ProjectTabType, tabs } from "./TabManager";
+    import { currentTab, openTab, ProjectTab, ProjectTabType } from "haumea/tab";
+    import {anchors} from "haumea/anchor"
     
     let mouseMove = (e) => {
         let state = ClickState.from($clickState);
@@ -49,13 +50,12 @@
         state.shiftKey = e.shiftKey;
         $modifierState = state;
     }
-    if($currentTab == undefined) {
-        openTab(new ProjectTab(ProjectTabType.IMAGE, "test idk"));
-        console.log($currentTab);
-    }
-    onMount(async () => {
-        
 
+    onMount(async () => {
+        if($currentTab == undefined) {
+            openTab(new ProjectTab(ProjectTabType.IMAGE, "test idk"));
+            console.log($currentTab);
+        }
         addWindow(new WindowBuilder(TabType.ColorSelector,TabType.Test).tabbed(true).build());
         addWindow(new WindowBuilder(TabType.ColorSelector,TabType.Test).tabbed(true).build());
         addWindow(new WindowBuilder(TabType.Toolbar).resizeable(false).size(40, 255).build());
@@ -92,8 +92,8 @@
     <Projectbar/>
 </div>
 <div class="test">
-    {#if $currentTab.type == ProjectTabType.IMAGE}
-    {#key windowRerender}
+    {#if $currentTab && $currentTab.type == ProjectTabType.IMAGE}
+    {#key $windows || $anchors}
             {#each [...$windows] as window}
                 {#if !window[1].anchored}
                     <Window id={window[0]}></Window>

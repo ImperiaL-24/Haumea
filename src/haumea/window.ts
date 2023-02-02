@@ -1,5 +1,5 @@
 import {v4 as uuidv4} from "uuid";
-import { Vector2 } from "src/engine/Vector2";
+import { Vector2 } from "haumea/math";
 import { derived, writable, type Writable } from "svelte/store";
 
 // WINDOW STORES
@@ -8,7 +8,6 @@ export let currentWindowId = writable("")
 export let windows: Writable<Map<string,WindowData>> = writable(new Map());
 
 export let currentWindow = derived([windows, currentWindowId], ([$windows, $currentWindowId]) => $windows.get($currentWindowId));
-export let windowRerender = writable(false);
 
 export let addWindow = (window: WindowData) => {
     windows.update(n => {
@@ -22,7 +21,6 @@ export let removeWindow = (window: WindowData) => {
         n.delete(window.id);
         return n;
     })
-    windowRerender.update(n => !n);
 }
 
 export enum TabId {

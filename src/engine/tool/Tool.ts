@@ -29,6 +29,6 @@ export class MoveTool extends Tool {
     onmousemove = () => {
         if(!get(clickState).leftClick) return;
         transition.set(false);
-        setCanvasPosition(getCanvasPosition().add(get(clickState).delta));
+        setCanvasPosition(getCanvasPosition().add(get(clickState).delta).asPixelPos());
     }
 }

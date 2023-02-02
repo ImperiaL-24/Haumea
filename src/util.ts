@@ -1,5 +1,5 @@
 import { get } from "svelte/store";
-import { Vector2 } from "./engine/Vector2";
+import { Vector2 } from "haumea/math";
 import { clickState } from "./store";
 
     /**

@@ -2,8 +2,8 @@
     import { clamp } from "../util";
     import { clickState } from "src/store";
 
-    import type { WindowData } from "src/haumea/window";
-    import { Vector2 } from "../engine/Vector2";
+    import type { WindowData } from "haumea/window";
+    import { Vector2 } from "haumea/math";
 
     export let data: WindowData;
     let initWidth = 0;

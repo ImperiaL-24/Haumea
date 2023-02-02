@@ -26,7 +26,7 @@
         const oldZoom = $zoom;
         $zoom = e.deltaY < 0 ? Math.min(1000, $zoom *1.25) : Math.max(0.01, $zoom /1.25);
  
-        setCanvasPosition(getCanvasPosition().add(mouseLocation.negate()).product($zoom/oldZoom).add(mouseLocation));
+        setCanvasPosition(getCanvasPosition().add(mouseLocation.negate()).product($zoom/oldZoom).add(mouseLocation).asPixelPos());
         
         $canvas.style.scale = `${$zoom} ${$zoom}`
 
@@ -67,7 +67,7 @@ on:wheel|passive={(e) => onWheel(e)}>
         canvas {
             position: absolute;
             box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-            transition: 0.2s scale;   
+            transition: 0.2s scale, 0.2s width, 0.2s height;   
             image-rendering: pixelated;
             translate: -50% -50%;
             z-index: 1;

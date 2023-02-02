@@ -5,6 +5,9 @@
         "src/*": [
             "src/*"
         ],
+        "haumea/*": [
+          "src/haumea/*"
+        ],
     },
     "target": "ESNext",
     "useDefineForClassFields": true,

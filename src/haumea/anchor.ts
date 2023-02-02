@@ -1,9 +1,8 @@
 import {v4 as uuidv4} from "uuid";
-import { anchors } from "src/store";
 import { windows } from 'src/haumea/window'
-import { get } from "svelte/store";
+import { get, writable, type Writable } from "svelte/store";
 
-export default class Anchor {
+export class Anchor {
     //position
     public position: "left" | "right" | "bottom" = "right";
 
@@ -24,6 +23,8 @@ export default class Anchor {
         this.windows=_windows;
     }
 }
+
+export let anchors: Writable<Map<string,Anchor>> = writable(new Map())
 
 export class AnchorBuilder {
     private anchor: Anchor;

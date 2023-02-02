@@ -3,7 +3,7 @@ import { getClickLocation } from "../../util";
 import { get, writable, type Writable } from "svelte/store";
 import { canvas, getPixelColor, zoom } from "../canvas/Canvas";
 import { Tool, ToolID } from "./Tool";
-import type { Color } from "../Color";
+import type { Color } from "../../haumea/color";
 
 export class EyedropperTool extends Tool {
     originalColor: Writable<Color> = writable();

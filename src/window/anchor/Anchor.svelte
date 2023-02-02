@@ -1,19 +1,19 @@
 <script lang="ts">
-    import {currentWindow, windowRerender, windows } from 'src/haumea/window'
-    import { AnchorBuilder } from "./Anchor";
+    import {currentWindow, windows } from 'haumea/window'
+    import { AnchorBuilder } from "haumea/anchor";
 
     let hovered: boolean;
     let hoveredWindowId: string = "";
     export let position: "left" | "right" | "bottom" = "right";
     let windowEnter = () => { 
-        if($currentWindow== undefined) return;
+        if($currentWindow == undefined) return;
         console.log($currentWindow)
         hovered = true;
         hoveredWindowId = $currentWindow.id;
     }
 
     let windowLeave = () => {
-        if($currentWindow== undefined) return;
+        if($currentWindow == undefined) return;
         console.log($currentWindow)
         hovered = false;
         hoveredWindowId = "";
@@ -23,7 +23,6 @@
         if(hoveredWindowId=="") return;
         hovered = false;
         
-        $windowRerender = !$windowRerender;
         new AnchorBuilder(hoveredWindowId).position(position).add();
         $windows.get(hoveredWindowId).anchored=true;
         hoveredWindowId="";

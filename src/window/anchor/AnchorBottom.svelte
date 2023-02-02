@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { anchors, innerRect } from "src/store";
+    import { innerRect } from "src/store";
     import Window from "../Window.svelte";
-    import type Anchor from "./Anchor";
+    import {anchors, Anchor} from "haumea/anchor";
     export let id: string;
 
     let data: Anchor = $anchors.get(id);

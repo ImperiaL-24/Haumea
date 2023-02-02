@@ -1,7 +1,7 @@
-import { clamp } from "../../util";
+import { clamp } from "src/util";
 import { get, writable, type Writable } from "svelte/store";
-import { Color } from "../Color";
-import { Vector2 } from "../Vector2";
+import { Color } from "../../haumea/color";
+import { PercentagePos, PixelPos, Vector2 } from "haumea/math";
 
 
 export let canvas: Writable<HTMLCanvasElement> = writable();
@@ -10,14 +10,12 @@ export let ctx: Writable<CanvasRenderingContext2D> = writable();
 export let zoom: Writable<number> = writable(1);
 export let transition: Writable<boolean> = writable(true);
 
-export let getCanvasPosition = () => {
-    return new Vector2(
-        parseFloat(get(canvas).style.left.slice(0,-1))/100*get(canvasBase).clientWidth,
-        parseFloat(get(canvas).style.top.slice(0,-1))/100*get(canvasBase).clientHeight
-    )
+export let getCanvasPosition = (): PixelPos => {
+    return new PercentagePos(parseFloat(get(canvas).style.left.slice(0,-1)),parseFloat(get(canvas).style.top.slice(0,-1))).toPixelPos(get(canvasBase));
+
 }
 
-export let setCanvasPosition = (pos: Vector2) => {
+export let setCanvasPosition = (pos: PixelPos) => {
     const cw = get(canvas).clientWidth*get(zoom);
     const ch = get(canvas).clientHeight*get(zoom);
     const vw = get(canvasBase).clientWidth;
@@ -39,5 +37,8 @@ export let getCanvasData = (): ImageData => {
 }
 
 export let setCanvasData = (data: ImageData) => {
+    console.warn("SETCANVAS")
+    get(canvas).width = data.width;
+    get(canvas).height = data.height;
     get(ctx).putImageData(data, 0, 0);
 }
