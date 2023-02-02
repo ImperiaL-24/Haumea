@@ -1,14 +1,14 @@
 <script lang="ts">
 
-import { indexCount, windows, colorTarget } from "../store";
+import { colorTarget } from "src/store";
 import ColorSelector from "./tabs/ColorSelector.svelte";
 import Test from "./tabs/Test.svelte";
-import { TabId } from "./TabType";
+
 import { fade } from 'svelte/transition';
 import Toolbar from "./tabs/Toolbar.svelte";
 import WindowNav from "./WindowNav.svelte";
 import WindowResizer from "./WindowResizer.svelte";
-import type WindowData from "./Window"
+import {TabId, indexCount, windows, type WindowData} from 'src/haumea/window'
 
 export let id: string;
 let data:WindowData = $windows.get(id);

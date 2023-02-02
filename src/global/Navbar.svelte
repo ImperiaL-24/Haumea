@@ -1,6 +1,6 @@
 <script lang="ts">
     import { appWindow } from '@tauri-apps/api/window'
-    import { activeDropdown, isWindowFocused, navbarPressed, unfocusNavbar } from 'src/store';
+    import { isWindowFocused, navbarPressed, unfocusNavbar } from 'src/store';
     import { MinusIcon, SquareIcon, XIcon } from "svelte-feather-icons";
     import NavbarCategory from './NavbarCategory.svelte';
     import { fade } from 'svelte/transition';

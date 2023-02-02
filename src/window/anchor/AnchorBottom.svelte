@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { anchors, innerRect } from "../../store";
+    import { anchors, innerRect } from "src/store";
     import Window from "../Window.svelte";
     import type Anchor from "./Anchor";
     export let id: string;

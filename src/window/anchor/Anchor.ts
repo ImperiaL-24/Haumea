@@ -1,5 +1,6 @@
 import {v4 as uuidv4} from "uuid";
-import { anchors, windows } from "../../store";
+import { anchors } from "src/store";
+import { windows } from 'src/haumea/window'
 import { get } from "svelte/store";
 
 export default class Anchor {

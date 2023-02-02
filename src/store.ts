@@ -3,7 +3,6 @@ import { Color } from "./engine/Color";
 import { currentColor } from "./engine/ColorManager";
 import { Vector2 } from "./engine/Vector2";
 import type Anchor from "./window/anchor/Anchor";
-import type Window from "./window/Window";
 
 export class ClickState {
     target: HTMLElement;
@@ -57,12 +56,7 @@ export let unfocusNavbar = () => {
     activeDropdown.set("");
 }
 
-// WINDOW STORES
-export let indexCount = writable(10)
-export let currentWindow = writable("")
-// Map of all current windows on the screen
-export let windows: Writable<Map<string,Window>> = writable(new Map())
-export let windowRerender = writable(false);
+
 export let innerRect: Writable<{x:number, y:number, height:number, width:number}> = writable({x:0,y:0,height:0,width:0});
 export let anchors: Writable<Map<string,Anchor>> = writable(new Map())
 

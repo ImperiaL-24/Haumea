@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { clamp } from "../../util";
-    import { anchors, clickState, innerRect } from "../../store";
+    import { clamp } from "src/util";
+    import { anchors, clickState } from "src/store";
     import Window from "../Window.svelte";
     import type Anchor from "./Anchor";
     export let id: string;

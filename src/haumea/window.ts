@@ -1,13 +1,48 @@
-import type { TabType } from "./TabType";
 import {v4 as uuidv4} from "uuid";
-import { windows } from "../store";
-import { Vector2 } from "../engine/Vector2";
+import { Vector2 } from "src/engine/Vector2";
+import { derived, writable, type Writable } from "svelte/store";
 
-export default class Window {
+// WINDOW STORES
+export let indexCount = writable(10)
+export let currentWindowId = writable("")
+export let windows: Writable<Map<string,WindowData>> = writable(new Map());
+
+export let currentWindow = derived([windows, currentWindowId], ([$windows, $currentWindowId]) => $windows.get($currentWindowId));
+export let windowRerender = writable(false);
+
+export let addWindow = (window: WindowData) => {
+    windows.update(n => {
+        n.set(window.id, window);
+        return n;
+    });
+}
+
+export let removeWindow = (window: WindowData) => {
+    windows.update(n => {
+        n.delete(window.id);
+        return n;
+    })
+    windowRerender.update(n => !n);
+}
+
+export enum TabId {
+    ColorSelector,
+    Test,
+    Toolbar
+}
+
+export class TabType {
+    public static ColorSelector = new TabType(TabId.ColorSelector,"Color")
+    public static Test = new TabType(TabId.Test,"Test")
+    public static Toolbar = new TabType(TabId.Toolbar,"Toolbar")
+    constructor(public type:TabId, public title:string) {}
+}
+
+export class WindowData {
     //position
     public position: Vector2 = new Vector2(100,100);
 
-    //size
+    //sizeS
     public height: number = 300;
     public width: number = 400;
 
@@ -40,10 +75,10 @@ export default class Window {
 }
 
 export class WindowBuilder {
-    private window: Window;
+    private window: WindowData;
     constructor(...tabs: TabType[]) {
         const id = uuidv4();
-        this.window = new Window(id,false, ...tabs);
+        this.window = new WindowData(id,false, ...tabs);
     }
     tabbed(value: boolean): WindowBuilder {
         this.window.tabbed = value;
@@ -66,13 +101,7 @@ export class WindowBuilder {
         this.window.height = height;
         return this;
     }
-    build(): Window {
+    build(): WindowData {
         return this.window;
-    }
-    add(): void {
-        windows.update(n => {
-            n.set(this.window.id, this.window);
-            return n;
-        });
     }
 }

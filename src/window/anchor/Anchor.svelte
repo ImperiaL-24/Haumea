@@ -1,20 +1,20 @@
 <script lang="ts">
-    import { currentWindow, windows, windowRerender } from "../../store";
+    import {currentWindow, windowRerender, windows } from 'src/haumea/window'
     import { AnchorBuilder } from "./Anchor";
 
     let hovered: boolean;
     let hoveredWindowId: string = "";
     export let position: "left" | "right" | "bottom" = "right";
     let windowEnter = () => { 
-        if($currentWindow=="") return;
-        console.log($windows.get($currentWindow))
+        if($currentWindow== undefined) return;
+        console.log($currentWindow)
         hovered = true;
-        hoveredWindowId = $currentWindow;
+        hoveredWindowId = $currentWindow.id;
     }
 
     let windowLeave = () => {
-        if($currentWindow=="") return;
-        console.log($windows.get($currentWindow))
+        if($currentWindow== undefined) return;
+        console.log($currentWindow)
         hovered = false;
         hoveredWindowId = "";
     }
@@ -31,7 +31,7 @@
     
 </script>
 
-<div class:hovered={hovered} class="anchor-drop {position}" class:no-mouse={$currentWindow==""} on:mouseenter={(e) => windowEnter()} on:mouseleave={(e) => windowLeave()}></div>
+<div class:hovered={hovered} class="anchor-drop {position}" class:no-mouse={$currentWindow==undefined} on:mouseenter={(e) => windowEnter()} on:mouseleave={(e) => windowLeave()}></div>
 
 <svelte:window  on:mouseup={() => { windowDrop()}}></svelte:window>
 

@@ -1,11 +1,10 @@
 <script lang="ts">
     import Window from "./window/Window.svelte";
-    import { windows, currentWindow, windowRerender, anchors, innerRect, isWindowFocused, ClickState, clickState, ModifierState, modifierState } from './store'; 
+    import { anchors, innerRect, isWindowFocused, ClickState, clickState, ModifierState, modifierState } from './store'; 
+    import {TabType, WindowBuilder, windows, currentWindowId, windowRerender, addWindow} from 'src/haumea/window'
     import Navbar from "./global/Navbar.svelte";
-    import { TabType } from "./window/TabType";
     import Canvas from "./canvas/Canvas.svelte";
     import { processKey } from "./engine/KeybindManager";
-    import { WindowBuilder } from "./window/Window";
     import Anchor from "./window/anchor/Anchor.svelte";
     import { onMount } from "svelte";
     import { Vector2 } from "./engine/Vector2";
@@ -51,14 +50,15 @@
         $modifierState = state;
     }
     if($currentTab == undefined) {
-            openTab(new ProjectTab(ProjectTabType.IMAGE, "test idk"));
-            console.log($currentTab);
+        openTab(new ProjectTab(ProjectTabType.IMAGE, "test idk"));
+        console.log($currentTab);
     }
     onMount(async () => {
         
 
-        new WindowBuilder(TabType.ColorSelector,TabType.Test).tabbed(true).add();
-        new WindowBuilder(TabType.Toolbar).resizeable(false).size(40, 255).add();
+        addWindow(new WindowBuilder(TabType.ColorSelector,TabType.Test).tabbed(true).build());
+        addWindow(new WindowBuilder(TabType.ColorSelector,TabType.Test).tabbed(true).build());
+        addWindow(new WindowBuilder(TabType.Toolbar).resizeable(false).size(40, 255).build());
         const unlisten = await appWindow.onFocusChanged(({ payload: isFocused }) => {
             $isWindowFocused = isFocused;
             $modifierState = new ModifierState();
@@ -93,13 +93,13 @@
 </div>
 <div class="test">
     {#if $currentTab.type == ProjectTabType.IMAGE}
-        {#key $windowRerender}
+    {#key windowRerender}
             {#each [...$windows] as window}
                 {#if !window[1].anchored}
                     <Window id={window[0]}></Window>
                 {/if}
             {/each}
-        {/key}
+    {/key}
         <Canvas></Canvas>
         <Anchor></Anchor>
         <Anchor position="left"></Anchor>
@@ -118,7 +118,7 @@
 
 <svelte:window 
 on:mousemove={(e) => { mouseMove(e)}} 
-on:mouseup={(e) => {$currentWindow=""; mouseUp(e)}} 
+on:mouseup={(e) => {$currentWindowId=""; mouseUp(e)}} 
 on:mousedown={(e) => {mouseDown(e)}}  
 on:keydown|preventDefault={(e) => {keyModifier(e); processKey(e);}}
 on:keyup|preventDefault={(e) => keyModifier(e)}

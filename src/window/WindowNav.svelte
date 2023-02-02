@@ -1,18 +1,19 @@
 <script lang="ts">
-    import { clickState, currentWindow, windowRerender, windows } from "../store";
+    import { clickState } from "src/store";
     import WindowButton from "./WindowButton.svelte";
-    import type Window from "./Window";
+    import {currentWindow,currentWindowId, removeWindow, windowRerender, windows, type WindowData} from 'src/haumea/window'
 
     let windowEnter = () => {
-    if($currentWindow=="" || $currentWindow == data.id || !data.tabbed || !$windows.get($currentWindow).tabbed) return;
+    if($currentWindow == undefined || $currentWindow.id == data.id || !data.tabbed || !$currentWindow.tabbed) return;
     data.hovered = true;
-    $windows.get($currentWindow).hovering = true;
+    // update this somehow;
+    $currentWindow.hovering = true;
 }
 
 let windowExit = () => {
-    if($currentWindow=="" || $currentWindow == data.id || !data.tabbed || !$windows.get($currentWindow).tabbed) return;
+    if($currentWindow== undefined || $currentWindow.id == data.id || !data.tabbed || !$currentWindow.tabbed) return;
     data.hovered = false;
-    $windows.get($currentWindow).hovering = false;
+    $currentWindow.hovering = false;
 }
 let wheel = (e) => {
     const delta = e.deltaY > 0 ? -50 : 50;
@@ -30,19 +31,19 @@ let windowDrop = () => {
         if(!newWindow.hovered) continue;
         newWindow.tabs.push(...data.tabs);
         newWindow.hovered = false;
-
-        $windows.delete(data.id)
+        removeWindow(data);
+        // $windows.delete(data.id)
         console.log("new window!", newWindow)
-        $windowRerender = !$windowRerender;
+        // $windowRerender = !$windowRerender;
         return;  
     }
 }
-    export let data: Window;
+    export let data: WindowData;
     let tabspace;
 </script>
 
 <nav 
-on:mousedown|self={() => {data.moving = true; $currentWindow=data.id}} 
+on:mousedown|self={() => {data.moving = true; $currentWindowId=data.id}} 
 on:mouseenter={() => {windowEnter()}}
 on:mouseleave={() => {windowExit()}} 
 class:isHovered={data.hovered}

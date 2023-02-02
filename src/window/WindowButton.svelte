@@ -1,8 +1,4 @@
 <script lang="ts">
-    import type { TabType } from "./TabType";
-    import type Window from "./Window";
-
-
 
     export let selected: boolean;
     export let title: string;

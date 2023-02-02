@@ -1,11 +1,11 @@
 <script lang="ts">
     import { clamp } from "../util";
-    import { clickState } from "../store";
+    import { clickState } from "src/store";
 
-    import type Window from "./Window";
+    import type { WindowData } from "src/haumea/window";
     import { Vector2 } from "../engine/Vector2";
 
-    export let data: Window;
+    export let data: WindowData;
     let initWidth = 0;
     let initHeight = 0;
     let initPos = new Vector2();
