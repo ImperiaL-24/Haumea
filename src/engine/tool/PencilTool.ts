@@ -1,16 +1,16 @@
 import { Tool, ToolID } from "./Tool";
 import { get, writable, type Writable } from "svelte/store";
-import { currentColor } from "../ColorManager";
 import { getClickLocation } from "../../util";
-import { canvas, ctx, zoom } from "../../haumea/preview";
-import { clickState, modifierState } from "../../store";
-import type {  Vector2 } from "../Vector2";
+import { canvas, ctx } from "haumea/preview";
+import { clickState, colorTarget, modifierState } from "../../store";
 import { EyedropperTool } from "./EyedropperTool";
-import { saveCanvas, stateList } from "../canvas/UndoManager";
+import { currentTab } from "haumea/tab";
+import type { Vector2 } from "haumea/math";
+import { Color } from "src/haumea/color";
 
 
 let draw = (size:number, location: Vector2) => {
-    const color = get(currentColor).asRGB();
+    const color = Color.newFromHSV(...get(colorTarget)).asRGB();
     
         const pixel = get(ctx).createImageData(size,size);
         let d = pixel.data;
@@ -44,20 +44,20 @@ export class PencilTool extends Tool {
     constructor() {super(ToolID.PENCIL_TOOL)}
     onmousedown = () => {
         mouseDownTarget = get(clickState).target;
-
+        const zoom  = get(currentTab).canvasData?.zoom.value;
 
         console.log("pencil mouse down!");
         if(get(modifierState).altKey) return this.eyedropper.onmousedown();
-        const location = getClickLocation(get(canvas)).product(1/get(zoom));
+        const location = getClickLocation(get(canvas)).product(1/zoom);
         draw(get(this.size), location);
         this.lastClick = location;
     }
     onmousemove = () => {
         if(get(modifierState).altKey) return this.eyedropper.onmousemove();
         if(!get(clickState).leftClick) return;
-
+        const zoom  = get(currentTab).canvasData?.zoom.value;
         
-        const location = getClickLocation(get(canvas)).product(1/get(zoom));
+        const location = getClickLocation(get(canvas)).product(1/zoom);
         if(mouseDownTarget != get(canvas)) return this.lastClick = location;
         if(this.lastClick == undefined) return;
         
@@ -68,8 +68,7 @@ export class PencilTool extends Tool {
     onmouseup = () => {
         if(get(modifierState).altKey) return this.eyedropper.onmouseup();
         mouseDownTarget = null;
-        saveCanvas();
-        console.log(stateList);
+        get(currentTab).canvasData.saveState();
     }
     onkeydown = (e) => {
         if(e.key == "w") this.size.set(get(this.size)+1);

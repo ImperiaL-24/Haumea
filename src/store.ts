@@ -1,6 +1,4 @@
 import { writable, type Writable } from "svelte/store";
-import { Color } from "./haumea/color";
-import { currentColor } from "./engine/ColorManager";
 import { Vector2 } from "haumea/math";
 
 export class ClickState {
@@ -65,9 +63,6 @@ export let innerRect: Writable<{x:number, y:number, height:number, width:number}
 
 // COLOR STORES
 export let colorTarget: Writable<[number, number, number]> = writable([0,0,0])
-colorTarget.subscribe(n => {
-    currentColor.set(Color.newFromHSV(n[0], n[1], n[2]));
-})
 
 
 

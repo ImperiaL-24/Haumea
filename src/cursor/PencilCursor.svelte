@@ -8,9 +8,13 @@ import type { Tool } from "src/engine/tool/Tool";
 export let instance: Tool;
 const tool = instance as PencilTool;
 let cursorSize: number;
+
+let zoom: number;
+$currentTab.canvasData?.zoom.$.subscribe(n => zoom = n);
+
 $: {
     tool.size.subscribe(n => {
-        cursorSize = $currentTab.canvasData.zoom*n;
+        cursorSize = zoom*n;
     });
 }
 </script>

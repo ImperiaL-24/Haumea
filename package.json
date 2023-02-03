@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@tauri-apps/api": "^1.1.0",
+    "base64-arraybuffer": "^1.0.2",
     "html2canvas": "^1.4.1",
     "node-sass": "^8.0.0",
     "sass": "^1.56.1",

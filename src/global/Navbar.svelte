@@ -6,8 +6,7 @@
     import { fade } from 'svelte/transition';
     import NavbarButton from './NavbarButton.svelte';
     import NavbarSeparator from './NavbarSeparator.svelte';
-    import { currentState, redo, stateList, undo } from 'src/engine/canvas/UndoManager';
-    import { openTab, ProjectTab, currentTab, currentTabId, ProjectTabType, tabs } from 'haumea/tab';
+    import { openTab, ProjectTab, currentTab, ProjectTabType, tabs, openFile } from 'haumea/tab';
     let canUndo, canRedo;
     $: $currentTab.canvasData?.canUndo.subscribe(n => canUndo = n);
     $: $currentTab.canvasData?.canRedo.subscribe(n => canRedo = n);
@@ -19,19 +18,19 @@
         <img src="icon.png" alt="icon">
         <NavbarCategory text="File">            
             <NavbarButton name="New" keybind="Ctrl+N" icon="icons/add-document.svg" action={() => {openTab(new ProjectTab(ProjectTabType.IMAGE, "NEW TAB!")); unfocusNavbar()}}/>
-            <NavbarButton name="Open" keybind="Ctrl+O" icon="icons/add.svg" disabled={$currentState == -1} action={() => redo()}/>
+            <NavbarButton name="Open" keybind="Ctrl+O" icon="icons/add.svg" action={() => {openFile()}}/>
             <NavbarButton name="Save..." keybind="Ctrl+S" icon="icons/disk.svg" action={() =>  location.reload()}/>
             <NavbarButton name="Save As..." icon="icons/disk.svg" action={() =>  location.reload()}/>
             <NavbarSeparator/>
             <NavbarButton name="Export..." icon="icons/file-export.svg" action={() =>  location.reload()}/>
             <NavbarButton name="Export As..." icon="icons/file-export.svg" action={() =>  location.reload()}/>
             <NavbarSeparator/>
-            <NavbarButton name="Settings" icon="icons/settings.svg" action={() =>  location.reload()}/>
+            <NavbarButton name="Settings" icon="icons/settings.svg" action={() =>  {openTab(new ProjectTab(ProjectTabType.SETTINGS, "Settings")); unfocusNavbar()}}/>
         </NavbarCategory>
         <NavbarCategory text="Edit">
-                <NavbarButton name="Undo" keybind="Ctrl+Z" icon="icons/rotate-left.svg" disabled={!canUndo} action={() => undo()}/>
+                <NavbarButton name="Undo" keybind="Ctrl+Z" icon="icons/rotate-left.svg" disabled={!canUndo} action={() => $currentTab.canvasData.undo()}/>
 
-            <NavbarButton name="Redo" keybind="Ctrl+Shift+Z" icon="icons/rotate-right.svg" disabled={!canRedo} action={() => redo()}/>
+            <NavbarButton name="Redo" keybind="Ctrl+Shift+Z" icon="icons/rotate-right.svg" disabled={!canRedo} action={() => $currentTab.canvasData.redo()}/>
             <NavbarSeparator/>
             <NavbarButton name="Refresh (DEV)" keybind="Ctrl+R" icon="icons/refresh.svg" action={() =>  location.reload()}/>
         </NavbarCategory>

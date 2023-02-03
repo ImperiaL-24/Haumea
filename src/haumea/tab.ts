@@ -1,7 +1,11 @@
 import { getCanvasData, setCanvasData } from "src/haumea/preview";
+import { Reactive } from "src/util";
 import { derived, get, writable, type Writable } from "svelte/store";
 import {v4 as uuidv4} from "uuid";
 import { PercentagePos } from "./math";
+import { open } from '@tauri-apps/api/dialog';
+import { readBinaryFile, BaseDirectory } from '@tauri-apps/api/fs';
+import { encode } from "base64-arraybuffer";
 
 export class ProjectTabType {
     static HOME = new ProjectTabType("HOME","svelte.svg");
@@ -13,6 +17,8 @@ export class ProjectTabType {
 export class ProjectTab {
     readonly id: string;
     isSaved: boolean;
+    //TODO: PATH CHECKING WHEN IMPORTING, AUTO SAVE TO LOCATION IF CTRL S, DONT AUTO SAVE IF CTRL S AND NO PATH, MAKE PATH ON PROJECT SAVE
+    path: string;
     type: ProjectTabType;
     tabName: string;
     canvasData?: CanvasImageData;
@@ -20,24 +26,28 @@ export class ProjectTab {
         this.id = uuidv4();
         this.type = type;
         this.tabName = name;
-        this.canvasData = data ?? type == ProjectTabType.IMAGE ? new CanvasImageData() : undefined;
-    }
-    subscribe(subscriber) {
-        subscriber(this)
-        return () => {}
+        if(data == undefined) {
+            this.canvasData = type == ProjectTabType.IMAGE ? new CanvasImageData() : undefined
+        } else {
+            this.canvasData = data;
+        }
+        
+        console.log(data)
     }
 }
 
 export class CanvasImageData {
     currentState: number = -1;
     stateList: ImageData[] = [];
-    position: PercentagePos = new PercentagePos(50,50);
-    zoom: number = 1;
+    position: Reactive<PercentagePos> = new Reactive(new PercentagePos(50,50));
+    zoom: Reactive<number> = new Reactive(1);
 
     canUndo: Writable<boolean> = writable(false);
     canRedo: Writable<boolean> = writable(false);
     constructor(data?: ImageData) {
+        console.log(data)
         this.stateList.push(data ?? new ImageData(16,16));
+        
     }
     get() {
         return this.stateList[this.stateList.length+this.currentState];
@@ -85,6 +95,38 @@ export let openTab = (tab: ProjectTab) => {
     })
     currentTabId.set(tab.id);
 
+}
+
+export let openFile = async () => {
+    const selected = await open({
+        multiple: false,
+        filters: [{
+            name: 'Image',
+            extensions: ['png', 'jpeg']
+        }]
+    });
+    if (Array.isArray(selected)) {
+        // user selected multiple files
+      } else if (selected === null) {
+        // user cancelled the selection
+      } else {
+        
+        const contents = await readBinaryFile(selected);
+        console.log()
+        var image = new Image();
+        image.src = "data:image/png;base64,"+encode(contents);
+        await image.decode();
+        console.log("yippie");
+        var canvas = document.createElement('canvas');
+            
+        canvas.width = image.width;
+        canvas.height = image.height;
+        let ctx = canvas.getContext("2d");
+        ctx.drawImage(image, 0,0);
+        
+        const project = new ProjectTab(ProjectTabType.IMAGE, selected, new CanvasImageData(ctx.getImageData(0,0,canvas.width, canvas.height)));
+        openTab(project);
+      }
 }
 
 export let closeTab = (id: string) => {

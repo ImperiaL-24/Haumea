@@ -1,16 +1,16 @@
 import { modifierState } from "../store";
 import { get } from "svelte/store";
-import { redo, undo } from "../engine/canvas/UndoManager";
 import { currentTool, ToolType } from "../engine/tool/ToolManager";
+import { currentTab } from "./tab";
 
 export let processKey = (e): void => {
 
     if(e.key.toLowerCase() == "z" && get(modifierState).ctrlKey) {
         console.log(get(modifierState).shiftKey);
         if(!get(modifierState).shiftKey) {
-            undo();
+            get(currentTab).canvasData.undo();
         } else {
-            redo();
+            get(currentTab).canvasData.redo();
         }
         
     }

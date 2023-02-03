@@ -8,16 +8,15 @@ import { currentTab, currentTabId, tabs } from "haumea/tab";
 export let canvas: Writable<HTMLCanvasElement> = writable();
 export let canvasBase: Writable<HTMLDivElement> = writable();
 export let ctx: Writable<CanvasRenderingContext2D> = writable();
-export let zoom: Writable<number> = writable(1);
 export let transition: Writable<boolean> = writable(true);
 
 export let getCanvasPosition = (): PixelPos => {
-    return get(currentTab).canvasData.position.toPixelPos(get(canvasBase));
+    return get(currentTab).canvasData.position.value.toPixelPos(get(canvasBase));
 
 }
 
 export let setCanvasPosition = (pos: PixelPos) => {
-    const zoom = get(currentTab).canvasData.zoom
+    const zoom = get(currentTab).canvasData.zoom.value;
     const cw = get(canvas).clientWidth*zoom;
     const ch = get(canvas).clientHeight*zoom;
     const vw = get(canvasBase).clientWidth;
@@ -26,10 +25,7 @@ export let setCanvasPosition = (pos: PixelPos) => {
         clamp(pos.x*100/get(canvasBase).clientWidth, (-cw/2+400)*100/vw,(cw/2-400)*100/vw+100),
         clamp(pos.y*100/get(canvasBase).clientHeight, (-ch/2+400)*100/vh,(ch/2-400)*100/vh+100)
     )
-    get(tabs).get(get(currentTabId)).canvasData.position = newPos;
-    console.log( get(tabs).get(get(currentTabId)).canvasData.position);
-    get(canvas).style.top = `${newPos.y}%`;
-    get(canvas).style.left = `${newPos.x}%`;
+    get(tabs).get(get(currentTabId)).canvasData.position.value = newPos;
 }
 
 

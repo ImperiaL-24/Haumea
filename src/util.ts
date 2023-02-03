@@ -1,4 +1,4 @@
-import { get } from "svelte/store";
+import { get, writable, type Writable } from "svelte/store";
 import { Vector2 } from "haumea/math";
 import { clickState } from "./store";
 
@@ -42,4 +42,23 @@ import { clickState } from "./store";
 
     export let clamp = (value: number, min: number, max: number): number => {
         return Math.max(min,Math.min(max,value));
+    }
+
+    export class Reactive<T> {
+        private _value:T;
+        private _$value: Writable<T> = writable(undefined);
+        constructor(value: T) {
+            this._value = value;
+            this._$value.set(value);
+        }
+        set value(value:T) {
+            this._value = value;
+            this._$value.set(value);
+        }
+        get value() {
+            return this._value;
+        }
+        get $() {
+            return this._$value;
+        }
     }

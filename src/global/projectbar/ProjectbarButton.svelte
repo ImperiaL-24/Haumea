@@ -124,8 +124,4 @@
         color: rgba(255, 255, 255, 1)!important;
         opacity: 0.8!important;
     }
-
-    .hide {
-        opacity: 0!important;
-    }
 </style>
