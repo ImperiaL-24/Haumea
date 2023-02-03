@@ -1,4 +1,4 @@
-import { setCanvasData } from "src/engine/canvas/Canvas";
+import { getCanvasData, setCanvasData } from "src/engine/canvas/Canvas";
 import { derived, get, writable, type Writable } from "svelte/store";
 import {v4 as uuidv4} from "uuid";
 
@@ -31,6 +31,27 @@ export class CanvasImageData {
     get() {
         return this.stateList[this.stateList.length+this.currentState];
     }
+    saveState() {
+        this.stateList.splice( this.stateList.length+this.currentState+1, -this.currentState+1);
+        this.stateList.push(getCanvasData());
+
+        this.currentState= -1;
+    }
+    undo() {
+        if(this.currentState == -50 || this.stateList.length == -this.currentState) return;
+        setCanvasData(this.stateList.slice(this.currentState-1)[0]);
+        this.currentState--;
+        console.log("undo", this.stateList, this.currentState)
+    }
+    redo() {
+        if(!(this.currentState != -1)) return;
+            setCanvasData(this.stateList.slice(this.currentState+1)[0]);
+            this.currentState++;
+            console.log("redo", this.stateList, this.currentState)
+    }
+    canUndo() {
+        return this.currentState != -50 && this.stateList.length != -this.currentState
+    }
 }
 
 export const tabs: Writable<Map<string, ProjectTab>> = writable(new Map());
@@ -41,7 +62,6 @@ export const currentTab = derived([tabs, currentTabId], ([$tabs, $currentTabId])
 export let setCurrentTab = (id: string) => {
     currentTabId.set(id);
     const currentTab = get(tabs).get(get(currentTabId));
-    if(currentTab.type == ProjectTabType.IMAGE) setCanvasData(currentTab.canvasData.get())
 }
 
 export let openTab = (tab: ProjectTab) => {
@@ -51,7 +71,6 @@ export let openTab = (tab: ProjectTab) => {
     })
     currentTabId.set(tab.id);
     const currentTab = get(tabs).get(get(currentTabId));
-    if(currentTab.type == ProjectTabType.IMAGE) setCanvasData(currentTab.canvasData.get())
 }
 
 export let closeTab = (id: string) => {

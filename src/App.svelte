@@ -57,7 +57,6 @@
             console.log($currentTab);
         }
         addWindow(new WindowBuilder(TabType.ColorSelector,TabType.Test).tabbed(true).build());
-        addWindow(new WindowBuilder(TabType.ColorSelector,TabType.Test).tabbed(true).build());
         addWindow(new WindowBuilder(TabType.Toolbar).resizeable(false).size(40, 255).build());
         const unlisten = await appWindow.onFocusChanged(({ payload: isFocused }) => {
             $isWindowFocused = isFocused;

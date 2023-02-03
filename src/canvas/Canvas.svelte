@@ -2,10 +2,11 @@
     import { onMount } from "svelte";
     import { getClickLocation } from "../util";
     import { currentTool } from "../engine/tool/ToolManager";
-    import { canvas, canvasBase, ctx, getCanvasPosition, setCanvasPosition, transition, zoom } from "../engine/canvas/Canvas";
+    import { canvas, canvasBase, ctx, getCanvasPosition, setCanvasData, setCanvasPosition, transition, zoom } from "../engine/canvas/Canvas";
     import { innerRect } from "../store";
     import Cursor from "./Cursor.svelte";
     import { saveCanvas } from "../engine/canvas/UndoManager";
+    import { currentTab, ProjectTabType } from "haumea/tab";
     onMount(() => {
         $ctx = $canvas.getContext("2d");
         $ctx.imageSmoothingEnabled = false;
@@ -32,6 +33,11 @@
 
     }
     let isMouseOver: boolean = false;
+    onMount(() => {
+        currentTab.subscribe((n) => {
+            if(n.type == ProjectTabType.IMAGE) setCanvasData(n.canvasData.get());
+        })
+    })
 </script>
 
 <div 

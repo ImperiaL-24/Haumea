@@ -7,7 +7,7 @@
     import NavbarButton from './NavbarButton.svelte';
     import NavbarSeparator from './NavbarSeparator.svelte';
     import { currentState, redo, stateList, undo } from 'src/engine/canvas/UndoManager';
-    import { openTab, ProjectTab, ProjectTabType } from 'haumea/tab';
+    import { openTab, ProjectTab, currentTab, ProjectTabType } from 'haumea/tab';
 </script>
 
 <div class="nav"  class:focused={$isWindowFocused}>
@@ -26,11 +26,12 @@
             <NavbarButton name="Settings" icon="icons/settings.svg" action={() =>  location.reload()}/>
         </NavbarCategory>
         <NavbarCategory text="Edit">
-            <NavbarButton name="Undo" keybind="Ctrl+Z" icon="icons/rotate-left.svg" disabled={$currentState == -50 || $stateList.length == -$currentState} action={() => undo()}/>
+            {#key $currentTab.canvasData.currentState}
+            <NavbarButton name="Undo" keybind="Ctrl+Z" icon="icons/rotate-left.svg" disabled={!$currentTab.canvasData?.canUndo()} action={() => undo()}/>
             <NavbarButton name="Redo" keybind="Ctrl+Shift+Z" icon="icons/rotate-right.svg" disabled={$currentState == -1} action={() => redo()}/>
             <NavbarSeparator/>
             <NavbarButton name="Refresh (DEV)" keybind="Ctrl+R" icon="icons/refresh.svg" action={() =>  location.reload()}/>
-
+            {/key}
         </NavbarCategory>
         <NavbarCategory text="Select"><p>hi3</p></NavbarCategory>
         <NavbarCategory text="Layer"><p>hi4</p></NavbarCategory>
