@@ -1,7 +1,8 @@
 import { clamp } from "src/util";
 import { get, writable, type Writable } from "svelte/store";
-import { Color } from "../../haumea/color";
+import { Color } from "./color";
 import { PercentagePos, PixelPos, Vector2 } from "haumea/math";
+import { currentTab, currentTabId, tabs } from "haumea/tab";
 
 
 export let canvas: Writable<HTMLCanvasElement> = writable();
@@ -11,18 +12,24 @@ export let zoom: Writable<number> = writable(1);
 export let transition: Writable<boolean> = writable(true);
 
 export let getCanvasPosition = (): PixelPos => {
-    return new PercentagePos(parseFloat(get(canvas).style.left.slice(0,-1)),parseFloat(get(canvas).style.top.slice(0,-1))).toPixelPos(get(canvasBase));
+    return get(currentTab).canvasData.position.toPixelPos(get(canvasBase));
 
 }
 
 export let setCanvasPosition = (pos: PixelPos) => {
-    const cw = get(canvas).clientWidth*get(zoom);
-    const ch = get(canvas).clientHeight*get(zoom);
+    const zoom = get(currentTab).canvasData.zoom
+    const cw = get(canvas).clientWidth*zoom;
+    const ch = get(canvas).clientHeight*zoom;
     const vw = get(canvasBase).clientWidth;
     const vh = get(canvasBase).clientHeight;
-
-    get(canvas).style.top = `${clamp(pos.y*100/get(canvasBase).clientHeight, (-ch/2+400)*100/vh,(ch/2-400)*100/vh+100)}%`;
-    get(canvas).style.left = `${clamp(pos.x*100/get(canvasBase).clientWidth, (-cw/2+400)*100/vw,(cw/2-400)*100/vw+100)}%`;
+    const newPos = new PercentagePos(
+        clamp(pos.x*100/get(canvasBase).clientWidth, (-cw/2+400)*100/vw,(cw/2-400)*100/vw+100),
+        clamp(pos.y*100/get(canvasBase).clientHeight, (-ch/2+400)*100/vh,(ch/2-400)*100/vh+100)
+    )
+    get(tabs).get(get(currentTabId)).canvasData.position = newPos;
+    console.log( get(tabs).get(get(currentTabId)).canvasData.position);
+    get(canvas).style.top = `${newPos.y}%`;
+    get(canvas).style.left = `${newPos.x}%`;
 }
 
 

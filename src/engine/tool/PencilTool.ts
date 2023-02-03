@@ -2,7 +2,7 @@ import { Tool, ToolID } from "./Tool";
 import { get, writable, type Writable } from "svelte/store";
 import { currentColor } from "../ColorManager";
 import { getClickLocation } from "../../util";
-import { canvas, ctx, zoom } from "../canvas/Canvas";
+import { canvas, ctx, zoom } from "../../haumea/preview";
 import { clickState, modifierState } from "../../store";
 import type {  Vector2 } from "../Vector2";
 import { EyedropperTool } from "./EyedropperTool";

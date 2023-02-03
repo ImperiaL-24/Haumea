@@ -1,6 +1,6 @@
 import { currentTab } from "src/haumea/tab";
 import { get, writable, type Writable } from "svelte/store";
-import { getCanvasData, setCanvasData } from "./Canvas";
+import { getCanvasData, setCanvasData } from "../../haumea/preview";
 
 
 export let currentState: Writable<number> = writable(-1);

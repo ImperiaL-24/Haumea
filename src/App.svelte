@@ -50,12 +50,12 @@
         state.shiftKey = e.shiftKey;
         $modifierState = state;
     }
-
+    if($currentTab == undefined) {
+        openTab(new ProjectTab(ProjectTabType.IMAGE, "test idk"));
+        console.log($currentTab);
+    }
     onMount(async () => {
-        if($currentTab == undefined) {
-            openTab(new ProjectTab(ProjectTabType.IMAGE, "test idk"));
-            console.log($currentTab);
-        }
+        
         addWindow(new WindowBuilder(TabType.ColorSelector,TabType.Test).tabbed(true).build());
         addWindow(new WindowBuilder(TabType.Toolbar).resizeable(false).size(40, 255).build());
         const unlisten = await appWindow.onFocusChanged(({ payload: isFocused }) => {

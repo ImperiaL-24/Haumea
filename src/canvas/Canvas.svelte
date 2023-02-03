@@ -2,11 +2,15 @@
     import { onMount } from "svelte";
     import { getClickLocation } from "../util";
     import { currentTool } from "../engine/tool/ToolManager";
-    import { canvas, canvasBase, ctx, getCanvasPosition, setCanvasData, setCanvasPosition, transition, zoom } from "../engine/canvas/Canvas";
+    import { canvas, canvasBase, ctx, getCanvasPosition, setCanvasData, setCanvasPosition, transition, zoom } from "../haumea/preview";
     import { innerRect } from "../store";
     import Cursor from "./Cursor.svelte";
     import { saveCanvas } from "../engine/canvas/UndoManager";
-    import { currentTab, ProjectTabType } from "haumea/tab";
+    import { currentTab, currentTabId, ProjectTabType, tabs } from "haumea/tab";
+
+    let position;
+    $: console.log(position);
+    $: position = $currentTab.canvasData?.position;
     onMount(() => {
         $ctx = $canvas.getContext("2d");
         $ctx.imageSmoothingEnabled = false;
@@ -15,21 +19,30 @@
         saveCanvas();
     })
 
-    $: {
+    currentTab.subscribe(n => {
         if($canvas) {
-            $canvas.style.scale = `${$zoom} ${$zoom}`
+            $transition = false;
+            canvas.update(m => {
+                m.style.scale = `${n.canvasData.zoom}`
+                m.style.top = `${n.canvasData.position.y}%`;
+                m.style.left = `${n.canvasData.position.x}%`;
+                return m;
+            })
         }
-    }
+        
+    })
 
     let onWheel = (e) => {
+        
         $transition = true;
         const mouseLocation = getClickLocation($canvasBase);
-        const oldZoom = $zoom;
-        $zoom = e.deltaY < 0 ? Math.min(1000, $zoom *1.25) : Math.max(0.01, $zoom /1.25);
+        const oldZoom = $tabs.get($currentTabId).canvasData.zoom;
+        const newZoom = e.deltaY < 0 ? Math.min(1000, oldZoom *1.25) : Math.max(0.01, oldZoom /1.25);
+        $tabs.get($currentTabId).canvasData.zoom = newZoom;
  
-        setCanvasPosition(getCanvasPosition().add(mouseLocation.negate()).product($zoom/oldZoom).add(mouseLocation).asPixelPos());
+        setCanvasPosition(getCanvasPosition().add(mouseLocation.negate()).product(newZoom/oldZoom).add(mouseLocation).asPixelPos());
         
-        $canvas.style.scale = `${$zoom} ${$zoom}`
+        $canvas.style.scale = `${newZoom}`
 
     }
     let isMouseOver: boolean = false;
@@ -51,8 +64,7 @@ on:wheel|passive={(e) => onWheel(e)}>
     <canvas 
     bind:this={$canvas}
     class:has-transition={$transition}
-    width="255" height="255" 
-    style="top: 50%; left:50%;"
+    width="255" height="255"
     ></canvas>
 </div>
 {#if isMouseOver}
@@ -73,7 +85,7 @@ on:wheel|passive={(e) => onWheel(e)}>
         canvas {
             position: absolute;
             box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-            transition: 0.2s scale, 0.2s width, 0.2s height;   
+            transition: 0.2s width, 0.2s height;   
             image-rendering: pixelated;
             translate: -50% -50%;
             z-index: 1;

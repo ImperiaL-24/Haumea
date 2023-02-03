@@ -1,6 +1,7 @@
-import { getCanvasData, setCanvasData } from "src/engine/canvas/Canvas";
+import { getCanvasData, setCanvasData } from "src/haumea/preview";
 import { derived, get, writable, type Writable } from "svelte/store";
 import {v4 as uuidv4} from "uuid";
+import { PercentagePos } from "./math";
 
 export class ProjectTabType {
     static HOME = new ProjectTabType("HOME","svelte.svg");
@@ -11,6 +12,7 @@ export class ProjectTabType {
 
 export class ProjectTab {
     readonly id: string;
+    isSaved: boolean;
     type: ProjectTabType;
     tabName: string;
     canvasData?: CanvasImageData;
@@ -20,11 +22,20 @@ export class ProjectTab {
         this.tabName = name;
         this.canvasData = data ?? type == ProjectTabType.IMAGE ? new CanvasImageData() : undefined;
     }
+    subscribe(subscriber) {
+        subscriber(this)
+        return () => {}
+    }
 }
 
 export class CanvasImageData {
     currentState: number = -1;
     stateList: ImageData[] = [];
+    position: PercentagePos = new PercentagePos(50,50);
+    zoom: number = 1;
+
+    canUndo: Writable<boolean> = writable(false);
+    canRedo: Writable<boolean> = writable(false);
     constructor(data?: ImageData) {
         this.stateList.push(data ?? new ImageData(16,16));
     }
@@ -36,21 +47,25 @@ export class CanvasImageData {
         this.stateList.push(getCanvasData());
 
         this.currentState= -1;
+        this.updateBooleans();
     }
     undo() {
-        if(this.currentState == -50 || this.stateList.length == -this.currentState) return;
+        if(!get(this.canUndo)) return;
         setCanvasData(this.stateList.slice(this.currentState-1)[0]);
         this.currentState--;
-        console.log("undo", this.stateList, this.currentState)
+        console.log("undo", this.canUndo)
+        this.updateBooleans()
     }
     redo() {
-        if(!(this.currentState != -1)) return;
+        if(!(get(this.canRedo))) return;
             setCanvasData(this.stateList.slice(this.currentState+1)[0]);
             this.currentState++;
             console.log("redo", this.stateList, this.currentState)
+            this.updateBooleans()
     }
-    canUndo() {
-        return this.currentState != -50 && this.stateList.length != -this.currentState
+    private updateBooleans() {
+        this.canUndo.set(this.currentState != -50 && this.stateList.length != -this.currentState);
+        this.canRedo.set(this.currentState != -1);
     }
 }
 
@@ -61,7 +76,6 @@ export const currentTab = derived([tabs, currentTabId], ([$tabs, $currentTabId])
 
 export let setCurrentTab = (id: string) => {
     currentTabId.set(id);
-    const currentTab = get(tabs).get(get(currentTabId));
 }
 
 export let openTab = (tab: ProjectTab) => {
@@ -70,12 +84,25 @@ export let openTab = (tab: ProjectTab) => {
         return n;
     })
     currentTabId.set(tab.id);
-    const currentTab = get(tabs).get(get(currentTabId));
+
 }
 
 export let closeTab = (id: string) => {
+    //TODO: ARE YOU SURE MODAL IF UNSAVED
+
+    if(get(currentTab).id == id) {
+        const keys = Array.from(get(tabs).keys());
+        let index = keys.indexOf(id);
+        if(index==0 && keys.length==1) return;
+        if(index!=0) index--;
+        else index++;
+        currentTabId.set(keys[index]);
+    }
+    
+    
     tabs.update(n => {
         n.delete(id);
         return n;
     })
+    
 }

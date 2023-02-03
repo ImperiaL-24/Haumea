@@ -1,6 +1,6 @@
 
 import { get } from "svelte/store";
-import { getCanvasPosition, setCanvasPosition, transition } from "../canvas/Canvas";
+import { getCanvasPosition, setCanvasPosition, transition } from "../../haumea/preview";
 import { clickState } from "../../store";
 
 export class ToolID {

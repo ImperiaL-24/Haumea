@@ -55,6 +55,11 @@ export let unfocusNavbar = () => {
     activeDropdown.set("");
 }
 
+export let focusNavbar = (text: string) => {
+    navbarPressed.set(true); 
+    activeDropdown.set(text);
+}
+
 
 export let innerRect: Writable<{x:number, y:number, height:number, width:number}> = writable({x:0,y:0,height:0,width:0});
 

@@ -1,16 +1,16 @@
 <script lang="ts">
 import type { PencilTool } from "../engine/tool/PencilTool";
 import { modifierState } from "../store";
-import {zoom} from "../engine/canvas/Canvas";
 import EyedropperCursor from "./EyedropperCursor.svelte";
-    import type { Tool } from "src/engine/tool/Tool";
+import type { Tool } from "src/engine/tool/Tool";
+    import { currentTab } from "haumea/tab";
 
 export let instance: Tool;
 const tool = instance as PencilTool;
 let cursorSize: number;
 $: {
     tool.size.subscribe(n => {
-        cursorSize = $zoom*n;
+        cursorSize = $currentTab.canvasData.zoom*n;
     });
 }
 </script>

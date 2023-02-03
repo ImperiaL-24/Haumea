@@ -1,25 +1,22 @@
 <script lang="ts">
+    import { closeTab, currentTab, openTab, ProjectTab } from "haumea/tab";
     import { fade } from "svelte/transition";
 
-
-
-    export let selected: boolean = false;
-    export let title: string;
-    export let icon: string;
-    export let closeAction: Function = () => {};
-    export let isSaved: boolean = false;
+    export let tab: ProjectTab;
+    let selected: boolean = false;
+    $: selected = $currentTab.id == tab.id;
     let isOver = false;
     
 </script>
 
 <div class="button-space" >
     <div class="actual-button" on:mouseenter={() => isOver = true} on:mouseleave={() => isOver = false}>
-        <img class="icon" src={icon} alt="project icon" class:selected={selected}/>
-        <button class="main"  on:click|preventDefault><p class:selected={selected}>{title}</p></button>
+        <img class="icon" src={tab.type.icon} alt="project icon" class:selected={selected}/>
+        <button class="main"  on:click|preventDefault={() => openTab(tab)}><p class:selected={selected}>{tab.tabName}</p></button>
         <div class="close-button">
             {#if isOver}
-            <img  in:fade={{duration:200}} out:fade={{duration:200}} class="close" src="icons/cross.svg" on:mouseup={() => closeAction()} alt="close"/>
-            {:else if !isSaved}
+            <img  in:fade={{duration:200}} out:fade={{duration:200}} class="close" src="icons/cross.svg" on:mouseup={() => closeTab(tab.id)} alt="close"/>
+            {:else if !tab.isSaved}
             <img  in:fade={{duration:200}} out:fade={{duration:200}} class="close" src="icons/circle.svg" alt="close"/>
             {:else}
             <img style="opacity: 0"  class="close" alt="close"/>

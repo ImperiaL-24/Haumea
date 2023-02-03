@@ -1,16 +1,19 @@
 <script lang="ts">
     import { fade, fly } from "svelte/transition";
-    import { activeDropdown, navbarPressed } from "../store";
+    import { activeDropdown, focusNavbar, navbarPressed, unfocusNavbar } from "src/store";
 
 
     export let text: string;
     let button: HTMLElement;
-    $: console.log($navbarPressed, $activeDropdown);
+    let click = () => {
+        if($navbarPressed) unfocusNavbar();
+        else focusNavbar(text);
+    }
 </script>
 <div>
     <button 
     bind:this={button} 
-    on:click={() => {$navbarPressed = true; $activeDropdown=text;}} 
+    on:click={() => click()} 
     on:mouseenter={() => {if($navbarPressed) $activeDropdown = text;}}
     >{text}</button>
     {#if $activeDropdown == text}

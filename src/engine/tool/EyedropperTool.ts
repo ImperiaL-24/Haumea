@@ -1,7 +1,7 @@
 import { clickState, colorTarget } from "../../store";
 import { getClickLocation } from "../../util";
 import { get, writable, type Writable } from "svelte/store";
-import { canvas, getPixelColor, zoom } from "../canvas/Canvas";
+import { canvas, getPixelColor, zoom } from "../../haumea/preview";
 import { Tool, ToolID } from "./Tool";
 import type { Color } from "../../haumea/color";
 

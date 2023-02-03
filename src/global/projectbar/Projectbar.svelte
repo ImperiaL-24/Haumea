@@ -6,8 +6,8 @@ import ProjectbarButton from "./ProjectbarButton.svelte";
 
 
 <div>
-    {#each [...$tabs] as [id, tab]}
-        <ProjectbarButton title="{tab.tabName}" icon="{tab.type.icon}" selected={$currentTab.id == id}/>
+    {#each [...$tabs] as [_id, tab]}
+        <ProjectbarButton tab={tab}/>
     {/each}
 </div>
 
