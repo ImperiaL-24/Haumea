@@ -9,6 +9,7 @@ import Toolbar from "./tabs/Toolbar.svelte";
 import WindowNav from "./WindowNav.svelte";
 import WindowResizer from "./WindowResizer.svelte";
 import {TabId, indexCount, windows, type WindowData} from 'src/haumea/window'
+    import Layers from "./tabs/Layers.svelte";
 
 export let id: string;
 let data:WindowData = $windows.get(id);
@@ -36,6 +37,8 @@ class:hovering={data.hovering}>
             <Test></Test>
         {:else if data.tabs[data.selectedTab].type == TabId.Toolbar}
             <Toolbar></Toolbar>
+        {:else if data.tabs[data.selectedTab].type == TabId.Layers}
+            <Layers></Layers>
         {/if}
     </div>
     {#if data.resizeable && !data.anchored}

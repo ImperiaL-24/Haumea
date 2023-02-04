@@ -58,9 +58,9 @@ export class PencilTool extends Tool {
         const zoom  = get(currentTab).canvasData?.zoom.value;
         
         const location = getClickLocation(get(canvas)).product(1/zoom);
-        if(mouseDownTarget != get(canvas)) return this.lastClick = location;
+        // if(mouseDownTarget != get(canvas)) return this.lastClick = location;
         if(this.lastClick == undefined) return;
-        
+
         lineTo(get(this.size), this.lastClick, location);
         
         this.lastClick = location;

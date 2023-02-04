@@ -1,13 +1,14 @@
 import { clamp } from "src/util";
-import { get, writable, type Writable } from "svelte/store";
+import { derived, get, writable, type Readable, type Writable } from "svelte/store";
 import { Color } from "./color";
 import { PercentagePos, PixelPos, Vector2 } from "haumea/math";
 import { currentTab, currentTabId, tabs } from "haumea/tab";
+import type { CanvasState } from "./canvas";
 
 
 export let canvas: Writable<HTMLCanvasElement> = writable();
 export let canvasBase: Writable<HTMLDivElement> = writable();
-export let ctx: Writable<CanvasRenderingContext2D> = writable();
+export let ctx: Readable<CanvasRenderingContext2D> = derived(canvas, ($canvas) => $canvas.getContext("2d"));
 export let transition: Writable<boolean> = writable(true);
 
 export let getCanvasPosition = (): PixelPos => {
@@ -17,8 +18,8 @@ export let getCanvasPosition = (): PixelPos => {
 
 export let setCanvasPosition = (pos: PixelPos) => {
     const zoom = get(currentTab).canvasData.zoom.value;
-    const cw = get(canvas).clientWidth*zoom;
-    const ch = get(canvas).clientHeight*zoom;
+    const cw = get(tabs).get(get(currentTabId)).canvasData.get().dimension.value.x*zoom;
+    const ch = get(tabs).get(get(currentTabId)).canvasData.get().dimension.value.y*zoom;
     const vw = get(canvasBase).clientWidth;
     const vh = get(canvasBase).clientHeight;
     const newPos = new PercentagePos(
@@ -34,14 +35,15 @@ export let getPixelColor = (pos: Vector2): Color => {
     return new Color(clickedColor[0], clickedColor[1], clickedColor[2]);
 }
 
-export let getCanvasData = (): ImageData => {
-
-    return get(ctx).getImageData(0, 0, get(canvas).width, get(canvas).height);
+export let getCanvasState = (): CanvasState => {
+    
+    return get(currentTab).canvasData.get();
 }
 
-export let setCanvasData = (data: ImageData) => {
+export let setCanvasState = (data: CanvasState) => {
     console.warn("SETCANVAS")
-    get(canvas).width = data.width;
-    get(canvas).height = data.height;
-    get(ctx).putImageData(data, 0, 0);
+    get(currentTab).canvasData.stateList.value[get(currentTab).canvasData.stateList.value.length + get(currentTab).canvasData.currentState.value] = data;
+    // get(canvas).width = data.width;
+    // get(canvas).height = data.height;
+    // get(ctx).putImageData(data, 0, 0);
 }

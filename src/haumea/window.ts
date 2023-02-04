@@ -26,13 +26,15 @@ export let removeWindow = (window: WindowData) => {
 export enum TabId {
     ColorSelector,
     Test,
-    Toolbar
+    Toolbar,
+    Layers
 }
 
 export class TabType {
     public static ColorSelector = new TabType(TabId.ColorSelector,"Color")
     public static Test = new TabType(TabId.Test,"Test")
     public static Toolbar = new TabType(TabId.Toolbar,"Toolbar")
+    public static Layers = new TabType(TabId.Layers,"Layers")
     constructor(public type:TabId, public title:string) {}
 }
 

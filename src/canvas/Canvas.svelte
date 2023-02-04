@@ -2,25 +2,43 @@
     import { onMount } from "svelte";
     import { getClickLocation } from "../util";
     import { currentTool } from "../engine/tool/ToolManager";
-    import { canvas, canvasBase, ctx, getCanvasPosition, setCanvasData, setCanvasPosition, transition } from "../haumea/preview";
+    import { canvas, canvasBase, ctx, getCanvasPosition, setCanvasState, setCanvasPosition, transition } from "../haumea/preview";
     import { innerRect } from "../store";
     import Cursor from "./Cursor.svelte";
     import { currentTab, currentTabId, ProjectTabType, tabs } from "haumea/tab";
     import type { PercentagePos } from "src/haumea/math";
-    import { get } from "svelte/store";
+    import type { CanvasState } from "src/haumea/canvas";
+    import CanvasLayer from "./CanvasLayer.svelte";
     let zoom: number;
     $: $currentTab.canvasData?.zoom.$.subscribe(n => zoom = n);
-    $: if($canvas) $canvas.style.scale = `${zoom}`;
 
     let position: PercentagePos;
     $: $currentTab.canvasData?.position.$.subscribe(n => position = n);
+
+    let currentStateId: number;
+    $: $currentTab.canvasData?.currentState.$.subscribe(n => currentStateId = n);
+
+    let stateList: CanvasState[];
+    $: $currentTab.canvasData?.stateList.$.subscribe(n => stateList = n);
+
+    let currentState: CanvasState;
+    $: currentState = stateList[stateList.length + currentStateId];
+
+    let layers: ImageData[]
+    $: currentState.layers.$.subscribe(n => layers = n);
+
+    let activeLayerId: number
+    $: currentState.activeLayer.$.subscribe(n => activeLayerId = n);
     
     onMount(() => {
-        $ctx = $canvas.getContext("2d");
-        $ctx.imageSmoothingEnabled = false;
-        $ctx.fillStyle = "#FFFFFF"
-        $ctx.fillRect(0,0,256, 256)
-        get(currentTab).canvasData.saveState();
+        // $ctx = $canvas.getContext("2d");
+        // $ctx.imageSmoothingEnabled = false;
+        // $ctx.fillStyle = "#FFFFFF"
+        // $ctx.fillRect(0,0,256, 256)
+        // get(currentTab).canvasData.saveState();
+        console.log(currentState);
+        $currentTab.canvasData.get().addLayer(new ImageData(100,100))
+        console.log($currentTab.canvasData.get());
     })
 
     currentTab.subscribe(_n => {
@@ -41,7 +59,7 @@
     let isMouseOver: boolean = false;
     onMount(() => {
         const unsubscribe = currentTab.subscribe((n) => {
-            if(n.type == ProjectTabType.IMAGE) setCanvasData(n.canvasData.get());
+            if(n.type == ProjectTabType.IMAGE) setCanvasState(n.canvasData.get());
         })
         return (() => unsubscribe());
     })
@@ -55,12 +73,13 @@ on:mousedown={(e) => $currentTool.onmousedown(e)}
 on:mouseup={(e) => $currentTool.onmouseup(e)}
 bind:this={$canvasBase} style="width:calc(100% - {$innerRect.width}px); margin-left:{$innerRect.x}px; height:calc(100vh - {$innerRect.height}px)" 
 on:wheel|passive={(e) => onWheel(e)}>
-    <canvas 
-    bind:this={$canvas}
-    class:has-transition={$transition}
-    width="255" height="255"
-    style="top: {position.y}%; left: {position.x}%;"
-    ></canvas>
+    {#each layers as layer, i}
+        <CanvasLayer bind:pos={position} bind:zoom={zoom} bind:currentState={currentState} index={i}></CanvasLayer>
+    {/each}
+<div class="shadow"
+class:has-transition={$transition}
+style="top: {position.y}%; left: {position.x}%; scale: {zoom}; width: {currentState.dimension.value.x}px; height: {currentState.dimension.value.y}px">
+</div>
 </div>
 {#if isMouseOver}
     <Cursor></Cursor>
@@ -77,17 +96,20 @@ on:wheel|passive={(e) => onWheel(e)}>
         width: 100%;
         z-index: 0;
         cursor: none;
-        canvas {
+        canvas, .shadow {
             position: absolute;
-            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
             transition: 0.2s width, 0.2s height;   
             image-rendering: pixelated;
             translate: -50% -50%;
             z-index: 1;
         }
 
+        .shadow {
+            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        }
+
     }
     .has-transition {
-        transition: 0.2s all;
+        transition: 0.2s all!important;
     }
 </style>

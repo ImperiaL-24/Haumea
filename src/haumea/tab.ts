@@ -1,11 +1,9 @@
-import { getCanvasData, setCanvasData } from "src/haumea/preview";
-import { Reactive } from "src/util";
 import { derived, get, writable, type Writable } from "svelte/store";
 import {v4 as uuidv4} from "uuid";
-import { PercentagePos } from "./math";
 import { open } from '@tauri-apps/api/dialog';
-import { readBinaryFile, BaseDirectory } from '@tauri-apps/api/fs';
+import { readBinaryFile } from '@tauri-apps/api/fs';
 import { encode } from "base64-arraybuffer";
+import { CanvasData } from "haumea/canvas";
 
 export class ProjectTabType {
     static HOME = new ProjectTabType("HOME","svelte.svg");
@@ -21,61 +19,18 @@ export class ProjectTab {
     path: string;
     type: ProjectTabType;
     tabName: string;
-    canvasData?: CanvasImageData;
-    constructor(type: ProjectTabType, name: string, data?: CanvasImageData) {
+    canvasData?: CanvasData;
+    constructor(type: ProjectTabType, name: string, data?: CanvasData) {
         this.id = uuidv4();
         this.type = type;
         this.tabName = name;
         if(data == undefined) {
-            this.canvasData = type == ProjectTabType.IMAGE ? new CanvasImageData() : undefined
+            this.canvasData = type == ProjectTabType.IMAGE ? new CanvasData() : undefined
         } else {
             this.canvasData = data;
         }
         
         console.log(data)
-    }
-}
-
-export class CanvasImageData {
-    currentState: number = -1;
-    stateList: ImageData[] = [];
-    position: Reactive<PercentagePos> = new Reactive(new PercentagePos(50,50));
-    zoom: Reactive<number> = new Reactive(1);
-
-    canUndo: Writable<boolean> = writable(false);
-    canRedo: Writable<boolean> = writable(false);
-    constructor(data?: ImageData) {
-        console.log(data)
-        this.stateList.push(data ?? new ImageData(16,16));
-        
-    }
-    get() {
-        return this.stateList[this.stateList.length+this.currentState];
-    }
-    saveState() {
-        this.stateList.splice( this.stateList.length+this.currentState+1, -this.currentState+1);
-        this.stateList.push(getCanvasData());
-
-        this.currentState= -1;
-        this.updateBooleans();
-    }
-    undo() {
-        if(!get(this.canUndo)) return;
-        setCanvasData(this.stateList.slice(this.currentState-1)[0]);
-        this.currentState--;
-        console.log("undo", this.canUndo)
-        this.updateBooleans()
-    }
-    redo() {
-        if(!(get(this.canRedo))) return;
-            setCanvasData(this.stateList.slice(this.currentState+1)[0]);
-            this.currentState++;
-            console.log("redo", this.stateList, this.currentState)
-            this.updateBooleans()
-    }
-    private updateBooleans() {
-        this.canUndo.set(this.currentState != -50 && this.stateList.length != -this.currentState);
-        this.canRedo.set(this.currentState != -1);
     }
 }
 
@@ -110,21 +65,23 @@ export let openFile = async () => {
       } else if (selected === null) {
         // user cancelled the selection
       } else {
-        
+        // read binary array
         const contents = await readBinaryFile(selected);
-        console.log()
+        //convert to base64 image
         var image = new Image();
         image.src = "data:image/png;base64,"+encode(contents);
         await image.decode();
-        console.log("yippie");
-        var canvas = document.createElement('canvas');
+
+        //convert image to canvas
+        let canvas = document.createElement('canvas');
             
         canvas.width = image.width;
         canvas.height = image.height;
         let ctx = canvas.getContext("2d");
         ctx.drawImage(image, 0,0);
         
-        const project = new ProjectTab(ProjectTabType.IMAGE, selected, new CanvasImageData(ctx.getImageData(0,0,canvas.width, canvas.height)));
+        //convert canvas to imagedata
+        const project = new ProjectTab(ProjectTabType.IMAGE, selected, new CanvasData(ctx.getImageData(0,0,canvas.width, canvas.height)));
         openTab(project);
       }
 }
