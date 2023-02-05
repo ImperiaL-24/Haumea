@@ -1,7 +1,9 @@
 import { getCanvasState } from "haumea/preview";
-import { Reactive } from "src/util";
+import { Reactive, Signal } from "src/util";
 import { get, writable, type Writable } from "svelte/store";
 import { PercentagePos, Vector2 } from "haumea/math";
+
+export let canvasChange: Signal = new Signal();
 
 export class CanvasState {
     layers: Reactive<ImageData[]> = new Reactive([]);
@@ -16,9 +18,10 @@ export class CanvasState {
     }
     addLayer(data?: ImageData) {
         if(data) {
-            this.layers.value.push(data)
+            this.layers.value = [...this.layers.value, data]
         } else {
-            this.layers.value.push(new ImageData(this.dimension.value.x, this.dimension.value.y))
+            
+            this.layers.value = [...this.layers.value, new ImageData(this.dimension.value.x, this.dimension.value.y)]
         }
         this.activeLayer.value = this.layers.value.length-1
     }
@@ -38,6 +41,7 @@ export class CanvasData {
         console.log(this.stateList.value);
         this.stateList.value.push(new CanvasState(data ?? new ImageData(100, 100)));
         console.log(this.stateList.value);
+
     }
     get() {
         return this.stateList.value[this.stateList.value.length + this.currentState.value];
@@ -52,21 +56,22 @@ export class CanvasData {
     undo() {
         if (!get(this.canUndo))
             return;
-        // setCanvasData(this.stateList.value.slice(this.currentState.value - 1)[0]);
-        this.currentState.value--;
-        console.log("undo", this.canUndo);
+        // setCanvasState(this.stateList.value.slice(this.currentState.value - 1)[0]);
+        this.currentState.value = this.currentState.value-1;
+        console.log("undo", this.stateList, this.currentState);
         this.updateBooleans();
     }
     redo() {
         if (!(get(this.canRedo)))
             return;
-        // setCanvasData(this.stateList.slice(this.currentState + 1)[0]);
-        this.currentState.value++;
+        // setCanvasState(this.stateList.value.slice(this.currentState.value + 1)[0]);
+        this.currentState.value = this.currentState.value+1;
         console.log("redo", this.stateList, this.currentState);
         this.updateBooleans();
     }
     private updateBooleans() {
         this.canUndo.set(this.currentState.value != -50 && this.stateList.value.length != -this.currentState.value);
         this.canRedo.set(this.currentState.value != -1);
+        canvasChange.signal();
     }
 }

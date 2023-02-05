@@ -3,24 +3,33 @@
     import type { PercentagePos } from "src/haumea/math";
     import { canvas, ctx, transition } from "haumea/preview";
     import { onMount } from "svelte";
+    import { currentTab } from "src/haumea/tab";
 
     export let pos: PercentagePos;
     export let zoom: number;
     export let currentState: CanvasState;
     export let index: number;
 
-    let activeLayerId: number
     currentState.activeLayer.$.subscribe(n => {
-        activeLayerId = n;
         console.log("MOUNT LAYER!")
         const data: ImageData = currentState.layers.value[index];
+        
         if($canvas[index]) {
             const ctx = $canvas[index].getContext("2d");
             ctx.putImageData(data, data.width, data.height);
         }
 
     });
-
+    $: {
+        currentState;
+        console.warn(currentState)
+        const data: ImageData = currentState.layers.value[index];
+        console.log(currentState.layers.value, $currentTab.canvasData?.stateList)
+        if($canvas[index]) {
+            const ctx = $canvas[index].getContext("2d");
+            ctx.putImageData(data, data.width, data.height);
+        }
+    }
 </script>
 
 <canvas

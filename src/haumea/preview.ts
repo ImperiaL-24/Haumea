@@ -38,10 +38,10 @@ export let getCanvasState = (): CanvasState => {
     return get(currentTab).canvasData.get();
 }
 
-export let setCanvasState = (data: CanvasState) => {
-    console.warn("SETCANVAS")
-    get(currentTab).canvasData.stateList.value[get(currentTab).canvasData.stateList.value.length + get(currentTab).canvasData.currentState.value] = data;
-    // get(canvas).width = data.width;
-    // get(canvas).height = data.height;
-    // get(ctx).putImageData(data, 0, 0);
-}
+// export let setCanvasState = (data: CanvasState) => {
+//     console.warn("SETCANVAS")
+//     get(currentTab).canvasData.stateList.value[get(currentTab).canvasData.stateList.value.length + get(currentTab).canvasData.currentState.value] = data;
+//     // get(canvas).width = data.width;
+//     // get(canvas).height = data.height;
+//     // get(ctx).putImageData(data, 0, 0);
+// }

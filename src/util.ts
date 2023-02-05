@@ -1,4 +1,4 @@
-import { get, writable, type Writable } from "svelte/store";
+import { get, writable, type Subscriber, type Writable } from "svelte/store";
 import { Vector2 } from "haumea/math";
 import { clickState } from "./store";
 
@@ -60,5 +60,17 @@ import { clickState } from "./store";
         }
         get $() {
             return this._$value;
+        }
+    }
+
+    export class Signal {
+
+        private _signal: Writable<boolean> = writable(true);
+        constructor() {}
+        signal() {
+            this._signal.update(n => !n);
+        }
+        subscribe(fn: Function) {
+            this._signal.subscribe(() => fn());
         }
     }

@@ -2,7 +2,7 @@
     import { onMount } from "svelte";
     import { getClickLocation } from "../util";
     import { currentTool } from "../engine/tool/ToolManager";
-    import { canvas, canvasBase, ctx, getCanvasPosition, setCanvasState, setCanvasPosition, transition } from "../haumea/preview";
+    import { canvas, canvasBase, ctx, getCanvasPosition, setCanvasPosition, transition } from "../haumea/preview";
     import { innerRect } from "../store";
     import Cursor from "./Cursor.svelte";
     import { currentTab, currentTabId, ProjectTabType, tabs } from "haumea/tab";
@@ -22,8 +22,10 @@
     $: $currentTab.canvasData?.stateList.$.subscribe(n => stateList = n);
 
     let currentState: CanvasState;
-    $: currentState = stateList[stateList.length + currentStateId];
-
+    $: {
+        currentState = stateList[stateList.length + currentStateId];
+        console.error(stateList, currentStateId, currentState)
+    }
     let layers: ImageData[]
     $: currentState.layers.$.subscribe(n => layers = n);
 
@@ -58,10 +60,10 @@
     }
     let isMouseOver: boolean = false;
     onMount(() => {
-        const unsubscribe = currentTab.subscribe((n) => {
-            if(n.type == ProjectTabType.IMAGE) setCanvasState(n.canvasData.get());
-        })
-        return (() => unsubscribe());
+        // const unsubscribe = currentTab.subscribe((n) => {
+        //     if(n.type == ProjectTabType.IMAGE) setCanvasState(n.canvasData.get());
+        // })
+        // return (() => unsubscribe());
     })
 </script>
 
@@ -73,9 +75,11 @@ on:mousedown={(e) => $currentTool.onmousedown(e)}
 on:mouseup={(e) => $currentTool.onmouseup(e)}
 bind:this={$canvasBase} style="width:calc(100% - {$innerRect.width}px); margin-left:{$innerRect.x}px; height:calc(100vh - {$innerRect.height}px)" 
 on:wheel|passive={(e) => onWheel(e)}>
+
     {#each layers as layer, i}
         <CanvasLayer bind:pos={position} bind:zoom={zoom} bind:currentState={currentState} index={i}></CanvasLayer>
     {/each}
+
 <div class="shadow"
 class:has-transition={$transition}
 style="top: {position.y}%; left: {position.x}%; scale: {zoom}; width: {currentState.dimension.value.x}px; height: {currentState.dimension.value.y}px">
