@@ -30,7 +30,6 @@ export class ProjectTab {
             this.canvasData = data;
         }
         
-        console.log(data)
     }
 }
 

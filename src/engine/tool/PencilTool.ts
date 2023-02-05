@@ -11,7 +11,6 @@ import { Color } from "src/haumea/color";
 
 let draw = (size:number, location: Vector2) => {
     const color = Color.newFromHSV(...get(colorTarget)).asRGB();
-    
         const pixel = get(ctx).createImageData(size,size);
         let d = pixel.data;
         for(let i = 0;i< pixel.data.length;i+=4) {
@@ -23,7 +22,7 @@ let draw = (size:number, location: Vector2) => {
 
         let placeLocationX = location.x- (size-1)/2;
         let placeLocationY = location.y - (size-1)/2;
-
+        
         get(ctx).putImageData(pixel, placeLocationX, placeLocationY)
 }
 
@@ -45,10 +44,11 @@ export class PencilTool extends Tool {
     onmousedown = () => {
         mouseDownTarget = get(clickState).target;
         const zoom  = get(currentTab).canvasData?.zoom.value;
+        const activeLayer = get(currentTab).canvasData?.get().activeLayer.value
 
         console.log("pencil mouse down!");
         if(get(modifierState).altKey) return this.eyedropper.onmousedown();
-        const location = getClickLocation(get(canvas)).product(1/zoom);
+        const location = getClickLocation(get(canvas)[activeLayer]).product(1/zoom);
         draw(get(this.size), location);
         this.lastClick = location;
     }
@@ -56,8 +56,9 @@ export class PencilTool extends Tool {
         if(get(modifierState).altKey) return this.eyedropper.onmousemove();
         if(!get(clickState).leftClick) return;
         const zoom  = get(currentTab).canvasData?.zoom.value;
-        
-        const location = getClickLocation(get(canvas)).product(1/zoom);
+        const activeLayer = get(currentTab).canvasData?.get().activeLayer.value
+
+        const location = getClickLocation(get(canvas)[activeLayer]).product(1/zoom);
         // if(mouseDownTarget != get(canvas)) return this.lastClick = location;
         if(this.lastClick == undefined) return;
 
