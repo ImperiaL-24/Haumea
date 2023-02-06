@@ -16,20 +16,21 @@
         
         if($canvas[index]) {
             const ctx = $canvas[index].getContext("2d");
-            ctx.putImageData(data, data.width, data.height);
+            ctx.putImageData(data, 0, 0);
         }
 
     });
     $: {
         currentState;
-        console.warn(currentState)
         const data: ImageData = currentState.layers.value[index];
         console.log(currentState.layers.value, $currentTab.canvasData?.stateList)
         if($canvas[index]) {
+            console.warn("CURRENT STATE CHANGE", currentState)
             const ctx = $canvas[index].getContext("2d");
-            ctx.putImageData(data, data.width, data.height);
+            ctx.putImageData(data, 0, 0);
         }
     }
+    //TODO: CANVAS AS BITMAP RENDERER;
 </script>
 
 <canvas

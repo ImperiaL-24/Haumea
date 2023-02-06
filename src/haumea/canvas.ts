@@ -12,9 +12,18 @@ export class CanvasState {
     visible: Reactive<boolean> = new Reactive(true);
     constructor(data?: ImageData) {
         console.log(data);
-        this.dimension.value = new Vector2(data.width, data.height);
-        this.addLayer(data);
-
+        if(data) {
+            this.dimension.value = new Vector2(data?.width, data?.height);
+            this.addLayer(data);
+        }
+    }
+    static from(state: CanvasState) {
+        let newState = new CanvasState();
+        newState.activeLayer = new Reactive(state.activeLayer.value);
+        newState.dimension = new Reactive(state.dimension.value);
+        newState.visible = new Reactive(state.visible.value);
+        newState.layers = new Reactive([...state.layers.value]);
+        return newState;
     }
     addLayer(data?: ImageData) {
         if(data) {
@@ -48,8 +57,8 @@ export class CanvasData {
     }
     saveState() {
         this.stateList.value.splice(this.stateList.value.length + this.currentState.value + 1, -this.currentState.value + 1);
-        this.stateList.value.push(getCanvasState());
-
+        this.stateList.value.push(CanvasState.from(getCanvasState()));
+        console.log("SAVE STATE", this.stateList.value)
         this.currentState.value = -1;
         this.updateBooleans();
     }
