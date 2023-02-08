@@ -1,36 +1,28 @@
 <script lang="ts">
-    import type { CanvasState } from "src/haumea/canvas";
+    import { Layer, stateChange, type CanvasState } from "src/haumea/canvas";
     import type { PercentagePos } from "src/haumea/math";
-    import { canvas, ctx, transition } from "haumea/preview";
-    import { onMount } from "svelte";
-    import { currentTab } from "src/haumea/tab";
+    import { canvas, transition } from "haumea/preview";
 
     export let pos: PercentagePos;
     export let zoom: number;
+    export let layer: Layer;
     export let currentState: CanvasState;
     export let index: number;
 
-    currentState.activeLayer.$.subscribe(n => {
-        console.log("MOUNT LAYER!")
-        const data: ImageData = currentState.layers.value[index];
-        
-        if($canvas[index]) {
-            const ctx = $canvas[index].getContext("2d");
-            ctx.putImageData(data, 0, 0);
-        }
-
-    });
-    $: {
-        currentState;
-        const data: ImageData = currentState.layers.value[index];
-        console.log(currentState.layers.value, $currentTab.canvasData?.stateList)
-        if($canvas[index]) {
-            console.warn("CURRENT STATE CHANGE", currentState)
-            const ctx = $canvas[index].getContext("2d");
-            ctx.putImageData(data, 0, 0);
-        }
+    let updateCanvas = () => {
+        if(!$canvas[index]) return;
+        const data: ImageData = layer.getImageData();
+        const ctx = $canvas[index].getContext("2d");
+        ctx.putImageData(data, 0,0);
     }
-    //TODO: CANVAS AS BITMAP RENDERER;
+
+    $: layer.layerChange.subscribe(() => {
+        updateCanvas()
+    });
+
+    stateChange.subscribe(() => {
+        updateCanvas();
+    });
 </script>
 
 <canvas

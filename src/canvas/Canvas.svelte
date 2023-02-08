@@ -2,12 +2,12 @@
     import { onMount } from "svelte";
     import { getClickLocation } from "../util";
     import { currentTool } from "../engine/tool/ToolManager";
-    import { canvas, canvasBase, ctx, getCanvasPosition, setCanvasPosition, transition } from "../haumea/preview";
+    import { canvas, canvasBase, getCanvasPosition, setCanvasPosition, transition } from "../haumea/preview";
     import { innerRect } from "../store";
     import Cursor from "./Cursor.svelte";
-    import { currentTab, currentTabId, ProjectTabType, tabs } from "haumea/tab";
+    import { currentTab, currentTabId, tabs } from "haumea/tab";
     import type { PercentagePos } from "src/haumea/math";
-    import type { CanvasState } from "src/haumea/canvas";
+    import { Layer, stateChange, type CanvasState } from "src/haumea/canvas";
     import CanvasLayer from "./CanvasLayer.svelte";
     let zoom: number;
     $: $currentTab.canvasData?.zoom.$.subscribe(n => zoom = n);
@@ -15,18 +15,17 @@
     let position: PercentagePos;
     $: $currentTab.canvasData?.position.$.subscribe(n => position = n);
 
-    let currentStateId: number;
-    $: $currentTab.canvasData?.currentState.$.subscribe(n => currentStateId = n);
-
-    let stateList: CanvasState[];
-    $: $currentTab.canvasData?.stateList.$.subscribe(n => stateList = n);
-
     let currentState: CanvasState;
-    $: {
-        currentState = stateList[stateList.length + currentStateId];
-        console.error(stateList, currentStateId, currentState)
-    }
-    let layers: ImageData[]
+
+    let stateChangeSubscriber = () => {};
+
+    currentTab.subscribe(() => {
+        stateChangeSubscriber();
+        stateChangeSubscriber = stateChange.subscribe(() => {
+            currentState = $currentTab.canvasData?.get();
+        })
+    })
+    let layers: Layer[]
     $: currentState.layers.$.subscribe(n => layers = n);
 
     let activeLayerId: number
@@ -38,9 +37,9 @@
         // $ctx.fillStyle = "#FFFFFF"
         // $ctx.fillRect(0,0,256, 256)
         // get(currentTab).canvasData.saveState();
-        console.log(currentState);
-        $currentTab.canvasData.get().addLayer(new ImageData(100,100))
-        console.log($currentTab.canvasData.get());
+        // console.log(currentState);
+        // // $currentTab.canvasData.get().addLayer(new Layer(new ImageData(100,100)))
+        // console.log($currentTab.canvasData.get());
     })
 
     currentTab.subscribe(_n => {
@@ -77,7 +76,7 @@ bind:this={$canvasBase} style="width:calc(100% - {$innerRect.width}px); margin-l
 on:wheel|passive={(e) => onWheel(e)}>
 
     {#each layers as layer, i}
-        <CanvasLayer bind:pos={position} bind:zoom={zoom} bind:currentState={currentState} index={i}></CanvasLayer>
+        <CanvasLayer bind:pos={position} bind:zoom={zoom} bind:currentState={currentState} layer={layer} index={i}></CanvasLayer>
     {/each}
 
 <div class="shadow"

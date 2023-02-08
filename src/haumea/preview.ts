@@ -4,9 +4,10 @@ import { Color } from "./color";
 import { PercentagePos, PixelPos, Vector2 } from "haumea/math";
 import { currentTab, currentTabId, tabs } from "haumea/tab";
 import type { CanvasState } from "./canvas";
-
+//TODO: remove canvas, and make a canvasClickZone thing
 export let canvas: Writable<HTMLCanvasElement[]> = writable([]);
 export let canvasBase: Writable<HTMLDivElement> = writable();
+//TODO: remove ctx;
 export let ctx: Readable<CanvasRenderingContext2D> = derived([canvas, get(currentTab)?.canvasData?.get().activeLayer.$], ([$canvas, $layer]) => {let layer = get(currentTab)?.canvasData?.get().activeLayer.value; if($canvas[layer]) return $canvas[layer].getContext("2d")});
 export let transition: Writable<boolean> = writable(true);
 

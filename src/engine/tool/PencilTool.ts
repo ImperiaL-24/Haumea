@@ -8,32 +8,6 @@ import { currentTab } from "haumea/tab";
 import type { Vector2 } from "haumea/math";
 import { Color } from "src/haumea/color";
 
-
-let draw = (size:number, location: Vector2) => {
-    const color = Color.newFromHSV(...get(colorTarget)).asRGB();
-        const pixel = get(ctx).createImageData(size,size);
-        let d = pixel.data;
-        for(let i = 0;i< pixel.data.length;i+=4) {
-            d[i] = color[0];
-            d[i+1] = color[1];
-            d[i+2] = color[2];
-            d[i+3] = 255;    
-        }
-
-        let placeLocationX = location.x- (size-1)/2;
-        let placeLocationY = location.y - (size-1)/2;
-        
-        get(ctx).putImageData(pixel, placeLocationX, placeLocationY)
-}
-
-let lineTo = (size: number, start: Vector2, end: Vector2) => {
-    const pixelDistance = end.floor().add(start.floor().negate()).abs().maxCoord();
-
-    for(let i=1;i<=pixelDistance;i++) {
-        draw(size, start.lerp(end, i/pixelDistance));
-    }
-}
-
 let mouseDownTarget: HTMLElement;
 
 export class PencilTool extends Tool {
@@ -42,14 +16,19 @@ export class PencilTool extends Tool {
     eyedropper: EyedropperTool = new EyedropperTool();
     constructor() {super(ToolID.PENCIL_TOOL)}
     onmousedown = () => {
+        if(get(modifierState).altKey) return this.eyedropper.onmousedown();
+        // TODO: if last state is the same as new state then do not create new state;
+        get(currentTab).canvasData.saveState();
+
         mouseDownTarget = get(clickState).target;
         const zoom  = get(currentTab).canvasData?.zoom.value;
         const activeLayer = get(currentTab).canvasData?.get().activeLayer.value
+        const layer = get(currentTab).canvasData?.get().getCurrentLayer();
 
         console.log("pencil mouse down!");
-        if(get(modifierState).altKey) return this.eyedropper.onmousedown();
+
         const location = getClickLocation(get(canvas)[activeLayer]).product(1/zoom);
-        draw(get(this.size), location);
+        layer.drawTo(location, get(this.size));
         this.lastClick = location;
     }
     onmousemove = () => {
@@ -57,19 +36,20 @@ export class PencilTool extends Tool {
         if(!get(clickState).leftClick) return;
         const zoom  = get(currentTab).canvasData?.zoom.value;
         const activeLayer = get(currentTab).canvasData?.get().activeLayer.value
+        const layer = get(currentTab).canvasData?.get().getCurrentLayer();
 
         const location = getClickLocation(get(canvas)[activeLayer]).product(1/zoom);
         // if(mouseDownTarget != get(canvas)) return this.lastClick = location;
         if(this.lastClick == undefined) return;
 
-        lineTo(get(this.size), this.lastClick, location);
+        layer.line(this.lastClick, location, get(this.size));
         
         this.lastClick = location;
     }
     onmouseup = () => {
         if(get(modifierState).altKey) return this.eyedropper.onmouseup();
         mouseDownTarget = null;
-        get(currentTab).canvasData.saveState();
+        
     }
     onkeydown = (e) => {
         if(e.key == "w") this.size.set(get(this.size)+1);

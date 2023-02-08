@@ -1,23 +1,34 @@
 <script lang="ts">
+    import { CanvasState, Layer as LayerData, stateChange } from "src/haumea/canvas";
     import { currentTab } from "src/haumea/tab";
-    import type { Reactive } from "src/util";
-    import Layer from "./Layer.svelte";
-    let layers: ImageData[]
-    $: $currentTab.canvasData?.get().layers.$.subscribe(n => layers = n);
-    console.log($currentTab.canvasData.get());
+    import Layer from "./Layer.svelte"
+    
+    let currentState:CanvasState;
+
+    let stateChangeSubscriber = () => {};
+
+    currentTab.subscribe(() => {
+        stateChangeSubscriber();
+        stateChangeSubscriber = stateChange.subscribe(() => {
+            currentState = $currentTab.canvasData?.get();
+        })
+    })
+    
+    let layers: LayerData[]
+    $: currentState.layers.$.subscribe(n => layers = n);
 
 </script>
 
 <main>
     <div class="layers">
         {#each layers as layer, i}
-            <Layer index={i} data={layer}/>
+            <Layer bind:currentState={currentState} index={i} layer={layer}/>
         {/each}
     </div>
-
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div class="buttons">
-        <img src="icons/add-document.svg" on:click={() => $currentTab.canvasData?.get().addLayer()}/>
+        <!-- svelte-ignore a11y-missing-attribute -->
+        <img src="icons/add-document.svg" on:click={() => $currentTab.canvasData?.get().addLayer(new LayerData(new ImageData(100,100)))}/>
     </div>
     
 </main>

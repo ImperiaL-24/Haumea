@@ -1,41 +1,44 @@
 <script lang="ts">
     import { currentTab } from "src/haumea/tab";
     import type { Reactive } from "src/util";
-    import { onMount } from "svelte";
-    import { canvas } from "src/haumea/preview";
-    import { canvasChange } from "src/haumea/canvas";
+    import { CanvasState, stateChange, type Layer } from "src/haumea/canvas";
 
 
     export let index: number;
-    export let data: ImageData;
+    export let layer: Layer;
+    export let currentState: CanvasState;
 
     let activeLayer: Reactive<number>
-    $: activeLayer = $currentTab.canvasData?.get().activeLayer
+    $: activeLayer = currentState.activeLayer
 
     let activeLayerStore: number
-    $: $currentTab.canvasData?.get().activeLayer.$.subscribe(n => activeLayerStore = n);
+    $: currentState.activeLayer.$.subscribe(n => activeLayerStore = n);
+
+    
+    $currentTab.canvasData?.get().activeLayer.$.subscribe(() => console.error("CHANGE"))
 
     let canvasPreview: HTMLCanvasElement
 
-    canvasChange.subscribe(() => {
+    let updateCanvas = () => {
         if(!canvasPreview) return;
-        const layerCanvas = $canvas[index];
-        let ctx = layerCanvas.getContext("2d");
-        let data = ctx.getImageData(0, 0, layerCanvas.clientWidth, layerCanvas.clientHeight);
+        const data: ImageData = layer.getImageData();
+        const ctx = canvasPreview.getContext("2d");
+        ctx.putImageData(data,0,0);
+    }
 
-        canvasPreview.height = layerCanvas.height;
-        canvasPreview.width = layerCanvas.width;
-
-        ctx = canvasPreview.getContext("2d");
-        ctx.putImageData(data, 0, 0);
+    $: layer.layerChange.subscribe(() => {
+        console.warn("LAYER CHANGE")
+        updateCanvas()
     });
 
-    
-    
+    stateChange.subscribe(() => {
+        updateCanvas();
+    });
+
 </script>
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class:active={activeLayerStore == index} on:click={() => activeLayer.value = index} class="main">
-    <canvas bind:this={canvasPreview}></canvas>
+<div class:active={activeLayerStore == index} on:click={() => $currentTab.canvasData.get().activeLayer.value = index} class="main">
+    <canvas bind:this={canvasPreview} width="{currentState.dimension.value.x}" height="{currentState.dimension.value.y}"></canvas>
     <div class="content">
         <p>Layer {index}</p>
     </div>

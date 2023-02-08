@@ -71,6 +71,6 @@ import { clickState } from "./store";
             this._signal.update(n => !n);
         }
         subscribe(fn: Function) {
-            this._signal.subscribe(() => fn());
+            return this._signal.subscribe(() => fn());
         }
     }
