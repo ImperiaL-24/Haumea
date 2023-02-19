@@ -9,10 +9,10 @@
     export let currentState: CanvasState;
 
     let activeLayer: Reactive<number>
-    $: activeLayer = currentState.activeLayer
+    $: activeLayer = currentState?.activeLayer
 
     let activeLayerStore: number
-    $: currentState.activeLayer.$.subscribe(n => activeLayerStore = n);
+    $: currentState?.activeLayer.$.subscribe(n => activeLayerStore = n);
 
     
     $currentTab.canvasData?.get().activeLayer.$.subscribe(() => console.error("CHANGE"))
@@ -38,7 +38,7 @@
 </script>
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class:active={activeLayerStore == index} on:click={() => $currentTab.canvasData.get().activeLayer.value = index} class="main">
-    <canvas bind:this={canvasPreview} width="{currentState.dimension.value.x}" height="{currentState.dimension.value.y}"></canvas>
+    <canvas bind:this={canvasPreview} width="{currentState?.dimension.value.x}" height="{currentState?.dimension.value.y}"></canvas>
     <div class="content">
         <p>Layer {index}</p>
     </div>

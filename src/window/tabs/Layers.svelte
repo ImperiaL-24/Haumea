@@ -15,7 +15,7 @@
     })
     
     let layers: LayerData[]
-    $: currentState.layers.$.subscribe(n => layers = n);
+    $: currentState?.layers.$.subscribe(n => layers = n);
 
 </script>
 

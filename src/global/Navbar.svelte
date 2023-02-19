@@ -5,8 +5,10 @@
     import NavbarCategory from './NavbarCategory.svelte';
     import { fade } from 'svelte/transition';
     import NavbarButton from './NavbarButton.svelte';
+    import ActionNavbarButton from './ActionNavbarButton.svelte';
     import NavbarSeparator from './NavbarSeparator.svelte';
     import { openTab, ProjectTab, currentTab, ProjectTabType, tabs, openFile } from 'haumea/tab';
+    import { Action } from 'src/haumea/keybind';
     let canUndo, canRedo;
     $: $currentTab.canvasData?.canUndo.subscribe(n => canUndo = n);
     $: $currentTab.canvasData?.canRedo.subscribe(n => canRedo = n);
@@ -17,8 +19,8 @@
     <div class="left">
         <img src="icon.png" alt="icon">
         <NavbarCategory text="File">            
-            <NavbarButton name="New" keybind="Ctrl+N" icon="icons/add-document.svg" action={() => {openTab(new ProjectTab(ProjectTabType.IMAGE, "NEW TAB!")); unfocusNavbar()}}/>
-            <NavbarButton name="Open" keybind="Ctrl+O" icon="icons/add.svg" action={() => {openFile()}}/>
+            <ActionNavbarButton action={Action.NEW_TAB}/>
+            <ActionNavbarButton action={Action.OPEN}/>
             <NavbarButton name="Save..." keybind="Ctrl+S" icon="icons/disk.svg" action={() =>  location.reload()}/>
             <NavbarButton name="Save As..." icon="icons/disk.svg" action={() =>  location.reload()}/>
             <NavbarSeparator/>
@@ -28,11 +30,10 @@
             <NavbarButton name="Settings" icon="icons/settings.svg" action={() =>  {openTab(new ProjectTab(ProjectTabType.SETTINGS, "Settings")); unfocusNavbar()}}/>
         </NavbarCategory>
         <NavbarCategory text="Edit">
-                <NavbarButton name="Undo" keybind="Ctrl+Z" icon="icons/rotate-left.svg" disabled={!canUndo} action={() => $currentTab.canvasData.undo()}/>
-
-            <NavbarButton name="Redo" keybind="Ctrl+Shift+Z" icon="icons/rotate-right.svg" disabled={!canRedo} action={() => $currentTab.canvasData.redo()}/>
+            <ActionNavbarButton disabled={!canUndo} action={Action.UNDO}/>
+            <ActionNavbarButton disabled={!canRedo} action={Action.REDO}/>
             <NavbarSeparator/>
-            <NavbarButton name="Refresh (DEV)" keybind="Ctrl+R" icon="icons/refresh.svg" action={() =>  location.reload()}/>
+            <ActionNavbarButton action={Action.RELOAD}/>
         </NavbarCategory>
         <NavbarCategory text="Select"><p>hi3</p></NavbarCategory>
         <NavbarCategory text="Layer"><p>hi4</p></NavbarCategory>

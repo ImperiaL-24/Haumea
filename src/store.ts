@@ -38,6 +38,16 @@ export class ModifierState {
         newState.ctrlKey = state.ctrlKey;
         return newState;
     }
+    static new(shiftKey: boolean,altKey: boolean,ctrlKey: boolean): ModifierState {
+        let newState = new ModifierState();
+        newState.shiftKey = shiftKey;
+        newState.altKey = altKey;
+        newState.ctrlKey = ctrlKey;
+        return newState;
+    }
+    equals(state: ModifierState) {
+        return this.shiftKey == state.shiftKey && this.altKey == state.altKey && this.ctrlKey == state.ctrlKey;
+    }
     constructor() {};
 }
 

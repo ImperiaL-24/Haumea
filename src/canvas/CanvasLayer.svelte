@@ -28,7 +28,7 @@
 <canvas
     bind:this={$canvas[index]}
     class:has-transition={$transition}
-    width="{currentState.dimension.value.x}" height="{currentState.dimension.value.y}"
+    width="{currentState?.dimension.value.x}" height="{currentState?.dimension.value.y}"
     style="top: {pos.y}%; left: {pos.x}%; scale: {zoom}"
 ></canvas>
 

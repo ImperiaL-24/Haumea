@@ -26,10 +26,10 @@
         })
     })
     let layers: Layer[]
-    $: currentState.layers.$.subscribe(n => layers = n);
+    $: currentState?.layers.$.subscribe(n => layers = n);
 
     let activeLayerId: number
-    $: currentState.activeLayer.$.subscribe(n => activeLayerId = n);
+    $: currentState?.activeLayer.$.subscribe(n => activeLayerId = n);
     
     onMount(() => {
         // $ctx = $canvas.getContext("2d");
@@ -81,7 +81,7 @@ on:wheel|passive={(e) => onWheel(e)}>
 
 <div class="shadow"
 class:has-transition={$transition}
-style="top: {position.y}%; left: {position.x}%; scale: {zoom}; width: {currentState.dimension.value.x}px; height: {currentState.dimension.value.y}px">
+style="top: {position.y}%; left: {position.x}%; scale: {zoom}; width: {currentState?.dimension.value.x}px; height: {currentState?.dimension.value.y}px">
 </div>
 </div>
 {#if isMouseOver}
