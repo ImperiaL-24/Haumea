@@ -17,7 +17,8 @@
 <div class="nav"  class:focused={$isWindowFocused}>
     <div data-tauri-drag-region class="blur"/>
     <div class="left">
-        <img src="icon.png" alt="icon">
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <img src="icon.png" alt="icon" on:click={() => {openTab(new ProjectTab(ProjectTabType.HOME, "Home")); unfocusNavbar()}}>
         <NavbarCategory text="File">            
             <ActionNavbarButton action={Action.NEW_TAB}/>
             <ActionNavbarButton action={Action.OPEN}/>

@@ -15,6 +15,7 @@
     import Projectbar from "./global/projectbar/Projectbar.svelte";
     import { currentTab, openTab, ProjectTab, ProjectTabType } from "haumea/tab";
     import {anchors} from "haumea/anchor"
+    import Home from "./home/Home.svelte";
     
     let mouseMove = (e) => {
         let state = ClickState.from($clickState);
@@ -112,6 +113,10 @@
                 <AnchorRight id={id}/>
             {/if}
             {/each}
+    {:else if $currentTab && $currentTab.type == ProjectTabType.HOME}
+        <Home/>
+    {:else if $currentTab && $currentTab.type == ProjectTabType.SETTINGS}
+        <p>Setting</p>
     {/if}
 </div>
 

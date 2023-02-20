@@ -3,10 +3,6 @@ import { get } from "svelte/store";
 import { currentTool, ToolType } from "../engine/tool/ToolManager";
 import { currentTab, openFile, openTab, ProjectTab, ProjectTabType } from "./tab";
 
-
-
-
-
 class Keybind {
     key: string
     modifiers: ModifierState

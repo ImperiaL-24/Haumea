@@ -6,7 +6,7 @@ import { encode } from "base64-arraybuffer";
 import { CanvasData } from "haumea/canvas";
 
 export class ProjectTabType {
-    static HOME = new ProjectTabType("HOME","svelte.svg");
+    static HOME = new ProjectTabType("HOME","icons/home.svg");
     static SETTINGS = new ProjectTabType("SETTINGS","icons/settings.svg");
     static IMAGE = new ProjectTabType("IMAGE","icons/picture.svg");
     constructor(public name: string, public icon:string) {}
