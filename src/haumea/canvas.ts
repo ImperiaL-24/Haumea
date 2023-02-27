@@ -50,7 +50,7 @@ export class CanvasState {
     visible: Reactive<boolean> = new Reactive(true);
     constructor(data: ImageData) {
         this.dimension.value = new Vector2(data.width, data.height);
-        this.addLayer(new Layer(data));
+        this.layers.value = [new Layer(data)];
     }
     static from(state: CanvasState) {
         let newState = new CanvasState(new ImageData(1,1));
@@ -60,18 +60,14 @@ export class CanvasState {
         newState.layers = new Reactive([...state.layers.value.map((layer) => new Layer(layer.getImageData()))]);
         return newState;
     }
-    addLayer(layer: Layer) {
-        this.layers.value = [...this.layers.value, layer]
-        this.activeLayer.value = this.layers.value.length-1
-    }
-    getCurrentLayer(): Layer {
-        return this.layers.value[this.activeLayer.value];
-    }
+    //TODO: move addLayer to CanvasData;
+
 }
 
 
 export class CanvasData {
     currentState: Reactive<number> = new Reactive(-1);
+    savedState: Reactive<number> = new Reactive(-1);
     stateList: Reactive<CanvasState[]> = new Reactive([]);
 
     position: Reactive<PercentagePos> = new Reactive(new PercentagePos(50, 50));
@@ -89,8 +85,17 @@ export class CanvasData {
         return this.stateList.value[this.stateList.value.length + this.currentState.value];
         
     }
+    saveData() {
+        this.savedState.value = this.currentState.value;
+        // TODO: check if has file attached
+    }
+    isSaved(): boolean {
+        return this.savedState.value == this.currentState.value;
+    }
     saveState() {
         this.stateList.value.splice(this.stateList.value.length + this.currentState.value + 1, -this.currentState.value - 1);
+        
+        this.savedState.value = this.savedState.value -this.currentState.value - 2;
         this.currentState.value = -1;
         this.stateList.value.push(CanvasState.from(getCanvasState()));
         console.log("SAVE STATE", this.stateList.value)
@@ -120,5 +125,13 @@ export class CanvasData {
         this.canUndo.set(this.currentState.value != -50 && this.stateList.value.length != -this.currentState.value);
         this.canRedo.set(this.currentState.value != -1);
         
+    }
+
+    addLayer(layer: Layer) {
+        this.get().layers.value = [...this.get().layers.value, layer]
+        this.get().activeLayer.value = this.get().layers.value.length-1
+    }
+    getCurrentLayer(): Layer {
+        return this.get().layers.value[this.get().activeLayer.value];
     }
 }

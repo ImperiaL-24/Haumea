@@ -56,6 +56,16 @@ export class Action {
         currentTool.set(ToolType.PENCIL_TOOL.tool);
     }, new Keybind("b", ModifierState.new(false, false, false)))
 
+    static PENCIL_TOOL_SIZE_INC = new Action("Pencil Tool Brush Size Increase", () => {
+        if(get(currentTool).type==ToolType.PENCIL_TOOL.type)
+        get(currentTool).updateSize((n) => n+1);
+    }, new Keybind("w", ModifierState.new(false, false, false)))
+
+    static PENCIL_TOOL_SIZE_DEC = new Action("Pencil Tool Brush Size Decrease", () => {
+        if(get(currentTool).type==ToolType.PENCIL_TOOL.type)
+        get(currentTool).updateSize((n) => n>1 ? n-1 : n);
+    }, new Keybind("s", ModifierState.new(false, false, false)))
+
     static MOVE_TOOL = new Action("Move Tool", () => {
         currentTool.set(ToolType.MOVE_TOOL.tool);
     }, new Keybind("v", ModifierState.new(false, false, false)))
@@ -69,6 +79,9 @@ export class Action {
         openFile()
     }, new Keybind("o", ModifierState.new(false, false, true)), "icons/add.svg")
     // TODO: SAVE, SAVE AS, EXPORT, EXPORT AS ACTIONS
+    static SAVE = new Action("Save", () => {
+        get(currentTab).canvasData?.saveData();
+    }, new Keybind("s", ModifierState.new(false, false, true)), "icons/disk.svg")
 }
 
 const actions = [
@@ -78,7 +91,10 @@ const actions = [
     Action.PENCIL_TOOL,
     Action.MOVE_TOOL,
     Action.NEW_TAB,
-    Action.OPEN
+    Action.OPEN,
+    Action.PENCIL_TOOL_SIZE_INC,
+    Action.PENCIL_TOOL_SIZE_DEC,
+    Action.SAVE
 ]
 
 export let processKey = (e): void => {

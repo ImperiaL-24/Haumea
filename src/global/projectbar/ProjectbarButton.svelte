@@ -1,12 +1,20 @@
 <script lang="ts">
     import { closeTab, currentTab, openTab, ProjectTab } from "haumea/tab";
+    import { CanvasData } from "src/haumea/canvas";
     import { fade } from "svelte/transition";
 
     export let tab: ProjectTab;
     let selected: boolean = false;
     $: selected = $currentTab.id == tab.id;
     let isOver = false;
+
+    let savedState;
+    $: tab.canvasData?.savedState.$.subscribe((n) => savedState = n);
+
+    let currentState;
+    $: tab.canvasData?.currentState.$.subscribe((n) => currentState = n);
     
+    $: console.log(savedState, currentState)
 </script>
 
 <div class="button-space" >
@@ -16,7 +24,7 @@
         <div class="close-button">
             {#if isOver}
             <img  in:fade={{duration:200}} out:fade={{duration:200}} class="close" src="icons/cross.svg" on:mouseup={() => closeTab(tab.id)} alt="close"/>
-            {:else if !tab.isSaved}
+            {:else if savedState != currentState}
             <img  in:fade={{duration:200}} out:fade={{duration:200}} class="close" src="icons/circle.svg" alt="close"/>
             {:else}
             <img style="opacity: 0"  class="close" alt="close"/>

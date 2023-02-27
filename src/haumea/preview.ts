@@ -30,7 +30,8 @@ export let setCanvasPosition = (pos: PixelPos) => {
 
 
 export let getPixelColor = (pos: Vector2): Color => {
-    const clickedColor = get(ctx).getImageData(pos.x, pos.y, 1, 1).data;
+    const layer = get(currentTab).canvasData?.get().getCurrentLayer();
+    const clickedColor = layer.ctx.getImageData(pos.x, pos.y, 1, 1).data;
     return new Color(clickedColor[0], clickedColor[1], clickedColor[2]);
 }
 

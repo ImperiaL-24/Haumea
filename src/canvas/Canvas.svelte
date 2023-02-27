@@ -9,6 +9,7 @@
     import type { PercentagePos } from "src/haumea/math";
     import { Layer, stateChange, type CanvasState } from "src/haumea/canvas";
     import CanvasLayer from "./CanvasLayer.svelte";
+    import { currentWindowId } from "src/haumea/window";
     let zoom: number;
     $: $currentTab.canvasData?.zoom.$.subscribe(n => zoom = n);
 
@@ -27,20 +28,7 @@
     })
     let layers: Layer[]
     $: currentState?.layers.$.subscribe(n => layers = n);
-
-    let activeLayerId: number
-    $: currentState?.activeLayer.$.subscribe(n => activeLayerId = n);
     
-    onMount(() => {
-        // $ctx = $canvas.getContext("2d");
-        // $ctx.imageSmoothingEnabled = false;
-        // $ctx.fillStyle = "#FFFFFF"
-        // $ctx.fillRect(0,0,256, 256)
-        // get(currentTab).canvasData.saveState();
-        // console.log(currentState);
-        // // $currentTab.canvasData.get().addLayer(new Layer(new ImageData(100,100)))
-        // console.log($currentTab.canvasData.get());
-    })
 
     currentTab.subscribe(_n => {
         $transition = false;
@@ -58,22 +46,18 @@
 
     }
     let isMouseOver: boolean = false;
-    onMount(() => {
-        // const unsubscribe = currentTab.subscribe((n) => {
-        //     if(n.type == ProjectTabType.IMAGE) setCanvasState(n.canvasData.get());
-        // })
-        // return (() => unsubscribe());
-    })
 </script>
 
 <div 
-on:mouseenter={() => isMouseOver=true} 
-on:mouseleave={() => isMouseOver=false}
-on:mousemove={(e) => $currentTool.onmousemove(e)}
-on:mousedown={(e) => $currentTool.onmousedown(e)}
-on:mouseup={(e) => $currentTool.onmouseup(e)}
+on:mouseenter={() => $currentWindowId == "" ? isMouseOver=true : null} 
+on:mouseleave={() => $currentWindowId == "" ? isMouseOver=false : null}
+on:mousemove={(e) => $currentWindowId == "" ? $currentTool.onmousemove(e) : null}
+on:mousedown={(e) => $currentWindowId == "" ? $currentTool.onmousedown(e) : null}
+on:mouseup={(e) => $currentWindowId == "" ? $currentTool.onmouseup(e) : null}
+on:keydown={(e) => $currentWindowId == "" ? $currentTool.onkeydown(e) : null}
 bind:this={$canvasBase} style="width:calc(100% - {$innerRect.width}px); margin-left:{$innerRect.x}px; height:calc(100vh - {$innerRect.height}px)" 
-on:wheel|passive={(e) => onWheel(e)}>
+on:wheel|passive={(e) => onWheel(e)}
+class:no-cursor={$currentWindowId == ""}>
 
     {#each layers as layer, i}
         <CanvasLayer bind:pos={position} bind:zoom={zoom} bind:currentState={currentState} layer={layer} index={i}></CanvasLayer>
@@ -89,7 +73,6 @@ style="top: {position.y}%; left: {position.x}%; scale: {zoom}; width: {currentSt
 {/if}
 
 
-<svelte:window on:mousemove={(e) => {}} />
 
 
 <style lang="scss">
@@ -98,7 +81,6 @@ style="top: {position.y}%; left: {position.x}%; scale: {zoom}; width: {currentSt
         height: 100vh;
         width: 100%;
         z-index: 0;
-        cursor: none;
         canvas, .shadow {
             position: absolute;
             transition: 0.2s width, 0.2s height;   
@@ -114,5 +96,8 @@ style="top: {position.y}%; left: {position.x}%; scale: {zoom}; width: {currentSt
     }
     .has-transition {
         transition: 0.2s all!important;
+    }
+    .no-cursor {
+        cursor: none;
     }
 </style>

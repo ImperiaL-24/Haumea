@@ -14,7 +14,6 @@ export class ProjectTabType {
 
 export class ProjectTab {
     readonly id: string;
-    isSaved: boolean;
     //TODO: PATH CHECKING WHEN IMPORTING, AUTO SAVE TO LOCATION IF CTRL S, DONT AUTO SAVE IF CTRL S AND NO PATH, MAKE PATH ON PROJECT SAVE
     path: string;
     type: ProjectTabType;
@@ -29,7 +28,6 @@ export class ProjectTab {
         } else {
             this.canvasData = data;
         }
-        
     }
 }
 
