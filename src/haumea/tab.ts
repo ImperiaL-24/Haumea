@@ -1,9 +1,10 @@
 import { derived, get, writable, type Writable } from "svelte/store";
 import {v4 as uuidv4} from "uuid";
-import { open } from '@tauri-apps/api/dialog';
-import { readBinaryFile } from '@tauri-apps/api/fs';
+import { open, save } from '@tauri-apps/api/dialog';
+import { readBinaryFile, writeBinaryFile } from '@tauri-apps/api/fs';
 import { encode } from "base64-arraybuffer";
 import { CanvasData } from "haumea/canvas";
+import { Signal } from "src/util";
 
 export class ProjectTabType {
     static HOME = new ProjectTabType("HOME","icons/home.svg");
@@ -14,11 +15,11 @@ export class ProjectTabType {
 
 export class ProjectTab {
     readonly id: string;
-    //TODO: PATH CHECKING WHEN IMPORTING, AUTO SAVE TO LOCATION IF CTRL S, DONT AUTO SAVE IF CTRL S AND NO PATH, MAKE PATH ON PROJECT SAVE
-    path: string;
+    path?: string;
     type: ProjectTabType;
     tabName: string;
     canvasData?: CanvasData;
+    onProjectSave: Signal = new Signal();
     constructor(type: ProjectTabType, name: string, data?: CanvasData) {
         this.id = uuidv4();
         this.type = type;
@@ -28,6 +29,30 @@ export class ProjectTab {
         } else {
             this.canvasData = data;
         }
+    }
+    setPath(path: string) {
+        this.path = path;
+        this.tabName = this.tabName = this.path.match(/(?<=\\)\w+\.\w+$/)[0];
+    }
+    async saveData() {
+        if(!this.canvasData) return;
+        this.canvasData.savedState.value = this.canvasData.currentState.value;
+        if(!this.path) {
+            this.setPath(await save({
+                defaultPath: this.tabName,
+                filters: [{
+                    name: 'Image',
+                    extensions: ['png', 'jpeg']
+                }]
+            }));
+        }
+        
+        const layer = this.canvasData.get().flatten();
+        console.log(layer.ctx.getImageData(0,0,layer.canvas.width, layer.canvas.height).data);
+        let blob = await layer.canvas.convertToBlob();
+        await writeBinaryFile(this.path, await blob.arrayBuffer());
+        console.log(this.path);
+        this.onProjectSave.signal();
     }
 }
 
@@ -46,7 +71,6 @@ export let openTab = (tab: ProjectTab) => {
         return n;
     })
     currentTabId.set(tab.id);
-
 }
 
 export let openFile = async () => {
@@ -79,6 +103,7 @@ export let openFile = async () => {
         
         //convert canvas to imagedata
         const project = new ProjectTab(ProjectTabType.IMAGE, selected, new CanvasData(ctx.getImageData(0,0,canvas.width, canvas.height)));
+        project.setPath(selected);
         openTab(project);
       }
 }

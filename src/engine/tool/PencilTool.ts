@@ -18,8 +18,6 @@ export class PencilTool extends Tool {
     constructor() {super(ToolID.PENCIL_TOOL)}
     onmousedown = () => {
         if(get(modifierState).altKey) return this.eyedropper.onmousedown();
-        // TODO: if last state is the same as new state then do not create new state;
-        
 
         mouseDownTarget = get(clickState).target;
 

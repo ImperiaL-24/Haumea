@@ -52,7 +52,7 @@
         $modifierState = state;
     }
     if($currentTab == undefined) {
-        openTab(new ProjectTab(ProjectTabType.IMAGE, "test idk"));
+        openTab(new ProjectTab(ProjectTabType.IMAGE, "Untitled"));
         console.log($currentTab);
     }
     onMount(async () => {

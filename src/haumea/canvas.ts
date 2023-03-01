@@ -60,8 +60,12 @@ export class CanvasState {
         newState.layers = new Reactive([...state.layers.value.map((layer) => new Layer(layer.getImageData()))]);
         return newState;
     }
-    //TODO: move addLayer to CanvasData;
-
+    flatten(): Layer {
+        return this.layers.value.reduce((prev, curr) => {
+            prev.ctx.drawImage(curr.canvas,0,0);
+            return prev;
+        })
+    }
 }
 
 
@@ -69,6 +73,7 @@ export class CanvasData {
     currentState: Reactive<number> = new Reactive(-1);
     savedState: Reactive<number> = new Reactive(-1);
     stateList: Reactive<CanvasState[]> = new Reactive([]);
+    filePath: string;
 
     position: Reactive<PercentagePos> = new Reactive(new PercentagePos(50, 50));
     zoom: Reactive<number> = new Reactive(1);
@@ -84,13 +89,6 @@ export class CanvasData {
     get() {
         return this.stateList.value[this.stateList.value.length + this.currentState.value];
         
-    }
-    saveData() {
-        this.savedState.value = this.currentState.value;
-        // TODO: check if has file attached
-    }
-    isSaved(): boolean {
-        return this.savedState.value == this.currentState.value;
     }
     saveState() {
         this.stateList.value.splice(this.stateList.value.length + this.currentState.value + 1, -this.currentState.value - 1);

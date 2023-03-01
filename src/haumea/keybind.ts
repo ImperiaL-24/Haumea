@@ -71,7 +71,7 @@ export class Action {
     }, new Keybind("v", ModifierState.new(false, false, false)))
 
     static NEW_TAB = new Action("New", () => {
-        openTab(new ProjectTab(ProjectTabType.IMAGE, "NEW TAB!")); 
+        openTab(new ProjectTab(ProjectTabType.IMAGE, "Untitled")); 
         unfocusNavbar()
     }, new Keybind("n", ModifierState.new(false, false, true)), "icons/add-document.svg")
 
@@ -80,7 +80,7 @@ export class Action {
     }, new Keybind("o", ModifierState.new(false, false, true)), "icons/add.svg")
     // TODO: SAVE, SAVE AS, EXPORT, EXPORT AS ACTIONS
     static SAVE = new Action("Save", () => {
-        get(currentTab).canvasData?.saveData();
+        get(currentTab).saveData();
     }, new Keybind("s", ModifierState.new(false, false, true)), "icons/disk.svg")
 }
 
