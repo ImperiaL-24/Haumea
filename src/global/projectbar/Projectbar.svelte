@@ -1,12 +1,14 @@
 <script lang="ts">
-    import { currentTab, tabs } from "haumea/tab";
+import { App } from "haumea/tab";
 import ProjectbarButton from "./ProjectbarButton.svelte";
 
+let tabs;
+$: App.tabsChange.subscribe(() => tabs = App.tabs)
 </script>
 
 
 <div>
-    {#each [...$tabs] as [_id, tab]}
+    {#each [...tabs] as [_id, tab]}
         <ProjectbarButton tab={tab}/>
     {/each}
 </div>

@@ -3,14 +3,17 @@ import type { PencilTool } from "../engine/tool/PencilTool";
 import { modifierState } from "../store";
 import EyedropperCursor from "./EyedropperCursor.svelte";
 import type { Tool } from "src/engine/tool/Tool";
-    import { currentTab } from "haumea/tab";
+    import { App, CanvasProjectTab } from "haumea/tab";
 
 export let instance: Tool;
 const tool = instance as PencilTool;
 let cursorSize: number;
 
+let activeCanvas: CanvasProjectTab;
+$: App.activeTabChange.subscribe(() => activeCanvas = App.activeCanvas);
+
 let zoom: number;
-$currentTab.canvasData?.zoom.$.subscribe(n => zoom = n);
+$: activeCanvas.data.zoomChange.subscribe(() => zoom = activeCanvas.data.zoom);
 
 $: {
     tool.size.subscribe(n => {

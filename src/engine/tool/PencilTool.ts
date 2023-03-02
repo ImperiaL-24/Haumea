@@ -1,12 +1,11 @@
 import { Tool, ToolID } from "./Tool";
 import { get, writable, type Writable } from "svelte/store";
 import { getClickLocation } from "../../util";
-import { canvas, ctx } from "haumea/preview";
-import { clickState, colorTarget, modifierState } from "../../store";
+import { canvas } from "haumea/preview";
+import { clickState, modifierState } from "../../store";
 import { EyedropperTool } from "./EyedropperTool";
-import { currentTab } from "haumea/tab";
+import { App } from "haumea/tab";
 import type { Vector2 } from "haumea/math";
-import { Color } from "src/haumea/color";
 
 let mouseDownTarget: HTMLElement;
 
@@ -22,12 +21,12 @@ export class PencilTool extends Tool {
         mouseDownTarget = get(clickState).target;
 
         if(mouseDownTarget.classList.contains("shadow")) {
-            get(currentTab).canvasData.saveState();
+            App.activeCanvas.data.addState();
             this.hasSaved = true;
         }
-        const zoom  = get(currentTab).canvasData?.zoom.value;
-        const activeLayer = get(currentTab).canvasData?.get().activeLayer.value
-        const layer = get(currentTab).canvasData?.getCurrentLayer();
+        const zoom  = App.activeCanvas.data.zoom;
+        const activeLayer = App.activeCanvas.data.activeState.activeLayer.value
+        const layer = App.activeCanvas.data.activeLayer;
 
         console.log("pencil mouse down!");
 
@@ -42,13 +41,13 @@ export class PencilTool extends Tool {
         mouseDownTarget = get(clickState).target;
 
         if(mouseDownTarget.classList.contains("shadow") && this.hasSaved == false) {
-            get(currentTab).canvasData.saveState();
+            App.activeCanvas.data.addState();
             this.hasSaved = true;
         }
 
-        const zoom  = get(currentTab).canvasData?.zoom.value;
-        const activeLayer = get(currentTab).canvasData?.get().activeLayer.value
-        const layer = get(currentTab).canvasData?.getCurrentLayer();
+        const zoom  = App.activeCanvas.data.zoom;
+        const activeLayer = App.activeCanvas.data.activeState.activeLayer.value
+        const layer = App.activeCanvas.data.activeLayer;
 
         const location = getClickLocation(get(canvas)[activeLayer]).product(1/zoom);
         // if(mouseDownTarget != get(canvas)) return this.lastClick = location;

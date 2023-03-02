@@ -1,11 +1,9 @@
-import { getCanvasState } from "haumea/preview";
 import { Reactive, Signal } from "src/util";
 import { get, writable, type Writable } from "svelte/store";
 import { PercentagePos, Vector2 } from "haumea/math";
 import { Color } from "./color";
 import { colorTarget } from "src/store";
 
-export let stateChange: Signal = new Signal();
 
 export class Layer {
     canvas: OffscreenCanvas;
@@ -70,66 +68,87 @@ export class CanvasState {
 
 
 export class CanvasData {
-    currentState: Reactive<number> = new Reactive(-1);
-    savedState: Reactive<number> = new Reactive(-1);
-    stateList: Reactive<CanvasState[]> = new Reactive([]);
-    filePath: string;
+    private currentState: number = -1;
+    private savedState: number = -1;
+    private stateList: CanvasState[] = [];
 
-    position: Reactive<PercentagePos> = new Reactive(new PercentagePos(50, 50));
-    zoom: Reactive<number> = new Reactive(1);
+    private _position: PercentagePos = new PercentagePos(50, 50);
+    private _zoom: number = 1;
 
-    canUndo: Writable<boolean> = writable(false);
-    canRedo: Writable<boolean> = writable(false);
+    activeStateChange: Signal = new Signal();
+    positionChange: Signal = new Signal();
+    zoomChange: Signal = new Signal();
+
     constructor(data?: ImageData) {
-        console.log(this.stateList.value);
-        this.stateList.value.push(new CanvasState(data ?? new ImageData(100, 100)));
-        console.log(this.stateList.value);
+        console.log(this.stateList);
+        this.stateList.push(new CanvasState(data ?? new ImageData(100, 100)));
+        console.log(this.stateList);
 
     }
-    get() {
-        return this.stateList.value[this.stateList.value.length + this.currentState.value];
-        
+    get activeState() {
+        return this.stateList[this.stateList.length + this.currentState];
     }
-    saveState() {
-        this.stateList.value.splice(this.stateList.value.length + this.currentState.value + 1, -this.currentState.value - 1);
+    addState() {
+        this.stateList.splice(this.stateList.length + this.currentState + 1, -this.currentState - 1);
         
-        this.savedState.value = this.savedState.value -this.currentState.value - 2;
-        this.currentState.value = -1;
-        this.stateList.value.push(CanvasState.from(getCanvasState()));
-        console.log("SAVE STATE", this.stateList.value)
+        this.savedState -= this.currentState - 2;
+        this.currentState = -1;
+        this.stateList.push(CanvasState.from(this.activeState));
         
-        this.updateBooleans();
-        stateChange.signal();
+        // TODO: check if this is needed
+        this.activeStateChange.signal();
+    }
+    save() {
+        this.savedState = this.currentState;
+    }
+    isSaved() {
+        return this.savedState == this.currentState;
     }
     undo() {
-        if (!get(this.canUndo))
-            return;
-        // setCanvasState(this.stateList.value.slice(this.currentState.value - 1)[0]);
-        this.currentState.value = this.currentState.value-1;
-        console.log("undo", this.stateList, this.currentState);
-        this.updateBooleans();
-        stateChange.signal();
+        if (!this.canUndo) return;
+        this.currentState--;
+
+        this.activeStateChange.signal();
     }
     redo() {
-        if (!(get(this.canRedo)))
-            return;
-        // setCanvasState(this.stateList.value.slice(this.currentState.value + 1)[0]);
-        this.currentState.value = this.currentState.value+1;
-        console.log("redo", this.stateList, this.currentState);
-        this.updateBooleans();
-        stateChange.signal();
-    }
-    private updateBooleans() {
-        this.canUndo.set(this.currentState.value != -50 && this.stateList.value.length != -this.currentState.value);
-        this.canRedo.set(this.currentState.value != -1);
-        
+        if (!this.canRedo) return;
+        this.currentState++;
+
+        this.activeStateChange.signal();
     }
 
-    addLayer(layer: Layer) {
-        this.get().layers.value = [...this.get().layers.value, layer]
-        this.get().activeLayer.value = this.get().layers.value.length-1
+
+    get canUndo() {
+        return this.currentState != -50 && this.stateList.length != -this.currentState;
     }
-    getCurrentLayer(): Layer {
-        return this.get().layers.value[this.get().activeLayer.value];
+
+    get canRedo() {
+        return this.currentState != -1
+    }
+
+    set position(newPos: PercentagePos) {
+        this._position = newPos;
+        this.positionChange.signal();
+    }
+
+    get position() {
+        return this._position;
+    }
+
+    set zoom(newZoom: number) {
+        this._zoom = newZoom;
+        this.zoomChange.signal();
+    }
+
+    get zoom() {
+        return this._zoom;
+    }
+    //TODO: signal change?
+    addLayer(layer: Layer) {
+        this.activeState.layers.value = [...this.activeState.layers.value, layer]
+        this.activeState.activeLayer.value = this.activeState.layers.value.length-1
+    }
+    get activeLayer(): Layer {
+        return this.activeState.layers.value[this.activeState.activeLayer.value];
     }
 }

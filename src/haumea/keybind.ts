@@ -1,7 +1,7 @@
 import { ModifierState, modifierState, unfocusNavbar } from "../store";
 import { get } from "svelte/store";
 import { currentTool, ToolType } from "../engine/tool/ToolManager";
-import { currentTab, openFile, openTab, ProjectTab, ProjectTabType } from "./tab";
+import { App, CanvasProjectTab, ProjectTab, ProjectTabType } from "./tab";
 
 class Keybind {
     key: string
@@ -41,11 +41,11 @@ export class Action {
     }
     
     static UNDO = new Action("Undo", () => {
-        get(currentTab).canvasData.undo();
+        App.activeCanvas.data.undo();
     }, new Keybind("z", ModifierState.new(false, false, true)), "icons/rotate-left.svg")
 
     static REDO = new Action("Redo", () => {
-        get(currentTab).canvasData.redo();
+        App.activeCanvas.data.redo();
     }, new Keybind("z", ModifierState.new(true, false, true)), "icons/rotate-right.svg")
 
     static RELOAD = new Action("Reload - DEV", () => {
@@ -71,16 +71,16 @@ export class Action {
     }, new Keybind("v", ModifierState.new(false, false, false)))
 
     static NEW_TAB = new Action("New", () => {
-        openTab(new ProjectTab(ProjectTabType.IMAGE, "Untitled")); 
+        App.openTab(new CanvasProjectTab()); 
         unfocusNavbar()
     }, new Keybind("n", ModifierState.new(false, false, true)), "icons/add-document.svg")
 
     static OPEN = new Action("Open", () => {
-        openFile()
+        App.openFile()
     }, new Keybind("o", ModifierState.new(false, false, true)), "icons/add.svg")
     // TODO: SAVE, SAVE AS, EXPORT, EXPORT AS ACTIONS
     static SAVE = new Action("Save", () => {
-        get(currentTab).saveData();
+        App.activeCanvas.saveData();
     }, new Keybind("s", ModifierState.new(false, false, true)), "icons/disk.svg")
 }
 

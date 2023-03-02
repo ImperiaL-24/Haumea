@@ -1,36 +1,38 @@
 <script lang="ts">
-    import { closeTab, currentTab, openTab, ProjectTab, ProjectTabType } from "haumea/tab";
-    import { TabType } from "src/haumea/window";
+    import { App, CanvasProjectTab, ProjectTab, ProjectTabType } from "haumea/tab";
     import { fade } from "svelte/transition";
 
     export let tab: ProjectTab;
+    //TODO: check if this works lmao
     let selected: boolean = false;
-    $: selected = $currentTab.id == tab.id;
+    $: selected = App.activeTab.id == tab.id;
     let isOver = false;
 
-    let savedState;
-    $: tab.canvasData?.savedState.$.subscribe((n) => savedState = n);
-
-    let currentState;
-    $: tab.canvasData?.currentState.$.subscribe((n) => currentState = n);
-
+    let isSaved: boolean;
     let filePath: string;
     let tabName: string;
-    $: tab.onProjectSave.subscribe(() => {
-        filePath = tab.path;
-        tabName = tab.tabName;
-    });
+
+    if(tab instanceof CanvasProjectTab) {
+        tab.data.activeStateChange.subscribe(() => isSaved = (tab as CanvasProjectTab).data.isSaved())
+        tab.onProjectSave.subscribe(() => {
+            filePath = (tab as CanvasProjectTab).path;
+            tabName = tab.tabName;
+        });
+    }
+        
+
+
     
 </script>
 
 <div class="button-space" >
     <div class="actual-button" on:mouseenter={() => isOver = true} on:mouseleave={() => isOver = false}>
         <img class="icon" src={tab.type.icon} alt="project icon" class:selected={selected}/>
-        <button class="main"  on:click|preventDefault={() => openTab(tab)}><p class:selected={selected}>{tabName}</p></button>
+        <button class="main"  on:click|preventDefault={() => App.activeTab = tab}><p class:selected={selected}>{tabName}</p></button>
         <div class="close-button">
             {#if isOver}
-            <img  in:fade={{duration:200}} out:fade={{duration:200}} class="close" src="icons/cross.svg" on:mouseup={() => closeTab(tab.id)} alt="close"/>
-            {:else if tab.type == ProjectTabType.IMAGE && (savedState != currentState || filePath == undefined) }
+            <img  in:fade={{duration:200}} out:fade={{duration:200}} class="close" src="icons/cross.svg" on:mouseup={() => App.closeTab(tab)} alt="close"/>
+            {:else if tab.type == ProjectTabType.IMAGE && (isSaved || filePath == undefined) }
             <img  in:fade={{duration:200}} out:fade={{duration:200}} class="close" src="icons/circle.svg" alt="close"/>
             {:else}
             <img style="opacity: 0"  class="close" alt="close"/>

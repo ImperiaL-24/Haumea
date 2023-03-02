@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { currentTab } from "src/haumea/tab";
+    import { App, CanvasProjectTab } from "src/haumea/tab";
     import type { Reactive } from "src/util";
-    import { CanvasState, stateChange, type Layer } from "src/haumea/canvas";
+    import type { CanvasState, Layer } from "src/haumea/canvas";
 
 
     export let index: number;
@@ -13,12 +13,14 @@
 
     let activeLayerStore: number
     $: currentState?.activeLayer.$.subscribe(n => activeLayerStore = n);
-
     
-    $currentTab.canvasData?.get().activeLayer.$.subscribe(() => console.error("CHANGE"))
+    let activeCanvas: CanvasProjectTab;
+    $: App.activeTabChange.subscribe(() => activeCanvas = App.activeCanvas);
+    
+
 
     let canvasPreview: HTMLCanvasElement
-
+    
     let updateCanvas = () => {
         if(!canvasPreview) return;
         const data: ImageData = layer.getImageData();
@@ -31,13 +33,13 @@
         updateCanvas()
     });
 
-    stateChange.subscribe(() => {
+    $: activeCanvas.data.activeStateChange.subscribe(() => {
         updateCanvas();
     });
 
 </script>
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class:active={activeLayerStore == index} on:click={() => $currentTab.canvasData.get().activeLayer.value = index} class="main">
+<div class:active={activeLayerStore == index} on:click={() => App.activeCanvas.data.activeState.activeLayer.value = index} class="main">
     <canvas bind:this={canvasPreview} width="{currentState?.dimension.value.x}" height="{currentState?.dimension.value.y}"></canvas>
     <div class="content">
         <p>Layer {index}</p>

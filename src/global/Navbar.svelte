@@ -7,18 +7,24 @@
     import NavbarButton from './NavbarButton.svelte';
     import ActionNavbarButton from './ActionNavbarButton.svelte';
     import NavbarSeparator from './NavbarSeparator.svelte';
-    import { openTab, ProjectTab, currentTab, ProjectTabType, tabs, openFile } from 'haumea/tab';
+    import { ProjectTab, ProjectTabType, App, CanvasProjectTab } from 'haumea/tab';
     import { Action } from 'src/haumea/keybind';
     let canUndo, canRedo;
-    $: $currentTab.canvasData?.canUndo.subscribe(n => canUndo = n);
-    $: $currentTab.canvasData?.canRedo.subscribe(n => canRedo = n);
+    let activeCanvas: CanvasProjectTab;
+    $: App.activeTabChange.subscribe(() => activeCanvas = App.activeCanvas);
+
+    activeCanvas?.data.activeStateChange.subscribe(() => {
+        canUndo = activeCanvas.data.canUndo;
+        canRedo = activeCanvas.data.canRedo;
+    })
+
 </script>
 
 <div class="nav"  class:focused={$isWindowFocused}>
     <div data-tauri-drag-region class="blur"/>
     <div class="left">
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <img src="icon.png" alt="icon" on:click={() => {openTab(new ProjectTab(ProjectTabType.HOME, "Home")); unfocusNavbar()}}>
+        <img src="icon.png" alt="icon" on:click={() => {App.openTab(new ProjectTab(ProjectTabType.HOME, "Home")); unfocusNavbar()}}>
         <NavbarCategory text="File">            
             <ActionNavbarButton action={Action.NEW_TAB}/>
             <ActionNavbarButton action={Action.OPEN}/>
@@ -28,7 +34,7 @@
             <NavbarButton name="Export..." icon="icons/file-export.svg" action={() =>  location.reload()}/>
             <NavbarButton name="Export As..." icon="icons/file-export.svg" action={() =>  location.reload()}/>
             <NavbarSeparator/>
-            <NavbarButton name="Settings" icon="icons/settings.svg" action={() =>  {openTab(new ProjectTab(ProjectTabType.SETTINGS, "Settings")); unfocusNavbar()}}/>
+            <NavbarButton name="Settings" icon="icons/settings.svg" action={() =>  {App.openTab(new ProjectTab(ProjectTabType.SETTINGS, "Settings")); unfocusNavbar()}}/>
         </NavbarCategory>
         <NavbarCategory text="Edit">
             <ActionNavbarButton disabled={!canUndo} action={Action.UNDO}/>

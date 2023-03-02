@@ -13,10 +13,13 @@
     import AnchorBottom from "./window/anchor/AnchorBottom.svelte";
     import AnchorRight from "./window/anchor/AnchorRight.svelte";
     import Projectbar from "./global/projectbar/Projectbar.svelte";
-    import { currentTab, openTab, ProjectTab, ProjectTabType } from "haumea/tab";
+    import { App, ProjectTab, ProjectTabType } from "haumea/tab";
     import {anchors} from "haumea/anchor"
     import Home from "./home/Home.svelte";
     
+    let activeTab: ProjectTab;
+    $: App.activeTabChange.subscribe(() => activeTab = App.activeTab);
+
     let mouseMove = (e) => {
         let state = ClickState.from($clickState);
         state.target = e.target;
@@ -51,10 +54,11 @@
         state.shiftKey = e.shiftKey;
         $modifierState = state;
     }
-    if($currentTab == undefined) {
-        openTab(new ProjectTab(ProjectTabType.HOME, "Home"));
-        console.log($currentTab);
+    if(App.activeTab == undefined) {
+        App.openTab(new ProjectTab(ProjectTabType.HOME, "Home"));
+        console.log(App.activeTab);
     }
+    
     onMount(async () => {
         
         addWindow(new WindowBuilder(TabType.ColorSelector,TabType.Test, TabType.Layers).tabbed(true).build());
@@ -92,7 +96,7 @@
     <Projectbar/>
 </div>
 <div class="test">
-    {#if $currentTab && $currentTab.type == ProjectTabType.IMAGE}
+    {#if activeTab && activeTab.type == ProjectTabType.IMAGE}
     {#key $windows || $anchors}
             {#each [...$windows] as window}
                 {#if !window[1].anchored}
@@ -113,9 +117,9 @@
                 <AnchorRight id={id}/>
             {/if}
             {/each}
-    {:else if $currentTab && $currentTab.type == ProjectTabType.HOME}
+    {:else if activeTab && activeTab.type == ProjectTabType.HOME}
         <Home/>
-    {:else if $currentTab && $currentTab.type == ProjectTabType.SETTINGS}
+    {:else if activeTab && activeTab.type == ProjectTabType.SETTINGS}
         <p>Setting</p>
     {/if}
 </div>
@@ -125,8 +129,7 @@ on:mousemove={(e) => { mouseMove(e)}}
 on:mouseup={(e) => {$currentWindowId=""; mouseUp(e)}} 
 on:mousedown={(e) => {mouseDown(e)}}  
 on:keydown|preventDefault={(e) => {keyModifier(e); processKey(e);}}
-on:keyup|preventDefault={(e) => keyModifier(e)}
-on:contextmenu|preventDefault/>
+on:keyup|preventDefault={(e) => keyModifier(e)}/>
 
 <style lang="scss">
     .top {

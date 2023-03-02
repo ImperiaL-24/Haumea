@@ -1,13 +1,17 @@
 <script lang="ts">
-    import { Layer, stateChange, type CanvasState } from "src/haumea/canvas";
+    import type { Layer, CanvasState } from "src/haumea/canvas";
     import type { PercentagePos } from "src/haumea/math";
     import { canvas, transition } from "haumea/preview";
+    import { App, type CanvasProjectTab } from "src/haumea/tab";
 
     export let pos: PercentagePos;
     export let zoom: number;
     export let layer: Layer;
     export let currentState: CanvasState;
     export let index: number;
+
+    let activeCanvas: CanvasProjectTab;
+    $: App.activeTabChange.subscribe(() => activeCanvas = App.activeCanvas);
 
     let updateCanvas = () => {
         if(!$canvas[index]) return;
@@ -20,7 +24,7 @@
         updateCanvas()
     });
 
-    stateChange.subscribe(() => {
+    $: activeCanvas.data.activeStateChange.subscribe(() => {
         updateCanvas();
     });
 </script>
