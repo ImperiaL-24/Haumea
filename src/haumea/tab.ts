@@ -56,74 +56,79 @@ export class ProjectTab {
     }
 }
 
-export const tabs: Writable<Map<string, ProjectTab>> = writable(new Map());
-export const currentTabId: Writable<string> = writable();
+export class App {
+    static tabs: Map<string, ProjectTab> = new Map();
+    private static activeTabId: string;
 
-export const currentTab = derived([tabs, currentTabId], ([$tabs, $currentTabId]) =>$tabs.get($currentTabId));
+    static currentTabChange: Signal = new Signal();
+    static tabsChange: Signal = new Signal();
 
-export let setCurrentTab = (id: string) => {
-    currentTabId.set(id);
-}
+    static get activeTab(): ProjectTab {
+        return this.tabs.get(this.activeTabId)
+    }
 
-export let openTab = (tab: ProjectTab) => {
-    tabs.update(n => {
-        n.set(tab.id, tab);
-        return n;
-    })
-    currentTabId.set(tab.id);
-}
+    static set activeTab(tab: ProjectTab) {
+        this.activeTabId = tab.id;
+        currentTabChange.signal();
+    }
 
-export let openFile = async () => {
-    const selected = await open({
-        multiple: false,
-        filters: [{
-            name: 'Image',
-            extensions: ['png', 'jpeg']
-        }]
-    });
-    if (Array.isArray(selected)) {
+    static openTab(tab: ProjectTab) {
+        this.tabs.set(tab.id, tab);
+        tabsChange.signal();
+        this.activeTab = tab;
+    }
+    static closeTab(tab: ProjectTab) {
+        //TODO: ARE YOU SURE MODAL IF UNSAVED
+        if(this.activeTab.id == tab.id) {
+            const keys = Array.from(this.tabs.keys());
+            let index = keys.indexOf(tab.id);
+            if(index==0 && keys.length==1) return;
+            if(index!=0) index--;
+            else index++;
+            this.activeTab = this.tabs[keys[index]];
+        }
+        this.tabs.delete(tab.id)
+        this.tabsChange.signal();
+    }
+    static async openFile() {
+        const selected = await open({
+            multiple: false,
+            filters: [{
+                name: 'Image',
+                extensions: ['png', 'jpeg']
+            }]
+        });
         // user selected multiple files
-      } else if (selected === null) {
+        if (Array.isArray(selected)) return;
         // user cancelled the selection
-      } else {
+        if (selected === null)  return;
+            
         // read binary array
         const contents = await readBinaryFile(selected);
         //convert to base64 image
         var image = new Image();
         image.src = "data:image/png;base64,"+encode(contents);
         await image.decode();
-
+    
         //convert image to canvas
         let canvas = document.createElement('canvas');
-            
+                
         canvas.width = image.width;
         canvas.height = image.height;
         let ctx = canvas.getContext("2d");
         ctx.drawImage(image, 0,0);
-        
+            
         //convert canvas to imagedata
         const project = new ProjectTab(ProjectTabType.IMAGE, selected, new CanvasData(ctx.getImageData(0,0,canvas.width, canvas.height)));
         project.setPath(selected);
-        openTab(project);
-      }
-}
-
-export let closeTab = (id: string) => {
-    //TODO: ARE YOU SURE MODAL IF UNSAVED
-
-    if(get(currentTab).id == id) {
-        const keys = Array.from(get(tabs).keys());
-        let index = keys.indexOf(id);
-        if(index==0 && keys.length==1) return;
-        if(index!=0) index--;
-        else index++;
-        currentTabId.set(keys[index]);
+        this.openTab(project);
     }
-    
-    
-    tabs.update(n => {
-        n.delete(id);
-        return n;
-    })
-    
 }
+
+export const tabs: Writable<Map<string, ProjectTab>> = writable(new Map());
+export const currentTabId: Writable<string> = writable();
+
+export const currentTab = derived([tabs, currentTabId], ([$tabs, $currentTabId]) =>$tabs.get($currentTabId));
+
+export const currentTabChange: Signal = new Signal();
+export const tabsChange: Signal = new Signal();
