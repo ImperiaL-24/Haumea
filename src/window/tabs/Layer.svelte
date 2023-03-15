@@ -2,52 +2,30 @@
     import { App, CanvasProjectTab } from "src/haumea/tab";
     import type { Reactive } from "src/util";
     import type { CanvasState, Layer } from "src/haumea/canvas";
+    import CanvasPreview from "src/canvas/CanvasPreview.svelte";
 
 
     export let index: number;
     export let layer: Layer;
     export let currentState: CanvasState;
 
-    let activeLayer: Reactive<number>
-    $: activeLayer = currentState?.activeLayer
-
     let activeLayerStore: number
     $: currentState?.activeLayer.$.subscribe(n => activeLayerStore = n);
-    
-    let activeCanvas: CanvasProjectTab;
-    $: App.activeTabChange.subscribe(() => activeCanvas = App.activeCanvas);
-    
-
-
-    let canvasPreview: HTMLCanvasElement
-    
-    let updateCanvas = () => {
-        if(!canvasPreview) return;
-        const data: ImageData = layer.getImageData();
-        const ctx = canvasPreview.getContext("2d");
-        ctx.putImageData(data,0,0);
-    }
-
-    $: layer.layerChange.subscribe(() => {
-        console.warn("LAYER CHANGE")
-        updateCanvas()
-    });
-
-    $: activeCanvas.data.activeStateChange.subscribe(() => {
-        updateCanvas();
-    });
 
 </script>
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class:active={activeLayerStore == index} on:click={() => App.activeCanvas.data.activeState.activeLayer.value = index} class="main">
-    <canvas bind:this={canvasPreview} width="{currentState?.dimension.value.x}" height="{currentState?.dimension.value.y}"></canvas>
+    <div class="canvas">
+        <CanvasPreview bind:layer={layer}></CanvasPreview>
+    </div>
+    
     <div class="content">
         <p>Layer {index}</p>
     </div>
-</div>
+</div>  
 
 <style lang="scss">
-    canvas {
+    canvas, .canvas {
         width: 3rem;
         height: 3rem;
         border-radius: 5px;

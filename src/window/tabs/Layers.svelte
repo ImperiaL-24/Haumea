@@ -8,7 +8,7 @@
     let activeCanvas: CanvasProjectTab;
     $: App.activeTabChange.subscribe(() => activeCanvas = App.activeCanvas);
     
-    $: activeCanvas.data.activeStateChange.subscribe(() => activeState = activeCanvas.data.activeState);
+    $: activeCanvas?.data.activeStateChange.subscribe(() => activeState = activeCanvas.data.activeState);
 
     let layers: LayerData[]
     $: activeState?.layers.$.subscribe(n => layers = n);

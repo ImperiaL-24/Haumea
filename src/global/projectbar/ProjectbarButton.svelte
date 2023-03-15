@@ -5,23 +5,20 @@
     export let tab: ProjectTab;
     //TODO: check if this works lmao
     let selected: boolean = false;
-    $: selected = App.activeTab.id == tab.id;
+    App.activeTabChange.subscribe(() => selected = App.activeTab.id == tab.id)
     let isOver = false;
-
     let isSaved: boolean;
     let filePath: string;
-    let tabName: string;
+    let tabName: string = tab.tabName;
 
     if(tab instanceof CanvasProjectTab) {
         tab.data.activeStateChange.subscribe(() => isSaved = (tab as CanvasProjectTab).data.isSaved())
         tab.onProjectSave.subscribe(() => {
             filePath = (tab as CanvasProjectTab).path;
+            isSaved = (tab as CanvasProjectTab).data.isSaved()
             tabName = tab.tabName;
         });
     }
-        
-
-
     
 </script>
 
@@ -32,7 +29,7 @@
         <div class="close-button">
             {#if isOver}
             <img  in:fade={{duration:200}} out:fade={{duration:200}} class="close" src="icons/cross.svg" on:mouseup={() => App.closeTab(tab)} alt="close"/>
-            {:else if tab.type == ProjectTabType.IMAGE && (isSaved || filePath == undefined) }
+            {:else if tab.type == ProjectTabType.IMAGE && (!isSaved || filePath == undefined) }
             <img  in:fade={{duration:200}} out:fade={{duration:200}} class="close" src="icons/circle.svg" alt="close"/>
             {:else}
             <img style="opacity: 0"  class="close" alt="close"/>

@@ -91,12 +91,13 @@ export class CanvasData {
     addState() {
         this.stateList.splice(this.stateList.length + this.currentState + 1, -this.currentState - 1);
         
-        this.savedState -= this.currentState - 2;
+        this.savedState -= this.currentState + 2;
         this.currentState = -1;
         this.stateList.push(CanvasState.from(this.activeState));
         
         // TODO: check if this is needed
         this.activeStateChange.signal();
+        console.log(this.savedState, this.currentState);
     }
     save() {
         this.savedState = this.currentState;
@@ -109,12 +110,14 @@ export class CanvasData {
         this.currentState--;
 
         this.activeStateChange.signal();
+        console.log(this.savedState, this.currentState);
     }
     redo() {
         if (!this.canRedo) return;
         this.currentState++;
 
         this.activeStateChange.signal();
+        console.log(this.savedState, this.currentState);
     }
 
 

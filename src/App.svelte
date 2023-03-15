@@ -56,7 +56,6 @@
     }
     if(App.activeTab == undefined) {
         App.openTab(new ProjectTab(ProjectTabType.HOME, "Home"));
-        console.log(App.activeTab);
     }
     
     onMount(async () => {

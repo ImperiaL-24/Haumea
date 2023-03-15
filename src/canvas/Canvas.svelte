@@ -1,7 +1,7 @@
 <script lang="ts">
     import { getClickLocation } from "../util";
     import { currentTool } from "../engine/tool/ToolManager";
-    import { canvasBase, getCanvasPosition, setCanvasPosition, transition } from "../haumea/preview";
+    import { canvasBase, canvasShadow, getCanvasPosition, setCanvasPosition, transition } from "../haumea/preview";
     import { innerRect } from "../store";
     import Cursor from "./Cursor.svelte";
     import { App, CanvasProjectTab } from "haumea/tab";
@@ -9,26 +9,28 @@
     import type { Layer, CanvasState } from "src/haumea/canvas";
     import CanvasLayer from "./CanvasLayer.svelte";
     import { currentWindowId } from "src/haumea/window";
+    import CanvasPreview from "./CanvasPreview.svelte";
 
     let activeState:CanvasState;
 
     let activeCanvas: CanvasProjectTab;
-    App.activeTabChange.subscribe(() => {
+    $: App.activeTabChange.subscribe(() => {
         activeCanvas = App.activeCanvas;
+        activeState = activeCanvas?.data.activeState;
         $transition = false;
-        console.log(activeCanvas);
+        console.log("ACTIVE TAB CHANGE");
     });
     
-    $: activeCanvas.data.activeStateChange.subscribe(() => activeState = activeCanvas.data.activeState);
+    $: activeCanvas?.data.activeStateChange.subscribe(() => {activeState = activeCanvas.data.activeState; console.log("ACTIVE STATE CHANGE");});
 
     let zoom: number;
-    $: activeCanvas.data.zoomChange.subscribe(() => zoom = activeCanvas.data.zoom);
+    $: activeCanvas?.data.zoomChange.subscribe(() => zoom = activeCanvas.data.zoom);
 
     let position: PercentagePos;
-    $: activeCanvas.data.positionChange.subscribe(() => position = activeCanvas.data.position);
+    $: activeCanvas?.data.positionChange.subscribe(() => position = activeCanvas.data.position);
 
     let layers: Layer[] = [];
-    $: activeState.layers.$.subscribe(n => layers = n);
+    $: activeState?.layers.$.subscribe(n => layers = n);
 
     let onWheel = (e) => {
         
@@ -56,13 +58,16 @@ bind:this={$canvasBase} style="width:calc(100% - {$innerRect.width}px); margin-l
 on:wheel|passive={(e) => onWheel(e)}
 class:no-cursor={$currentWindowId == ""}>
 
-    {#each layers as layer, i}
-        <CanvasLayer bind:pos={position} bind:zoom={zoom} bind:currentState={activeState} layer={layer} index={i}></CanvasLayer>
-    {/each}
-
     <div class="shadow"
+    bind:this={$canvasShadow}
+    style="top: {position.y}%; left: {position.x}%; scale: {zoom}; width: {activeState?.dimension.value.x}px; height: {activeState?.dimension.value.y}px; {$transition ? `transition: 0.2s all!important;`: ``}">
 
-    style="top: {position.y}%; left: {position.x}%; scale: {zoom}; width: {activeState?.dimension.value.x}px; height: {activeState?.dimension.value.y}px; {$transition ? `transition: 0.2s all!important;`: console.log($transition)}">
+        {#each layers as layer}
+            <div class="canvas">
+                <CanvasPreview bind:layer={layer}></CanvasPreview>
+            </div>
+        {/each}
+
     </div>
 </div>
 {#if isMouseOver}
@@ -93,5 +98,12 @@ class:no-cursor={$currentWindowId == ""}>
     }
     .no-cursor {
         cursor: none;
+    }
+    .canvas {
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        position: absolute;
     }
 </style>

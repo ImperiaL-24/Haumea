@@ -80,7 +80,6 @@ export class App {
 
     static set activeTab(tab: ProjectTab) {
         this.activeTabId = tab.id;
-        console.log("SET ACTIVE TAB");
         this.activeTabChange.signal();
     }
 
@@ -98,7 +97,7 @@ export class App {
             if(index==0 && keys.length==1) return;
             if(index!=0) index--;
             else index++;
-            this.activeTab = this.tabs[keys[index]];
+            this.activeTab = this.tabs.get(keys[index]);
         }
         this.tabs.delete(tab.id)
         this.tabsChange.signal();

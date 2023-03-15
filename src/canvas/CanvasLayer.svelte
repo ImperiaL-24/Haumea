@@ -24,7 +24,7 @@
         updateCanvas()
     });
 
-    $: activeCanvas.data.activeStateChange.subscribe(() => {
+    $: activeCanvas?.data.activeStateChange.subscribe(() => {
         updateCanvas();
     });
 </script>

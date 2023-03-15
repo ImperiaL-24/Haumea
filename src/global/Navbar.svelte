@@ -9,13 +9,14 @@
     import NavbarSeparator from './NavbarSeparator.svelte';
     import { ProjectTab, ProjectTabType, App, CanvasProjectTab } from 'haumea/tab';
     import { Action } from 'src/haumea/keybind';
-    let canUndo, canRedo;
+    let canUndo: boolean, canRedo:boolean;
     let activeCanvas: CanvasProjectTab;
     $: App.activeTabChange.subscribe(() => activeCanvas = App.activeCanvas);
 
-    activeCanvas?.data.activeStateChange.subscribe(() => {
+    $: activeCanvas?.data.activeStateChange.subscribe(() => {
         canUndo = activeCanvas.data.canUndo;
         canRedo = activeCanvas.data.canRedo;
+        console.log("state change");
     })
 
 </script>

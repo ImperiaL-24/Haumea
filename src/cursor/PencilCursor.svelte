@@ -13,7 +13,7 @@ let activeCanvas: CanvasProjectTab;
 $: App.activeTabChange.subscribe(() => activeCanvas = App.activeCanvas);
 
 let zoom: number;
-$: activeCanvas.data.zoomChange.subscribe(() => zoom = activeCanvas.data.zoom);
+$: activeCanvas?.data.zoomChange.subscribe(() => zoom = activeCanvas.data.zoom);
 
 $: {
     tool.size.subscribe(n => {

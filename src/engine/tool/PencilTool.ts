@@ -1,7 +1,7 @@
 import { Tool, ToolID } from "./Tool";
 import { get, writable, type Writable } from "svelte/store";
 import { getClickLocation } from "../../util";
-import { canvas } from "haumea/preview";
+import { canvas, canvasShadow } from "haumea/preview";
 import { clickState, modifierState } from "../../store";
 import { EyedropperTool } from "./EyedropperTool";
 import { App } from "haumea/tab";
@@ -30,7 +30,7 @@ export class PencilTool extends Tool {
 
         console.log("pencil mouse down!");
 
-        const location = getClickLocation(get(canvas)[activeLayer]).product(1/zoom);
+        const location = getClickLocation(get(canvasShadow)).product(1/zoom);
         layer.drawTo(location, get(this.size));
         this.lastClick = location;
     }
@@ -49,7 +49,7 @@ export class PencilTool extends Tool {
         const activeLayer = App.activeCanvas.data.activeState.activeLayer.value
         const layer = App.activeCanvas.data.activeLayer;
 
-        const location = getClickLocation(get(canvas)[activeLayer]).product(1/zoom);
+        const location = getClickLocation(get(canvasShadow)).product(1/zoom);
         // if(mouseDownTarget != get(canvas)) return this.lastClick = location;
         if(this.lastClick == undefined) return;
 
