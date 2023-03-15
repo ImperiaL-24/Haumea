@@ -25,7 +25,7 @@
 
     let zoom: number;
     $: activeCanvas?.data.zoomChange.subscribe(() => zoom = activeCanvas.data.zoom);
-
+    
     let position: PercentagePos;
     $: activeCanvas?.data.positionChange.subscribe(() => position = activeCanvas.data.position);
 

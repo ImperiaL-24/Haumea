@@ -17,9 +17,9 @@
     import {anchors} from "haumea/anchor"
     import Home from "./home/Home.svelte";
     
-    let activeTab: ProjectTab;
-    $: App.activeTabChange.subscribe(() => activeTab = App.activeTab);
 
+    $$: App.activeTabChange => let activeTab: ProjectTab = App.activeTab;
+    
     let mouseMove = (e) => {
         let state = ClickState.from($clickState);
         state.target = e.target;

@@ -1,7 +1,8 @@
 import sveltePreprocess from "svelte-preprocess";
-
+import { ddPreprocess } from "./dd.js";
 export default {
-  // Consult https://github.com/sveltejs/svelte-preprocess
-  // for more information about preprocessors
-  preprocess: sveltePreprocess(),
+  preprocess: [
+    ddPreprocess,
+    sveltePreprocess()
+  ]
 };
