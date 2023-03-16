@@ -1,7 +1,7 @@
 import { Tool, ToolID } from "./Tool";
 import { get, writable, type Writable } from "svelte/store";
 import { getClickLocation } from "../../util";
-import { canvas, canvasShadow } from "haumea/preview";
+import { canvasShadow } from "haumea/preview";
 import { clickState, modifierState } from "../../store";
 import { EyedropperTool } from "./EyedropperTool";
 import { App } from "haumea/tab";
@@ -19,8 +19,7 @@ export class PencilTool extends Tool {
         if(get(modifierState).altKey) return this.eyedropper.onmousedown();
 
         mouseDownTarget = get(clickState).target;
-
-        if(mouseDownTarget.classList.contains("shadow")) {
+        if(mouseDownTarget.parentElement.parentElement.classList.contains("shadow")) {
             App.activeCanvas.data.addState();
             this.hasSaved = true;
         }
@@ -40,7 +39,7 @@ export class PencilTool extends Tool {
 
         mouseDownTarget = get(clickState).target;
 
-        if(mouseDownTarget.classList.contains("shadow") && this.hasSaved == false) {
+        if(mouseDownTarget.parentElement.parentElement.classList.contains("shadow") && this.hasSaved == false) {
             App.activeCanvas.data.addState();
             this.hasSaved = true;
         }

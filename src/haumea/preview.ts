@@ -4,8 +4,6 @@ import { Color } from "./color";
 import { PercentagePos, PixelPos, Vector2 } from "haumea/math";
 import { App } from "haumea/tab";
 
-//TODO: remove canvas, and make a canvasClickZone thing
-export let canvas: Writable<HTMLCanvasElement[]> = writable([]);
 export let canvasBase: Writable<HTMLDivElement> = writable();
 export let canvasShadow: Writable<HTMLDivElement> = writable();
 export let transition: Writable<boolean> = writable(true);

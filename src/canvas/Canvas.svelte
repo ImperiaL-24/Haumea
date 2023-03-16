@@ -7,39 +7,30 @@
     import { App, CanvasProjectTab } from "haumea/tab";
     import type { PercentagePos } from "src/haumea/math";
     import type { Layer, CanvasState } from "src/haumea/canvas";
-    import CanvasLayer from "./CanvasLayer.svelte";
     import { currentWindowId } from "src/haumea/window";
     import CanvasPreview from "./CanvasPreview.svelte";
 
-    let activeState:CanvasState;
 
     $$: App.activeTabChange => let activeCanvas: CanvasProjectTab = App.activeCanvas;
-    $$: App.activeTabChange => console.warn("NEW TAB CHANGE");
-    $: App.activeTabChange.subscribe(() => {
-        activeState = activeCanvas?.data.activeState;
-        $transition = false;
-        console.warn("OLD TAB CHANGE");
-    });
-    
-    $: activeCanvas?.data.activeStateChange.subscribe(() => {activeState = activeCanvas.data.activeState; console.log("ACTIVE STATE CHANGE");});
+    $$: App.activeTabChange => let activeState: CanvasState = activeCanvas?.data.activeState;
+    $$: App.activeTabChange => $transition = false;
+    $$: App.activeTabChange => console.warn(activeState);
 
-    let zoom: number;
-    $: activeCanvas?.data.zoomChange.subscribe(() => zoom = activeCanvas.data.zoom);
-    
-    let position: PercentagePos;
-    $: activeCanvas?.data.positionChange.subscribe(() => position = activeCanvas.data.position);
 
-    let layers: Layer[] = [];
-    $: activeState?.layers.$.subscribe(n => layers = n);
+    $$: $: activeCanvas?.data.activeStateChange => activeState = activeCanvas?.data.activeState;
+    $$: $: activeCanvas?.data.activeStateChange => console.log("ACTIVE STATE CHANGE");
 
+    $$: $: activeCanvas?.data.zoomChange => let zoom = activeCanvas?.data.zoom;
+
+    $$: $: activeCanvas?.data.positionChange => let position: PercentagePos = activeCanvas?.data.position;
+
+    $$: $: activeState?.layers.$ => let layers: Layer[] = activeState?.layers.value;
     let onWheel = (e) => {
-        
         $transition = true;
-        console.log($transition);
         const mouseLocation = getClickLocation($canvasBase);
         const oldZoom = activeCanvas?.data.zoom;
         const newZoom = e.deltaY < 0 ? Math.min(1000, oldZoom *1.25) : Math.max(0.01, oldZoom /1.25);
-        App.activeCanvas.data.zoom = newZoom;
+        if(App.activeCanvas) App.activeCanvas.data.zoom = newZoom;
  
         setCanvasPosition(getCanvasPosition().add(mouseLocation.negate()).product(newZoom/oldZoom).add(mouseLocation).asPixelPos());
 

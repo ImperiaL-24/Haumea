@@ -9,11 +9,9 @@ export let instance: Tool;
 const tool = instance as PencilTool;
 let cursorSize: number;
 
-let activeCanvas: CanvasProjectTab;
-$: App.activeTabChange.subscribe(() => activeCanvas = App.activeCanvas);
+$$: App.activeTabChange => let activeCanvas: CanvasProjectTab = App.activeCanvas;
 
-let zoom: number;
-$: activeCanvas?.data.zoomChange.subscribe(() => zoom = activeCanvas.data.zoom);
+$$: $: activeCanvas?.data.zoomChange => let zoom = activeCanvas.data.zoom;
 
 $: {
     tool.size.subscribe(n => {

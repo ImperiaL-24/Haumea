@@ -2,8 +2,7 @@
 import { App } from "haumea/tab";
 import ProjectbarButton from "./ProjectbarButton.svelte";
 
-let tabs;
-$: App.tabsChange.subscribe(() => tabs = App.tabs)
+$$: App.tabsChange => let tabs = App.tabs;
 </script>
 
 

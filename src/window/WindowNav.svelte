@@ -54,7 +54,7 @@ class:tabless-nav={!data.tabbed}
 {#if data.tabbed}
     <div class="tabspace" on:wheel|passive={(e) => wheel(e)} bind:this={tabspace}>
         {#each data.tabs as tab, i}
-            <WindowButton selected={data.selectedTab==i} title={tab.title} on:click={() => {data.selectedTab = i; console.log("click")}}></WindowButton>
+            <WindowButton selected={data.selectedTab==i} title={tab.title} on:click={() => {data.selectedTab = i}}></WindowButton>
         {/each}
     </div>
 {/if}

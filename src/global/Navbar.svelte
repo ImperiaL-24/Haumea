@@ -7,17 +7,12 @@
     import NavbarButton from './NavbarButton.svelte';
     import ActionNavbarButton from './ActionNavbarButton.svelte';
     import NavbarSeparator from './NavbarSeparator.svelte';
-    import { ProjectTab, ProjectTabType, App, CanvasProjectTab } from 'haumea/tab';
+    import { ProjectTab, ProjectTabType, App } from 'haumea/tab';
     import { Action } from 'src/haumea/keybind';
-    let canUndo: boolean, canRedo:boolean;
-    let activeCanvas: CanvasProjectTab;
-    $: App.activeTabChange.subscribe(() => activeCanvas = App.activeCanvas);
 
-    $: activeCanvas?.data.activeStateChange.subscribe(() => {
-        canUndo = activeCanvas.data.canUndo;
-        canRedo = activeCanvas.data.canRedo;
-        console.log("state change");
-    })
+    $$: App.activeTabChange => let activeCanvas = App.activeCanvas;
+    $$: $: activeCanvas?.data.activeStateChange => let canUndo: boolean = activeCanvas?.data.canUndo;
+    $$: $: activeCanvas?.data.activeStateChange => let canRedo = activeCanvas?.data.canRedo;
 
 </script>
 

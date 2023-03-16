@@ -1,4 +1,4 @@
-
+//TODO: MULTI LINE CODE
 export let ddPreprocess = {
 	script:({ content, attributes, filename }) => {
 		if (attributes.lang !== 'ts') return;
@@ -8,6 +8,8 @@ export let ddPreprocess = {
 		for(let dd of dds) {
 			const ddName = "_DD" + Math.round(Math.random()*1000000);
 			const unsubscriberName = ddName + "unsubscriber";
+			const ddFunctionName = ddName + "code";
+			const ddResubberName = ddName + "resubscriber";
 			const signal = dd.match(/(?<=\$\$:).+(?==>)/)[0].trim();
 			let signalName = signal.match(/(?<=\$:).+/); 
 			signalName ? signalName = signalName[0].trim() : signalName = signal;
@@ -20,9 +22,10 @@ export let ddPreprocess = {
 				newCode += declaration +";\n";
 				code = code.replace(declaration,varName).trim();
 			}
-			newCode += `let ${unsubscriberName} = ${signalName}.subscribe(() => ${code.replace(";","")});\nonDestroy(${unsubscriberName})\n`;
+			newCode += `let ${ddFunctionName} = () => {${code}}\n let ${unsubscriberName} = ${signalName}.subscribe(${ddFunctionName});\nonDestroy(() => {${unsubscriberName}();})\n`;
 			if(signal.startsWith("$:")) {
-				newCode+=`$:{${unsubscriberName}(); ${unsubscriberName} = ${signalName}.subscribe(() => ${code.replace(";","")});}`
+				newCode+=`let ${ddResubberName} = () => {if(${unsubscriberName}) ${unsubscriberName}(); ${unsubscriberName} = ${signalName}.subscribe(${ddFunctionName});} 
+				$: ${signalName} && ${ddResubberName}()`
 			}
 			content = content.replace(dd, newCode);
 		}
