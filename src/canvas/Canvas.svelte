@@ -13,12 +13,12 @@
 
     let activeState:CanvasState;
 
-    let activeCanvas: CanvasProjectTab;
+    $$: App.activeTabChange => let activeCanvas: CanvasProjectTab = App.activeCanvas;
+    $$: App.activeTabChange => console.warn("NEW TAB CHANGE");
     $: App.activeTabChange.subscribe(() => {
-        activeCanvas = App.activeCanvas;
         activeState = activeCanvas?.data.activeState;
         $transition = false;
-        console.log("ACTIVE TAB CHANGE");
+        console.warn("OLD TAB CHANGE");
     });
     
     $: activeCanvas?.data.activeStateChange.subscribe(() => {activeState = activeCanvas.data.activeState; console.log("ACTIVE STATE CHANGE");});
