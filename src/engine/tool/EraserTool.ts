@@ -2,7 +2,7 @@ import { Tool, ToolID } from "./Tool";
 import { get, writable, type Writable } from "svelte/store";
 import { getClickLocation } from "../../util";
 import { canvasShadow } from "haumea/preview";
-import { clickState, colorTarget, modifierState } from "../../store";
+import { clickState, modifierState } from "../../store";
 import { EyedropperTool } from "./EyedropperTool";
 import { App } from "haumea/tab";
 import type { Vector2 } from "haumea/math";
@@ -11,15 +11,13 @@ import { Color } from "src/haumea/color";
 
 let mouseDownTarget: HTMLElement;
 
-export class PencilTool extends Tool {
+export class EraserTool extends Tool {
     size: Writable<number> = writable(1);
     lastClick: Vector2
     eyedropper: EyedropperTool = new EyedropperTool();
     hasSaved: boolean = false;
-    constructor() {super(ToolID.PENCIL_TOOL)}
+    constructor() {super(ToolID.ERASER_TOOL)}
     onmousedown = () => {
-        if(get(modifierState).altKey) return this.eyedropper.onmousedown();
-
         mouseDownTarget = get(clickState).target;
         if(mouseDownTarget.parentElement.parentElement.classList.contains("shadow")) {
             App.activeCanvas.addState();
@@ -29,11 +27,10 @@ export class PencilTool extends Tool {
         const layer = App.activeCanvas.activeState.activeLayer;
 
         const location = getClickLocation(get(canvasShadow)).product(1/zoom);
-        layer.drawTo(location, new Brush(get(this.size), Color.newFromHSV(...get(colorTarget)), 255));
+        layer.drawTo(location, new Brush(get(this.size), new Color(), 0));
         this.lastClick = location;
     }
     onmousemove = () => {
-        if(get(modifierState).altKey) return this.eyedropper.onmousemove();
         if(!get(clickState).leftClick) return;
 
         mouseDownTarget = get(clickState).target;
@@ -50,7 +47,7 @@ export class PencilTool extends Tool {
         // if(mouseDownTarget != get(canvas)) return this.lastClick = location;
         if(this.lastClick == undefined) return;
 
-        layer.line(this.lastClick, location, new Brush(get(this.size), Color.newFromHSV(...get(colorTarget)), 255));
+        layer.line(this.lastClick, location, new Brush(get(this.size), new Color(), 0));
         
         this.lastClick = location;
         this

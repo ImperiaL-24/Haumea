@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { App, CanvasProjectTab } from "src/haumea/tab";
-    import type { Reactive } from "src/util";
+    import { App } from "src/haumea/tab";
     import type { CanvasState, Layer } from "src/haumea/canvas";
     import CanvasPreview from "src/canvas/CanvasPreview.svelte";
 
@@ -9,12 +8,11 @@
     export let layer: Layer;
     export let currentState: CanvasState;
 
-    let activeLayerStore: number
-    $: currentState?.activeLayer.$.subscribe(n => activeLayerStore = n);
+    $$: $: currentState?.activeLayerChange => let activeLayer = currentState?.activeLayer;
 
 </script>
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class:active={activeLayerStore == index} on:click={() => App.activeCanvas.data.activeState.activeLayer.value = index} class="main">
+<div class:active={activeLayer == layer} on:click={() => App.activeCanvas.activeState.setActiveLayer(index)} class="main">
     <div class="canvas">
         <CanvasPreview bind:layer={layer}></CanvasPreview>
     </div>

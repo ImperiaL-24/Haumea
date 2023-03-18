@@ -1,7 +1,7 @@
 import { ModifierState, modifierState, unfocusNavbar } from "../store";
 import { get } from "svelte/store";
 import { currentTool, ToolType } from "../engine/tool/ToolManager";
-import { App, CanvasProjectTab, ProjectTab, ProjectTabType } from "./tab";
+import { App, CanvasProjectTab } from "./tab";
 
 class Keybind {
     key: string
@@ -41,11 +41,11 @@ export class Action {
     }
     
     static UNDO = new Action("Undo", () => {
-        App.activeCanvas.data.undo();
+        App.activeCanvas.undo();
     }, new Keybind("z", ModifierState.new(false, false, true)), "icons/rotate-left.svg")
 
     static REDO = new Action("Redo", () => {
-        App.activeCanvas.data.redo();
+        App.activeCanvas.redo();
     }, new Keybind("z", ModifierState.new(true, false, true)), "icons/rotate-right.svg")
 
     static RELOAD = new Action("Reload - DEV", () => {
@@ -55,6 +55,10 @@ export class Action {
     static PENCIL_TOOL = new Action("Pencil Tool", () => {
         currentTool.set(ToolType.PENCIL_TOOL.tool);
     }, new Keybind("b", ModifierState.new(false, false, false)))
+
+    static ERASER_TOOL = new Action("Eraser Tool", () => {
+        currentTool.set(ToolType.ERASER_TOOL.tool);
+    }, new Keybind("e", ModifierState.new(false, false, false)))
 
     static PENCIL_TOOL_SIZE_INC = new Action("Pencil Tool Brush Size Increase", () => {
         if(get(currentTool).type==ToolType.PENCIL_TOOL.type)
@@ -89,6 +93,7 @@ const actions = [
     Action.REDO,
     Action.RELOAD,
     Action.PENCIL_TOOL,
+    Action.ERASER_TOOL,
     Action.MOVE_TOOL,
     Action.NEW_TAB,
     Action.OPEN,

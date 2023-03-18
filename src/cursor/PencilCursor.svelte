@@ -11,7 +11,7 @@ let cursorSize: number;
 
 $$: App.activeTabChange => let activeCanvas: CanvasProjectTab = App.activeCanvas;
 
-$$: $: activeCanvas?.data.zoomChange => let zoom = activeCanvas.data.zoom;
+$$: $: activeCanvas?.zoomChange => let zoom = activeCanvas.zoom;
 
 $: {
     tool.size.subscribe(n => {

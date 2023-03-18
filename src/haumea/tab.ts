@@ -2,8 +2,9 @@ import {v4 as uuidv4} from "uuid";
 import { open, save } from '@tauri-apps/api/dialog';
 import { readBinaryFile, writeBinaryFile } from '@tauri-apps/api/fs';
 import { encode } from "base64-arraybuffer";
-import { CanvasData } from "haumea/canvas";
+import { CanvasState, Layer } from "haumea/canvas";
 import { Signal } from "src/util";
+import { PercentagePos } from "./math";
 
 export class ProjectTabType {
     static HOME = new ProjectTabType("HOME","icons/home.svg");
@@ -26,23 +27,97 @@ export class ProjectTab {
 
 export class CanvasProjectTab extends ProjectTab {
     private _path: string;
-    data: CanvasData;
     onProjectSave: Signal = new Signal();
-    constructor(path?: string, data?: CanvasData) {
+    constructor(path?: string, data?: ImageData) {
         super(ProjectTabType.IMAGE,path ? path.match(/(?<=\\)\w+\.\w+$/)[0] : "Untitled")
         this._path = path;
-        this.data = data == undefined ? new CanvasData() : data;
+        this.stateList.push(new CanvasState(this, data ?? new ImageData(100, 100)));
     }
+
+    private currentState: number = -1;
+    private savedState: number = -1;
+    private stateList: CanvasState[] = [];
+
+    private _position: PercentagePos = new PercentagePos(50, 50);
+    private _zoom: number = 1;
+
+    activeStateChange: Signal = new Signal();
+    positionChange: Signal = new Signal();
+    zoomChange: Signal = new Signal();
+
+    get activeState() {
+        return this.stateList[this.stateList.length + this.currentState];
+    }
+    addState() {
+        this.stateList.splice(this.stateList.length + this.currentState + 1, -this.currentState - 1);
+        
+        this.savedState -= this.currentState + 2;
+        this.currentState = -1;
+        const newState = CanvasState.from(this.activeState);
+        this.stateList.push(newState);
+        
+        this.activeStateChange.signal();
+        return newState;
+    }
+    save() {
+        this.savedState = this.currentState;
+    }
+    isSaved() {
+        return this.savedState == this.currentState;
+    }
+    undo() {
+        if (!this.canUndo) return;
+        this.currentState--;
+
+        this.activeStateChange.signal();
+        console.log(this.savedState, this.currentState);
+    }
+    redo() {
+        if (!this.canRedo) return;
+        this.currentState++;
+
+        this.activeStateChange.signal();
+        console.log(this.savedState, this.currentState);
+    }
+
+
+    get canUndo() {
+        return this.currentState != -50 && this.stateList.length != -this.currentState;
+    }
+
+    get canRedo() {
+        return this.currentState != -1
+    }
+
+    set position(newPos: PercentagePos) {
+        this._position = newPos;
+        this.positionChange.signal();
+    }
+
+    get position() {
+        return this._position;
+    }
+
+    set zoom(newZoom: number) {
+        this._zoom = newZoom;
+        this.zoomChange.signal();
+    }
+
+    get zoom() {
+        return this._zoom;
+    }
+
     set path(path: string) {
         this._path = path;
         this.tabName = this.tabName = this.path.match(/(?<=\\)\w+\.\w+$/)[0];
     }
+
     get path() {
         return this._path;
     }
+    
     async saveData() {
-        if(!this.data) return;
-        this.data.save();
+        this.save();
         if(!this.path) {
             this.path = await save({
                 defaultPath: this.tabName,
@@ -53,7 +128,7 @@ export class CanvasProjectTab extends ProjectTab {
             });
         }
         
-        const layer = this.data.activeState.flatten();
+        const layer = this.activeState.flatten();
         console.log(layer.ctx.getImageData(0,0,layer.canvas.width, layer.canvas.height).data);
         let blob = await layer.canvas.convertToBlob();
         await writeBinaryFile(this.path, await blob.arrayBuffer());
@@ -132,7 +207,7 @@ export class App {
         ctx.drawImage(image, 0,0);
             
         //convert canvas to imagedata
-        const project = new CanvasProjectTab(selected, new CanvasData(ctx.getImageData(0,0,canvas.width, canvas.height)));
+        const project = new CanvasProjectTab(selected, ctx.getImageData(0,0,canvas.width, canvas.height));
         this.openTab(project);
     }
 

@@ -17,7 +17,7 @@
     import {anchors} from "haumea/anchor"
     import Home from "./home/Home.svelte";
     
-    // TODO: DEPRECATE REACTIVE, MERGE CANVASDATA WITH CANVAS TAB;
+    // TODO: DEPRECATE REACTIVE;
     $$: App.activeTabChange => let activeTab: ProjectTab = App.activeTab;
     
     let mouseMove = (e) => {
@@ -56,12 +56,13 @@
     }
     if(App.activeTab == undefined) {
         App.openTab(new ProjectTab(ProjectTabType.HOME, "Home"));
+        console.log("TEST");
     }
     
     onMount(async () => {
         
         addWindow(new WindowBuilder(TabType.ColorSelector,TabType.Test, TabType.Layers).tabbed(true).build());
-        addWindow(new WindowBuilder(TabType.Toolbar).resizeable(false).size(40, 255).build());
+        addWindow(new WindowBuilder(TabType.Toolbar).resizeable(false).size(40, 295).build());
         const unlisten = await appWindow.onFocusChanged(({ payload: isFocused }) => {
             $isWindowFocused = isFocused;
             $modifierState = new ModifierState();

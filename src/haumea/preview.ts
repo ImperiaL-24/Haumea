@@ -13,24 +13,24 @@ export let transition: Writable<boolean> = writable(true);
  * @deprecated use App.activeCanvas.canvasData.position.toPixelPos(get(canvasBase))
  */
 export let getCanvasPosition = (): PixelPos => {
-    return App.activeCanvas.data.position.toPixelPos(get(canvasBase));
+    return App.activeCanvas.position.toPixelPos(get(canvasBase));
 }
 
 export let setCanvasPosition = (pos: PixelPos) => {
-    const zoom = App.activeCanvas.data.zoom;
-    const cw = App.activeCanvas.data.activeState.dimension.value.x*zoom;
-    const ch = App.activeCanvas.data.activeState.dimension.value.y*zoom;
+    const zoom = App.activeCanvas.zoom;
+    const cw = App.activeCanvas.activeState.dimension.x*zoom;
+    const ch = App.activeCanvas.activeState.dimension.y*zoom;
     const vw = get(canvasBase).clientWidth;
     const vh = get(canvasBase).clientHeight;
     const newPos = new PercentagePos(
         clamp(pos.x*100/get(canvasBase).clientWidth, (-cw/2+400)*100/vw,(cw/2-400)*100/vw+100),
         clamp(pos.y*100/get(canvasBase).clientHeight, (-ch/2+400)*100/vh,(ch/2-400)*100/vh+100)
     )
-    App.activeCanvas.data.position = newPos;
+    App.activeCanvas.position = newPos;
 }
 
 export let getPixelColor = (pos: Vector2): Color => {
-    const layer = App.activeCanvas.data.activeLayer;
+    const layer = App.activeCanvas.activeState.activeLayer;
     const clickedColor = layer.ctx.getImageData(pos.x, pos.y, 1, 1).data;
     return new Color(clickedColor[0], clickedColor[1], clickedColor[2]);
 }

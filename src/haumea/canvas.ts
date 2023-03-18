@@ -1,9 +1,10 @@
-import { Reactive, Signal } from "src/util";
-import { get, writable, type Writable } from "svelte/store";
-import { PercentagePos, Vector2 } from "haumea/math";
+import { Signal } from "src/util";
+import { get } from "svelte/store";
+import { Vector2 } from "haumea/math";
 import { Color } from "./color";
 import { colorTarget } from "src/store";
-
+import type { CanvasProjectTab } from "./tab";
+import type { Brush } from "./tool/tool";
 
 export class Layer {
     canvas: OffscreenCanvas;
@@ -14,25 +15,25 @@ export class Layer {
         this.ctx = this.canvas.getContext("2d") as OffscreenCanvasRenderingContext2D;
         this.ctx.putImageData(data, 0, 0);
     }
-    drawTo(position: Vector2, size: number, silent:boolean = false) {
-        const color = Color.newFromHSV(...get(colorTarget)).asRGB();
-        const pixel = new ImageData(size,size);
+    drawTo(position: Vector2, brush: Brush, silent:boolean = false) {
+        const color = brush.color.asRGB();
+        const pixel = new ImageData(brush.size,brush.size);
         let d = pixel.data;
         for(let i = 0;i< pixel.data.length;i+=4) {
             d[i] = color[0];
             d[i+1] = color[1];
             d[i+2] = color[2];
-            d[i+3] = 255;    
+            d[i+3] = brush.opacity;    
         }
-        const pos = position.addScalar(-(size-1)/2);
+        const pos = position.addScalar(-(brush.size-1)/2);
         this.ctx.putImageData(pixel, pos.x, pos.y);
         if(!silent) this.layerChange.signal();
     }
-    line(from: Vector2, to: Vector2, size: number) {
+    line(from: Vector2, to: Vector2, brush: Brush) {
         const pixelDistance = to.floor().add(from.floor().negate()).abs().maxCoord();
         if(pixelDistance==0) return;
         for(let i=1;i<=pixelDistance;i++) {
-            this.drawTo(from.lerp(to, i/pixelDistance), size, true);
+            this.drawTo(from.lerp(to, i/pixelDistance), brush, true);
         }
         this.layerChange.signal();
     }
@@ -42,116 +43,66 @@ export class Layer {
 }
 
 export class CanvasState {
-    layers: Reactive<Layer[]> = new Reactive([]);
-    activeLayer: Reactive<number> = new Reactive(0);
-    dimension: Reactive<Vector2> = new Reactive(new Vector2(100,100));
-    visible: Reactive<boolean> = new Reactive(true);
-    constructor(data: ImageData) {
-        this.dimension.value = new Vector2(data.width, data.height);
-        this.layers.value = [new Layer(data)];
+    private _layers: Layer[] = [];
+    private _activeLayerId: number = 0;
+    private _dimension: Vector2 = new Vector2(100,100);
+    private _visible: boolean = true;
+
+    private tab: CanvasProjectTab;
+    visibilityChange: Signal = new Signal();
+    activeLayerChange: Signal = new Signal();
+    dimensionChange: Signal = new Signal();
+    layersChange: Signal = new Signal();
+
+    constructor(tab: CanvasProjectTab, data: ImageData) {
+        this.tab = tab;
+        this._dimension = new Vector2(data.width, data.height);
+        this._layers = [new Layer(data)];
     }
     static from(state: CanvasState) {
-        let newState = new CanvasState(new ImageData(1,1));
-        newState.activeLayer = new Reactive(state.activeLayer.value);
-        newState.dimension = new Reactive(state.dimension.value);
-        newState.visible = new Reactive(state.visible.value);
-        newState.layers = new Reactive([...state.layers.value.map((layer) => new Layer(layer.getImageData()))]);
+        let newState = new CanvasState(state.tab, new ImageData(1,1));
+        newState._activeLayerId = state._activeLayerId;
+        newState.dimension = state.dimension;
+        newState._visible = state._visible;
+        newState._layers = [...state._layers.map((layer) => new Layer(layer.getImageData()))];
         return newState;
     }
     flatten(): Layer {
-        return this.layers.value.reduce((prev, curr) => {
+        return this._layers.reduce((prev, curr) => {
             prev.ctx.drawImage(curr.canvas,0,0);
             return prev;
         })
     }
-}
-
-
-export class CanvasData {
-    private currentState: number = -1;
-    private savedState: number = -1;
-    private stateList: CanvasState[] = [];
-
-    private _position: PercentagePos = new PercentagePos(50, 50);
-    private _zoom: number = 1;
-
-    activeStateChange: Signal = new Signal();
-    positionChange: Signal = new Signal();
-    zoomChange: Signal = new Signal();
-
-    constructor(data?: ImageData) {
-        console.log(this.stateList);
-        this.stateList.push(new CanvasState(data ?? new ImageData(100, 100)));
-        console.log(this.stateList);
-
+    set dimension(dimension: Vector2) {
+        this._dimension = dimension;
+        this.dimensionChange.signal();
     }
-    get activeState() {
-        return this.stateList[this.stateList.length + this.currentState];
+    get dimension() {
+        return this._dimension;
     }
-    addState() {
-        this.stateList.splice(this.stateList.length + this.currentState + 1, -this.currentState - 1);
-        
-        this.savedState -= this.currentState + 2;
-        this.currentState = -1;
-        this.stateList.push(CanvasState.from(this.activeState));
-        
-        // TODO: check if this is needed
-        this.activeStateChange.signal();
-        console.log(this.savedState, this.currentState);
+    set visible(visible: boolean) {
+        this._visible = visible;
+        this.visibilityChange.signal();
     }
-    save() {
-        this.savedState = this.currentState;
+    get visible() {
+        return this._visible;
     }
-    isSaved() {
-        return this.savedState == this.currentState;
+    get activeLayer() {
+        return this._layers[this._activeLayerId];
     }
-    undo() {
-        if (!this.canUndo) return;
-        this.currentState--;
-
-        this.activeStateChange.signal();
-        console.log(this.savedState, this.currentState);
+    setActiveLayer(id: number) {
+        this._activeLayerId = id;
+        this.activeLayerChange.signal();
     }
-    redo() {
-        if (!this.canRedo) return;
-        this.currentState++;
-
-        this.activeStateChange.signal();
-        console.log(this.savedState, this.currentState);
+    get layers() {
+        return this._layers;
     }
-
-
-    get canUndo() {
-        return this.currentState != -50 && this.stateList.length != -this.currentState;
-    }
-
-    get canRedo() {
-        return this.currentState != -1
-    }
-
-    set position(newPos: PercentagePos) {
-        this._position = newPos;
-        this.positionChange.signal();
-    }
-
-    get position() {
-        return this._position;
-    }
-
-    set zoom(newZoom: number) {
-        this._zoom = newZoom;
-        this.zoomChange.signal();
-    }
-
-    get zoom() {
-        return this._zoom;
-    }
-    //TODO: signal change?
     addLayer(layer: Layer) {
-        this.activeState.layers.value = [...this.activeState.layers.value, layer]
-        this.activeState.activeLayer.value = this.activeState.layers.value.length-1
-    }
-    get activeLayer(): Layer {
-        return this.activeState.layers.value[this.activeState.activeLayer.value];
+        this._layers = [...this.layers, layer]
+        this.setActiveLayer(this.layers.length-1);
+        this.layersChange.signal();
+        this.activeLayerChange.signal();
+        
     }
 }
+

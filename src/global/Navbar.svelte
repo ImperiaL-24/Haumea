@@ -11,8 +11,8 @@
     import { Action } from 'src/haumea/keybind';
 
     $$: App.activeTabChange => let activeCanvas = App.activeCanvas;
-    $$: $: activeCanvas?.data.activeStateChange => let canUndo: boolean = activeCanvas?.data.canUndo;
-    $$: $: activeCanvas?.data.activeStateChange => let canRedo = activeCanvas?.data.canRedo;
+    $$: $: activeCanvas?.activeStateChange => let canUndo: boolean = activeCanvas?.canUndo;
+    $$: $: activeCanvas?.activeStateChange => let canRedo = activeCanvas?.canRedo;
 
 </script>
 

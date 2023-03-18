@@ -12,25 +12,25 @@
 
 
     $$: App.activeTabChange => let activeCanvas: CanvasProjectTab = App.activeCanvas;
-    $$: App.activeTabChange => let activeState: CanvasState = activeCanvas?.data.activeState;
+    $$: App.activeTabChange => let activeState: CanvasState = activeCanvas?.activeState;
     $$: App.activeTabChange => $transition = false;
     $$: App.activeTabChange => console.warn(activeState);
 
 
-    $$: $: activeCanvas?.data.activeStateChange => activeState = activeCanvas?.data.activeState;
-    $$: $: activeCanvas?.data.activeStateChange => console.log("ACTIVE STATE CHANGE");
+    $$: $: activeCanvas?.activeStateChange => activeState = activeCanvas?.activeState;
+    $$: $: activeCanvas?.activeStateChange => console.log("ACTIVE STATE CHANGE");
 
-    $$: $: activeCanvas?.data.zoomChange => let zoom = activeCanvas?.data.zoom;
+    $$: $: activeCanvas?.zoomChange => let zoom = activeCanvas?.zoom;
 
-    $$: $: activeCanvas?.data.positionChange => let position: PercentagePos = activeCanvas?.data.position;
+    $$: $: activeCanvas?.positionChange => let position: PercentagePos = activeCanvas?.position;
 
-    $$: $: activeState?.layers.$ => let layers: Layer[] = activeState?.layers.value;
+    $$: $: activeState?.layersChange => let layers: Layer[] = activeState?.layers;
     let onWheel = (e) => {
         $transition = true;
         const mouseLocation = getClickLocation($canvasBase);
-        const oldZoom = activeCanvas?.data.zoom;
+        const oldZoom = activeCanvas?.zoom;
         const newZoom = e.deltaY < 0 ? Math.min(1000, oldZoom *1.25) : Math.max(0.01, oldZoom /1.25);
-        if(App.activeCanvas) App.activeCanvas.data.zoom = newZoom;
+        if(App.activeCanvas) App.activeCanvas.zoom = newZoom;
  
         setCanvasPosition(getCanvasPosition().add(mouseLocation.negate()).product(newZoom/oldZoom).add(mouseLocation).asPixelPos());
 
@@ -51,7 +51,7 @@ class:no-cursor={$currentWindowId == ""}>
 
     <div class="shadow"
     bind:this={$canvasShadow}
-    style="top: {position.y}%; left: {position.x}%; scale: {zoom}; width: {activeState?.dimension.value.x}px; height: {activeState?.dimension.value.y}px; {$transition ? `transition: 0.2s all!important;`: ``}">
+    style="top: {position.y}%; left: {position.x}%; scale: {zoom}; width: {activeState?.dimension.x}px; height: {activeState?.dimension.y}px; {$transition ? `transition: 0.2s all!important;`: ``}">
 
         {#each layers as layer}
             <div class="canvas">

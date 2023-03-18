@@ -6,6 +6,7 @@ import { currentTool } from "../engine/tool/ToolManager";
 import { clickState } from "../store";
 
 import MoveCursor from "../cursor/MoveCursor.svelte";
+import EraserCursor from "src/cursor/EraserCursor.svelte";
 
 </script>
 
@@ -14,6 +15,8 @@ import MoveCursor from "../cursor/MoveCursor.svelte";
         <EyedropperCursor instance={$currentTool}/>
         {:else if $currentTool.type == ToolID.PENCIL_TOOL}
         <PencilCursor instance={$currentTool}/>
+        {:else if $currentTool.type == ToolID.ERASER_TOOL}
+        <EraserCursor instance={$currentTool}/>
         {:else if $currentTool.type == ToolID.MOVE_TOOL}
         <MoveCursor/>
     {/if}

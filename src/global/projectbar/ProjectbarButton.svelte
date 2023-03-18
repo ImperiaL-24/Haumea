@@ -3,19 +3,17 @@
     import { fade } from "svelte/transition";
 
     export let tab: ProjectTab;
-    //TODO: check if this works lmao
-    let selected: boolean = false;
-    App.activeTabChange.subscribe(() => selected = App.activeTab.id == tab.id)
+    $$: App.activeTabChange => let selected = App.activeTab.id == tab.id;
     let isOver = false;
     let isSaved: boolean;
     let filePath: string;
     let tabName: string = tab.tabName;
 
     if(tab instanceof CanvasProjectTab) {
-        tab.data.activeStateChange.subscribe(() => isSaved = (tab as CanvasProjectTab).data.isSaved())
+        tab.activeStateChange.subscribe(() => isSaved = (tab as CanvasProjectTab).isSaved())
         tab.onProjectSave.subscribe(() => {
             filePath = (tab as CanvasProjectTab).path;
-            isSaved = (tab as CanvasProjectTab).data.isSaved()
+            isSaved = (tab as CanvasProjectTab).isSaved()
             tabName = tab.tabName;
         });
     }
