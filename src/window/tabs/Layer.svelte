@@ -23,7 +23,7 @@
 </div>  
 
 <style lang="scss">
-    canvas, .canvas {
+    .canvas {
         width: 3rem;
         height: 3rem;
         border-radius: 5px;

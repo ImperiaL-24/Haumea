@@ -1,19 +1,28 @@
-import { Signal } from "src/util";
-import { get } from "svelte/store";
+import { blobToBase64, Signal } from "src/util";
 import { Vector2 } from "haumea/math";
-import { Color } from "./color";
-import { colorTarget } from "src/store";
 import type { CanvasProjectTab } from "./tab";
 import type { Brush } from "./tool/tool";
 
 export class Layer {
     canvas: OffscreenCanvas;
     ctx: OffscreenCanvasRenderingContext2D;
+    private _visible: boolean = true;
+
+    visibilityChange: Signal = new Signal();
     layerChange: Signal = new Signal();
-    constructor(data: ImageData) {
+
+    constructor(data: ImageData, visible?: boolean) {
         this.canvas = new OffscreenCanvas(data.width, data.height);
         this.ctx = this.canvas.getContext("2d") as OffscreenCanvasRenderingContext2D;
         this.ctx.putImageData(data, 0, 0);
+        this._visible = visible;
+    }
+    set visible(visible: boolean) {
+        this._visible = visible;
+        this.visibilityChange.signal();
+    }
+    get visible() {
+        return this._visible;
     }
     drawTo(position: Vector2, brush: Brush, silent:boolean = false) {
         const color = brush.color.asRGB();
@@ -40,16 +49,36 @@ export class Layer {
     getImageData() {
         return this.ctx.getImageData(0,0, this.canvas.width, this.canvas.height);
     }
+    async asJSON() {
+        const dataBlob: Blob = await this.canvas.convertToBlob();
+        return {
+            visible: this._visible,
+            data: await blobToBase64(dataBlob)
+        }
+    }
+    static async fromJSON(json: {visible:boolean, data:string}) {
+        var image = new Image();
+        image.src = json.data;
+        await image.decode();
+    
+        //convert image to canvas
+        let canvas = document.createElement('canvas');
+                
+        canvas.width = image.width;
+        canvas.height = image.height;
+        let ctx = canvas.getContext("2d");
+        ctx.drawImage(image, 0,0);
+        return new Layer(ctx.getImageData(0,0,canvas.width, canvas.height), json.visible);
+    }
 }
 
 export class CanvasState {
     private _layers: Layer[] = [];
     private _activeLayerId: number = 0;
     private _dimension: Vector2 = new Vector2(100,100);
-    private _visible: boolean = true;
+    
 
     private tab: CanvasProjectTab;
-    visibilityChange: Signal = new Signal();
     activeLayerChange: Signal = new Signal();
     dimensionChange: Signal = new Signal();
     layersChange: Signal = new Signal();
@@ -63,7 +92,6 @@ export class CanvasState {
         let newState = new CanvasState(state.tab, new ImageData(1,1));
         newState._activeLayerId = state._activeLayerId;
         newState.dimension = state.dimension;
-        newState._visible = state._visible;
         newState._layers = [...state._layers.map((layer) => new Layer(layer.getImageData()))];
         return newState;
     }
@@ -79,13 +107,6 @@ export class CanvasState {
     }
     get dimension() {
         return this._dimension;
-    }
-    set visible(visible: boolean) {
-        this._visible = visible;
-        this.visibilityChange.signal();
-    }
-    get visible() {
-        return this._visible;
     }
     get activeLayer() {
         return this._layers[this._activeLayerId];
@@ -104,5 +125,32 @@ export class CanvasState {
         this.activeLayerChange.signal();
         
     }
+    async asJSON() {
+        let layers = [];
+        for(let layer of this.layers) {
+            const layerJSON = await layer.asJSON();
+            layers.push(layerJSON);
+        }
+        return {
+            width: this.dimension.x,
+            height: this.dimension.y,
+            activeLayer: this._activeLayerId,
+            layers: layers
+        }
+    }
+    static async fromJSON(tab: CanvasProjectTab, json: {width: number, height: number, activeLayer: number, layers: any[]}) {
+        let layers = [];
+        for(let layerJSON of json.layers) {
+            const layer = await Layer.fromJSON(layerJSON);
+            layers.push(layer);
+        }
+
+        let newState = new CanvasState(tab, new ImageData(json.width,json.height));
+        newState._activeLayerId = json.activeLayer;
+        newState.dimension = new Vector2(json.width, json.height);
+        newState._layers = layers;
+        return newState;
+    }
+
 }
 

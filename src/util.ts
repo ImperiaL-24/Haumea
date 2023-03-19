@@ -44,6 +44,14 @@ import { clickState } from "./store";
         return Math.max(min,Math.min(max,value));
     }
 
+    export let blobToBase64 = (blob: Blob) => {
+        return new Promise((resolve, _) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.readAsDataURL(blob);
+        });
+      }
+
     export class Signal {
 
         private _signal: Writable<boolean> = writable(true);

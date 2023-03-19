@@ -24,11 +24,10 @@
         <NavbarCategory text="File">            
             <ActionNavbarButton action={Action.NEW_TAB}/>
             <ActionNavbarButton action={Action.OPEN}/>
-            <NavbarButton name="Save..." keybind="Ctrl+S" icon="icons/disk.svg" action={() =>  location.reload()}/>
-            <NavbarButton name="Save As..." icon="icons/disk.svg" action={() =>  location.reload()}/>
+            <ActionNavbarButton disabled={!activeCanvas} action={Action.IMPORT}/>
             <NavbarSeparator/>
-            <NavbarButton name="Export..." icon="icons/file-export.svg" action={() =>  location.reload()}/>
-            <NavbarButton name="Export As..." icon="icons/file-export.svg" action={() =>  location.reload()}/>
+            <ActionNavbarButton disabled={!activeCanvas} action={Action.SAVE}/>
+            <ActionNavbarButton disabled={!activeCanvas} action={Action.EXPORT}/>
             <NavbarSeparator/>
             <NavbarButton name="Settings" icon="icons/settings.svg" action={() =>  {App.openTab(new ProjectTab(ProjectTabType.SETTINGS, "Settings")); unfocusNavbar()}}/>
         </NavbarCategory>

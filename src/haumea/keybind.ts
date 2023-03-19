@@ -7,11 +7,16 @@ class Keybind {
     key: string
     modifiers: ModifierState
 
-    constructor(key: string, modifiers?: ModifierState) {
+    constructor(key: string, modifiers: ModifierState) {
         this.key = key;
 
         this.modifiers = modifiers;
     }
+    static from(keybind:string) {
+        keybind = keybind.toLowerCase();
+        return new Keybind(keybind.match(/\w(?!.*\+)/)[0], ModifierState.new(keybind.includes("shift+"), keybind.includes("alt+"), keybind.includes("ctrl+")))
+    }
+    static NONE = new Keybind("", new ModifierState());
     matches(key: string, modifiers: ModifierState) {
         return this.key == key.toLowerCase() && this.modifiers.equals(modifiers);
     }
@@ -42,50 +47,58 @@ export class Action {
     
     static UNDO = new Action("Undo", () => {
         App.activeCanvas.undo();
-    }, new Keybind("z", ModifierState.new(false, false, true)), "icons/rotate-left.svg")
+    }, Keybind.from("Ctrl+Z"), "icons/rotate-left.svg")
 
     static REDO = new Action("Redo", () => {
         App.activeCanvas.redo();
-    }, new Keybind("z", ModifierState.new(true, false, true)), "icons/rotate-right.svg")
+    }, Keybind.from("Ctrl+Shift+Z"), "icons/rotate-right.svg")
 
     static RELOAD = new Action("Reload - DEV", () => {
         location.reload();
-    }, new Keybind("r", ModifierState.new(false, false, true)), "icons/refresh.svg")
+    }, Keybind.from("Ctrl+R"), "icons/refresh.svg")
 
     static PENCIL_TOOL = new Action("Pencil Tool", () => {
         currentTool.set(ToolType.PENCIL_TOOL.tool);
-    }, new Keybind("b", ModifierState.new(false, false, false)))
+    }, Keybind.from("B"))
 
     static ERASER_TOOL = new Action("Eraser Tool", () => {
         currentTool.set(ToolType.ERASER_TOOL.tool);
-    }, new Keybind("e", ModifierState.new(false, false, false)))
+    }, Keybind.from("E"))
 
     static PENCIL_TOOL_SIZE_INC = new Action("Pencil Tool Brush Size Increase", () => {
         if(get(currentTool).type==ToolType.PENCIL_TOOL.type)
         get(currentTool).updateSize((n) => n+1);
-    }, new Keybind("w", ModifierState.new(false, false, false)))
+    }, Keybind.from("W"))
 
     static PENCIL_TOOL_SIZE_DEC = new Action("Pencil Tool Brush Size Decrease", () => {
         if(get(currentTool).type==ToolType.PENCIL_TOOL.type)
         get(currentTool).updateSize((n) => n>1 ? n-1 : n);
-    }, new Keybind("s", ModifierState.new(false, false, false)))
+    }, Keybind.from("S"))
 
     static MOVE_TOOL = new Action("Move Tool", () => {
         currentTool.set(ToolType.MOVE_TOOL.tool);
-    }, new Keybind("v", ModifierState.new(false, false, false)))
+    }, Keybind.from("V"))
 
     static NEW_TAB = new Action("New", () => {
         App.openTab(new CanvasProjectTab()); 
         unfocusNavbar()
-    }, new Keybind("n", ModifierState.new(false, false, true)), "icons/add-document.svg")
+    }, Keybind.from("Ctrl+N"), "icons/add-document.svg")
 
     static OPEN = new Action("Open", () => {
         App.openFile()
-    }, new Keybind("o", ModifierState.new(false, false, true)), "icons/add.svg")
-    // TODO: SAVE, SAVE AS, EXPORT, EXPORT AS ACTIONS
+    }, Keybind.from("Ctrl+O"), "icons/add.svg")
+
+    static IMPORT = new Action("Import", () => {
+        App.openProject()
+    }, Keybind.NONE, "icons/add.svg")
+
     static SAVE = new Action("Save", () => {
         App.activeCanvas.saveData();
-    }, new Keybind("s", ModifierState.new(false, false, true)), "icons/disk.svg")
+    }, Keybind.from("Ctrl+S"), "icons/disk.svg")
+
+    static EXPORT = new Action("Export", () => {
+        App.activeCanvas.exportData();
+    }, Keybind.from("Ctrl+SHIFT+Q"), "icons/file-export.svg")
 }
 
 const actions = [
@@ -97,9 +110,11 @@ const actions = [
     Action.MOVE_TOOL,
     Action.NEW_TAB,
     Action.OPEN,
+    Action.IMPORT,
     Action.PENCIL_TOOL_SIZE_INC,
     Action.PENCIL_TOOL_SIZE_DEC,
-    Action.SAVE
+    Action.SAVE,
+    Action.EXPORT
 ]
 
 export let processKey = (e): void => {

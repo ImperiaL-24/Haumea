@@ -1,6 +1,6 @@
 import {v4 as uuidv4} from "uuid";
 import { open, save } from '@tauri-apps/api/dialog';
-import { readBinaryFile, writeBinaryFile } from '@tauri-apps/api/fs';
+import { readBinaryFile, readTextFile, writeBinaryFile, writeTextFile } from '@tauri-apps/api/fs';
 import { encode } from "base64-arraybuffer";
 import { CanvasState, Layer } from "haumea/canvas";
 import { Signal } from "src/util";
@@ -28,10 +28,16 @@ export class ProjectTab {
 export class CanvasProjectTab extends ProjectTab {
     private _path: string;
     onProjectSave: Signal = new Signal();
-    constructor(path?: string, data?: ImageData) {
+    constructor(path?: string) {
         super(ProjectTabType.IMAGE,path ? path.match(/(?<=\\)\w+\.\w+$/)[0] : "Untitled")
         this._path = path;
-        this.stateList.push(new CanvasState(this, data ?? new ImageData(100, 100)));
+        this.stateList[0] = new CanvasState(this, new ImageData(100,100));
+    }
+
+    static fromData(data: ImageData, path?: string,) {
+        let tab = new CanvasProjectTab(path);
+        tab.stateList[0] = new CanvasState(tab, data);
+        return tab;
     }
 
     private currentState: number = -1;
@@ -47,6 +53,9 @@ export class CanvasProjectTab extends ProjectTab {
 
     get activeState() {
         return this.stateList[this.stateList.length + this.currentState];
+    }
+    setState(state: CanvasState) {
+        this.stateList[0] = state;
     }
     addState() {
         this.stateList.splice(this.stateList.length + this.currentState + 1, -this.currentState - 1);
@@ -108,6 +117,7 @@ export class CanvasProjectTab extends ProjectTab {
     }
 
     set path(path: string) {
+        if(!path) return;
         this._path = path;
         this.tabName = this.tabName = this.path.match(/(?<=\\)\w+\.\w+$/)[0];
     }
@@ -116,14 +126,14 @@ export class CanvasProjectTab extends ProjectTab {
         return this._path;
     }
     
-    async saveData() {
+    async exportData() {
         this.save();
-        if(!this.path) {
+        if(!this.path || this.path.endsWith(".hpr")) {
             this.path = await save({
                 defaultPath: this.tabName,
                 filters: [{
                     name: 'Image',
-                    extensions: ['png', 'jpeg']
+                    extensions: ['png']
                 }]
             });
         }
@@ -133,6 +143,24 @@ export class CanvasProjectTab extends ProjectTab {
         let blob = await layer.canvas.convertToBlob();
         await writeBinaryFile(this.path, await blob.arrayBuffer());
         console.log(this.path);
+        this.onProjectSave.signal();
+    }
+    async saveData() {
+        if(this.activeState.layers.length == 1) {
+            await this.exportData();
+            return;
+        }
+        this.save();
+        if(!this.path || this.path.endsWith(".png")) {
+            this.path = await save({
+                defaultPath: this.tabName,
+                filters: [{
+                    name: 'Haumea Project',
+                    extensions: ['hpr']
+                }]
+            });
+        }
+        await writeTextFile(this.path, JSON.stringify(await this.activeState.asJSON()));
         this.onProjectSave.signal();
     }
 }
@@ -181,16 +209,36 @@ export class App {
     static async openFile() {
         const selected = await open({
             multiple: false,
-            filters: [{
+            filters: [
+            {
+                name: 'All',
+                extensions: ['*']
+            },{
                 name: 'Image',
                 extensions: ['png', 'jpeg']
+            },{
+                name: 'Haumea Project',
+                extensions: ['hpr']
             }]
         });
         // user selected multiple files
         if (Array.isArray(selected)) return;
         // user cancelled the selection
         if (selected === null)  return;
-            
+
+        if(!selected.match(/.*\.(png|hpr|jpeg)/)) return;
+
+        if(selected.endsWith(".hpr")) {
+            const contents = JSON.parse(await readTextFile(selected));
+            const project = new CanvasProjectTab(selected)
+
+            const state = await CanvasState.fromJSON(project, contents)
+            project.setState(state);
+            this.openTab(project);
+
+            return;
+        }
+
         // read binary array
         const contents = await readBinaryFile(selected);
         //convert to base64 image
@@ -207,8 +255,7 @@ export class App {
         ctx.drawImage(image, 0,0);
             
         //convert canvas to imagedata
-        const project = new CanvasProjectTab(selected, ctx.getImageData(0,0,canvas.width, canvas.height));
+        const project = CanvasProjectTab.fromData(ctx.getImageData(0,0,canvas.width, canvas.height), selected);
         this.openTab(project);
     }
-
 }
