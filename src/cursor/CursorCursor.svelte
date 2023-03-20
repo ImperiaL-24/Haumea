@@ -1,4 +1,4 @@
-<img src="tools/move.svg" alt="cursor">
+<img src="tools/cursor.svg" alt="cursor">
 <style lang="scss">
     img {
         height: 18px;

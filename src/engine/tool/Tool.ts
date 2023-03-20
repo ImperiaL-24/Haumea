@@ -4,7 +4,7 @@ import { getCanvasPosition, setCanvasPosition, transition } from "../../haumea/p
 import { clickState } from "../../store";
 
 export class ToolID {
-    public static MOVE_TOOL = "MOVE_TOOL"
+    public static CURSOR_TOOL = "CURSOR_TOOL"
     public static PENCIL_TOOL = "PENCIL_TOOL"
     public static ERASER_TOOL = "ERASER_TOOL"
     public static CROP_TOOL = "CROP_TOOL"
@@ -22,8 +22,8 @@ export class Tool {
     constructor(public type: string) {};
 }
 
-export class MoveTool extends Tool {
-    constructor() {super(ToolID.MOVE_TOOL)}
+export class CursorTool extends Tool {
+    constructor() {super(ToolID.CURSOR_TOOL)}
     onmousedown = (e) => {
         transition.set(false);
     }

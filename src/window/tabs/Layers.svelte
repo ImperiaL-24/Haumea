@@ -20,7 +20,7 @@
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div class="buttons">
         <!-- svelte-ignore a11y-missing-attribute -->
-        <img src="icons/add-document.svg" on:click={() => App.activeCanvas.addState().addLayer(new LayerData(new ImageData(100,100)))}/>
+        <img src="icons/add-document.svg" on:click={() => App.activeCanvas.addState().addLayer(new LayerData(new ImageData(100,100), true))}/>
     </div>
     
 </main>

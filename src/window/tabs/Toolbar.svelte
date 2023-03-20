@@ -5,7 +5,7 @@
 </script>
 
 <main>
-    <button class:active={$currentTool == ToolType.MOVE_TOOL.tool} on:click={() => $currentTool = ToolType.MOVE_TOOL.tool}><img src="tools/move.svg" class="white filter" alt="toolimage"></button>
+    <button class:active={$currentTool == ToolType.CURSOR_TOOL.tool} on:click={() => $currentTool = ToolType.CURSOR_TOOL.tool}><img src="tools/cursor.svg" class="white filter" alt="toolimage"></button>
     <button class:active={$currentTool == ToolType.PENCIL_TOOL.tool} on:click={() => $currentTool = ToolType.PENCIL_TOOL.tool}><img src="tools/pencil.svg" class="white filter" alt="toolimage"></button>
     <button class:active={$currentTool == ToolType.ERASER_TOOL.tool} on:click={() => $currentTool = ToolType.ERASER_TOOL.tool}><img src="tools/eraser_tool.svg" class="white filter" alt="toolimage"></button>
     <button class:active={$currentTool == ToolType.CROP_TOOL.tool} on:click={() => $currentTool = ToolType.CROP_TOOL.tool}><img src="tools/crop.svg" class="white filter" alt="toolimage"></button>

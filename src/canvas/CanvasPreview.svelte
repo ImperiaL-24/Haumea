@@ -1,4 +1,5 @@
 <script lang="ts">
+    import {App} from "src/haumea/tab";
     import type { Layer } from "src/haumea/canvas";
 
     export let layer: Layer;
@@ -14,7 +15,6 @@
     }
         
     $$: $: layer.layerChange => updateCanvas();
-
 </script>
 
 <canvas bind:this={canvasPreview}></canvas>
