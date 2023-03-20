@@ -2,6 +2,7 @@ import { ModifierState, modifierState, unfocusNavbar } from "../store";
 import { get } from "svelte/store";
 import { currentTool, ToolType } from "../engine/tool/ToolManager";
 import { App, CanvasProjectTab } from "./tab";
+import { Vector2 } from "./math";
 
 class Keybind {
     key: string
@@ -99,6 +100,11 @@ export class Action {
     static EXPORT = new Action("Export", () => {
         App.activeCanvas.exportData();
     }, Keybind.from("Ctrl+SHIFT+Q"), "icons/file-export.svg")
+
+    static TEST = new Action("Test", () => {
+        console.warn("TEST ACTION RUN!")
+        App.activeCanvas.activeState.activeLayer.moveBy(new Vector2(10,10));
+    }, Keybind.from("Ctrl+X"), "icons/file-export.svg")
 }
 
 const actions = [
@@ -114,7 +120,8 @@ const actions = [
     Action.PENCIL_TOOL_SIZE_INC,
     Action.PENCIL_TOOL_SIZE_DEC,
     Action.SAVE,
-    Action.EXPORT
+    Action.EXPORT,
+    Action.TEST
 ]
 
 export let processKey = (e): void => {

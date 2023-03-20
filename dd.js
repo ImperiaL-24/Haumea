@@ -30,7 +30,6 @@ export let ddPreprocess = {
 			content = content.replace(dd, newCode);
 		}
 		if(!content.match(/import ?{ *\w*onDestroy\w* *} ?from ?("|')svelte("|');/))content = `import { onDestroy } from "svelte";\n` + content;
-		console.log(content);
 		return {
 			code: content
 		}

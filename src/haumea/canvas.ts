@@ -8,11 +8,16 @@ export class Layer {
     ctx: OffscreenCanvasRenderingContext2D;
     private _visible: boolean = true;
 
+    minPoint: Vector2 = new Vector2();
+    maxPoint: Vector2 = new Vector2(1,1);
+
     visibilityChange: Signal = new Signal();
     layerChange: Signal = new Signal();
+    dimensionChange: Signal = new Signal();
 
     constructor(data: ImageData, visible?: boolean) {
         this.canvas = new OffscreenCanvas(data.width, data.height);
+        this.maxPoint = new Vector2(data.width, data.height);
         this.ctx = this.canvas.getContext("2d") as OffscreenCanvasRenderingContext2D;
         this.ctx.putImageData(data, 0, 0);
         this._visible = visible;
@@ -24,6 +29,39 @@ export class Layer {
     get visible() {
         return this._visible;
     }
+    get dimensions() {
+        return this.maxPoint.add(this.minPoint.negate())
+    }
+    resizeToFit(position: Vector2) {
+        let altered: boolean = false;
+        if(position.x < this.minPoint.x) {
+            this.minPoint.x = position.x;
+            altered = true;
+        }
+        if(position.y < this.minPoint.y) {
+            this.minPoint.y = position.x;
+            altered = true;
+        }
+        if(position.x > this.maxPoint.x) {
+            this.maxPoint.x = position.x;
+            altered = true;
+        }
+        if(position.y > this.maxPoint.y) {
+            this.maxPoint.y = position.y;
+            altered = true;
+        }
+        if(altered == false) return;
+        const data = this.ctx.getImageData(0,0, this.canvas.width, this.canvas.height);
+        this.canvas = new OffscreenCanvas(this.dimensions.x, this.dimensions.y);
+        this.ctx = this.canvas.getContext("2d") as OffscreenCanvasRenderingContext2D;
+        this.ctx.putImageData(data, 0, 0);
+        this.dimensionChange.signal();
+    }
+    moveBy(delta: Vector2) {
+        this.minPoint = this.minPoint.add(delta);
+        this.maxPoint = this.maxPoint.add(delta);
+        this.dimensionChange.signal();
+    }
     drawTo(position: Vector2, brush: Brush, silent:boolean = false) {
         const color = brush.color.asRGB();
         const pixel = new ImageData(brush.size,brush.size);
@@ -34,7 +72,9 @@ export class Layer {
             d[i+2] = color[2];
             d[i+3] = brush.opacity;    
         }
-        const pos = position.addScalar(-(brush.size-1)/2);
+        const pos = position.addScalar(-(brush.size-1)/2).add(this.minPoint.negate());
+        //TODO: RESIZE BLOCK NOT APPLICATON POINT
+        this.resizeToFit(pos);
         this.ctx.putImageData(pixel, pos.x, pos.y);
         if(!silent) this.layerChange.signal();
     }
@@ -92,7 +132,7 @@ export class CanvasState {
         let newState = new CanvasState(state.tab, new ImageData(1,1));
         newState._activeLayerId = state._activeLayerId;
         newState.dimension = state.dimension;
-        newState._layers = [...state._layers.map((layer) => new Layer(layer.getImageData()))];
+        newState._layers = state._layers;
         return newState;
     }
     flatten(): Layer {

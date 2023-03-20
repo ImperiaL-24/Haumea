@@ -9,6 +9,7 @@
     import type { Layer, CanvasState } from "src/haumea/canvas";
     import { currentWindowId } from "src/haumea/window";
     import CanvasPreview from "./CanvasPreview.svelte";
+    import LayerPreview from "./LayerPreview.svelte";
 
 
     $$: App.activeTabChange => let activeCanvas: CanvasProjectTab = App.activeCanvas;
@@ -51,15 +52,14 @@ class:no-cursor={$currentWindowId == ""}>
 
     <div class="shadow"
     bind:this={$canvasShadow}
-    style="top: {position.y}%; left: {position.x}%; scale: {zoom}; width: {activeState?.dimension.x}px; height: {activeState?.dimension.y}px; {$transition ? `transition: 0.2s all!important;`: ``}">
+    style="top: {position.y}%; left: {position.x}%; width: {activeState?.dimension.x*zoom}px; height: {activeState?.dimension.y*zoom}px; {$transition ? `transition: 0.2s all!important;`: ``}">
 
         {#each layers as layer}
-            <div class="canvas">
-                <CanvasPreview bind:layer={layer}></CanvasPreview>
-            </div>
+            <LayerPreview bind:layer={layer}></LayerPreview>
         {/each}
-
+        <div class="true-shadow"></div>
     </div>
+    
 </div>
 {#if isMouseOver}
     <Cursor></Cursor>
@@ -74,7 +74,7 @@ class:no-cursor={$currentWindowId == ""}>
         height: 100vh;
         width: 100%;
         z-index: 0;
-        canvas, .shadow {
+        .shadow {
             position: absolute;
             transition: 0.2s width, 0.2s height;   
             image-rendering: pixelated;
@@ -82,19 +82,18 @@ class:no-cursor={$currentWindowId == ""}>
             z-index: 1;
         }
 
-        .shadow {
+        .true-shadow {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
             box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+            z-index: -1;
         }
 
     }
     .no-cursor {
         cursor: none;
-    }
-    .canvas {
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        position: absolute;
     }
 </style>
