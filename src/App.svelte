@@ -17,7 +17,6 @@
     import {anchors} from "haumea/anchor"
     import Home from "./home/Home.svelte";
     
-    // TODO: DEPRECATE REACTIVE;
     $$: App.activeTabChange => let activeTab: ProjectTab = App.activeTab;
     
     let mouseMove = (e) => {

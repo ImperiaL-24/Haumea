@@ -25,7 +25,7 @@ export class Layer {
     clone() {
         let newLayer = new Layer(this.ctx.getImageData(0,0, this.canvas.width, this.canvas.height), this._visible);
         newLayer.minPoint = new Vector2(this.minPoint.x, this.minPoint.y);
-        newLayer.maxPoint = new Vector2(this.maxPoint.x, this.minPoint.y);
+        newLayer.maxPoint = new Vector2(this.maxPoint.x, this.maxPoint.y);
         return newLayer;
     }
     set visible(visible: boolean) {
@@ -140,7 +140,6 @@ export class CanvasState {
         let newState = new CanvasState(state.tab, new ImageData(1,1));
         newState._activeLayerId = state._activeLayerId;
         newState.dimension = state.dimension;
-        //TODO: COPY
         newState._layers = state._layers.flatMap((layer) => layer.clone());
         return newState;
     }

@@ -21,7 +21,7 @@ $$: $: layer.dimensionChange => updateCanvas();
 </script>
 
 
-<div class="canvas" style="left: {x*zoom}px; top: {y*zoom   }px; width: {w*zoom}px; height: {h*zoom}px;">
+<div class="canvas" style="left: {x*zoom}px; top: {y*zoom   }px; width: {w*zoom}px; height: {h*zoom}px; opacity: {layer.visible ? "1" : "0"}"> 
     <CanvasPreview bind:layer={layer}></CanvasPreview>
 </div>
 
@@ -32,5 +32,6 @@ $$: $: layer.dimensionChange => updateCanvas();
     top: 0;
     left: 0;
     position: absolute;
+    transition: 0.2s all;
 }
 </style>

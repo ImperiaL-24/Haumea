@@ -64,7 +64,6 @@ export class CanvasProjectTab extends ProjectTab {
         this.currentState = -1;
         const newState = CanvasState.from(this.activeState);
         this.stateList.push(newState);
-        
         this.activeStateChange.signal();
         return newState;
     }
