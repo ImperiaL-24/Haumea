@@ -2,6 +2,7 @@ import { blobToBase64, Signal } from "src/util";
 import { Vector2 } from "haumea/math";
 import type { CanvasProjectTab } from "./tab";
 import type { Brush } from "./tool/tool";
+import { transition } from "./preview";
 
 export class Layer {
     canvas: OffscreenCanvas;
@@ -58,6 +59,7 @@ export class Layer {
             altered = true;
         }
         if(altered == false) return;
+        transition.set(false);
         const data = this.ctx.getImageData(0,0, this.canvas.width, this.canvas.height);
         this.canvas = new OffscreenCanvas(this.dimensions.x, this.dimensions.y);
         this.ctx = this.canvas.getContext("2d", {willReadFrequently: true}) as OffscreenCanvasRenderingContext2D;

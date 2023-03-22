@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Layer } from "src/haumea/canvas";
+    import { transition } from "src/haumea/preview";
     import { App, CanvasProjectTab } from "src/haumea/tab";
     import CanvasPreview from "./CanvasPreview.svelte";
 export let layer: Layer;
@@ -21,7 +22,7 @@ $$: $: layer.dimensionChange => updateCanvas();
 </script>
 
 
-<div class="canvas" style="left: {x*zoom}px; top: {y*zoom   }px; width: {w*zoom}px; height: {h*zoom}px; opacity: {layer.visible ? "1" : "0"}"> 
+<div class="canvas" style="left: {x*zoom}px; top: {y*zoom}px; width: {w*zoom}px; height: {h*zoom}px; opacity: {layer.visible ? "1" : "0"}; transition: {$transition ? "0.2s all" : "none"}"> 
     <CanvasPreview bind:layer={layer}></CanvasPreview>
 </div>
 
@@ -32,6 +33,5 @@ $$: $: layer.dimensionChange => updateCanvas();
     top: 0;
     left: 0;
     position: absolute;
-    transition: 0.2s all;
 }
 </style>

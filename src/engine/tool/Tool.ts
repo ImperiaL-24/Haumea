@@ -5,6 +5,7 @@ import { clickState } from "../../store";
 
 export class ToolID {
     public static CURSOR_TOOL = "CURSOR_TOOL"
+    public static MOVE_TOOL = "MOVE_TOOL"
     public static PENCIL_TOOL = "PENCIL_TOOL"
     public static ERASER_TOOL = "ERASER_TOOL"
     public static CROP_TOOL = "CROP_TOOL"
