@@ -96,8 +96,10 @@ export class Layer {
         }
         this.layerChange.signal();
     }
-    getImageData() {
-        return this.ctx.getImageData(0,0, this.canvas.width, this.canvas.height);
+    getImageData(from?: Vector2, to?: Vector2) {
+        const start = from ?? new Vector2();
+        const end = to ?? new Vector2(this.canvas.width, this.canvas.height);
+        return this.ctx.getImageData(start.x,start.y, end.x, end.y);
     }
     async asJSON() {
         const dataBlob: Blob = await this.canvas.convertToBlob();

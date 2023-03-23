@@ -27,12 +27,12 @@ export class MoveTool extends Tool {
         const delta = currentLocation.add(this.previousLocation.negate());
         console.log(delta);
 
-        if(Math.round(delta.x) != 0) {
-            App.activeCanvas.activeState.activeLayer.moveBy(new Vector2(delta.x, 0));
+        if(Math.floor(Math.abs(delta.x)) != 0) {
+            App.activeCanvas.activeState.activeLayer.moveBy(new Vector2(Math.sign(delta.x)*Math.floor(Math.abs(delta.x)), 0));
             this.previousLocation.x = currentLocation.x;
         }
-        else if(Math.round(delta.y) != 0) {
-            App.activeCanvas.activeState.activeLayer.moveBy(new Vector2(0, delta.y));
+        else if(Math.floor(Math.abs(delta.y)) != 0) {
+            App.activeCanvas.activeState.activeLayer.moveBy(new Vector2(0, Math.sign(delta.y)*Math.floor(Math.abs(delta.y))));
             this.previousLocation.y = currentLocation.y;
         }
 

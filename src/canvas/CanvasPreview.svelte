@@ -7,7 +7,7 @@
 
     let updateCanvas = () => {
         if(!canvasPreview) return;
-        const data: ImageData = layer.getImageData();
+        const data: ImageData = layer.getImageData(layer.minPoint.negate(), App.activeCanvas.activeState.dimension.add(layer.minPoint.negate()));
         canvasPreview.width = data.width;
         canvasPreview.height = data.height;
         const ctx = canvasPreview.getContext("2d");
