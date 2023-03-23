@@ -1,11 +1,11 @@
 import { Tool, ToolID } from "./Tool";
 import { get, writable, type Writable } from "svelte/store";
 import { getClickLocation } from "../../util";
-import { canvasShadow } from "haumea/preview";
+import { canvasShadow, getCanvasPosition, setCanvasPosition, transition } from "haumea/preview";
 import { clickState, colorTarget, modifierState } from "../../store";
 import { EyedropperTool } from "./EyedropperTool";
 import { App } from "haumea/tab";
-import type { Vector2 } from "haumea/math";
+import { Vector2 } from "haumea/math";
 import { Brush } from "src/haumea/tool/tool";
 import { Color } from "src/haumea/color";
 
@@ -69,4 +69,14 @@ export class PencilTool extends Tool {
         if(e.key.toLowerCase() == "w") this.size.set(get(this.size)+1);
         if(e.key.toLowerCase() == "s") this.size.set(get(this.size)-1);
     };
+    onwheel = (e) => {
+        if(get(modifierState).altKey) {
+            App.activeCanvas.zoomBy(e.deltaY);
+            return;
+        }
+        //TODO: Eraser TOOl and this maybe have transition to true?
+        let delta = e.deltaY > 0 ? -50*App.activeCanvas.zoom/100-10 : 50*App.activeCanvas.zoom/100+10;
+        let distance: Vector2 = get(modifierState).ctrlKey ? new Vector2(delta, 0) : new Vector2(0, delta);
+        setCanvasPosition(getCanvasPosition().add(distance).asPixelPos());
+    }
 }

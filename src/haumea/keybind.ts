@@ -76,9 +76,13 @@ export class Action {
         get(currentTool).updateSize((n) => n>1 ? n-1 : n);
     }, Keybind.from("S"))
 
-    static CURSOR_TOOL = new Action("Pan Tool", () => {
+    static CURSOR_TOOL = new Action("Cursor Tool", () => {
         currentTool.set(ToolType.CURSOR_TOOL.tool);
     }, Keybind.from("A"))
+
+    static MOVE_TOOL = new Action("Move Tool", () => {
+        currentTool.set(ToolType.MOVE_TOOL.tool);
+    }, Keybind.from("V"))
 
     static NEW_TAB = new Action("New", () => {
         App.openTab(new CanvasProjectTab()); 
@@ -114,6 +118,7 @@ const actions = [
     Action.PENCIL_TOOL,
     Action.ERASER_TOOL,
     Action.CURSOR_TOOL,
+    Action.MOVE_TOOL,
     Action.NEW_TAB,
     Action.OPEN,
     Action.IMPORT,

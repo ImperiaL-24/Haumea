@@ -58,13 +58,13 @@ export class Layer {
             this.maxPoint.y = position.y;
             altered = true;
         }
-        if(altered == false) return;
+        if(altered == false) return false;
         transition.set(false);
         const data = this.ctx.getImageData(0,0, this.canvas.width, this.canvas.height);
         this.canvas = new OffscreenCanvas(this.dimensions.x, this.dimensions.y);
         this.ctx = this.canvas.getContext("2d", {willReadFrequently: true}) as OffscreenCanvasRenderingContext2D;
         this.ctx.putImageData(data, oldMinPoint.x-this.minPoint.x, oldMinPoint.y-this.minPoint.y);
-        this.dimensionChange.signal();
+        return true;
     }
     moveBy(delta: Vector2) {
         this.minPoint = this.minPoint.add(delta);
@@ -83,23 +83,36 @@ export class Layer {
         }
         const pos = position.addScalar(-(brush.size-1)/2).floor();
         //TODO: RESIZE BLOCK NOT APPLICATON POINT
-        this.resizeToFit(pos);
+        const hasResized = this.resizeToFit(pos);
         this.ctx.putImageData(pixel, pos.x-this.minPoint.x, pos.y-this.minPoint.y);
-        if(!silent) this.layerChange.signal();
+        if(!silent) {
+            this.layerChange.signal();
+            console.warn("LAYER CHANGE SIGNAL")
+            if(hasResized) {
+                this.dimensionChange.signal();
+                console.warn("DIMENSION CHANGE SIGNAL")
+            }
+        }
+        
     }
     line(from: Vector2, to: Vector2, brush: Brush) {
         const pixelDistance = to.floor().add(from.floor().negate()).abs().maxCoord();
-        this.resizeToFit(to.floor());
+        const hasResized = this.resizeToFit(to.floor());
         if(pixelDistance==0) return;
         for(let i=1;i<=pixelDistance;i++) {
             this.drawTo(from.lerp(to, i/pixelDistance), brush, true);
         }
         this.layerChange.signal();
+        console.warn("LAYER CHANGE SIGNAL")
+        if(hasResized) {
+            this.dimensionChange.signal();
+            console.warn("DIMENSION CHANGE SIGNAL")
+        }
     }
     getImageData(from?: Vector2, to?: Vector2) {
         const start = from ?? new Vector2();
         const end = to ?? new Vector2(this.canvas.width, this.canvas.height);
-        return this.ctx.getImageData(start.x,start.y, end.x, end.y);
+        return this.ctx.getImageData(start.x,start.y, end.x-start.x, end.y-start.y);
     }
     async asJSON() {
         const dataBlob: Blob = await this.canvas.convertToBlob();

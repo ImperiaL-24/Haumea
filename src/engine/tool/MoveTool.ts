@@ -26,7 +26,6 @@ export class MoveTool extends Tool {
 
         const delta = currentLocation.add(this.previousLocation.negate());
         console.log(delta);
-
         if(Math.floor(Math.abs(delta.x)) != 0) {
             App.activeCanvas.activeState.activeLayer.moveBy(new Vector2(Math.sign(delta.x)*Math.floor(Math.abs(delta.x)), 0));
             this.previousLocation.x = currentLocation.x;
@@ -37,5 +36,8 @@ export class MoveTool extends Tool {
         }
 
         
+    }
+    onwheel = (e) => {
+        App.activeCanvas.zoomBy(e.deltaY);
     }
 }

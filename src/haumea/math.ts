@@ -56,6 +56,9 @@ export class Vector2 {
     asPercentagePos(): PercentagePos {
         return new PercentagePos(this.x, this.y);
     }
+    clone() {
+        return new Vector2(this.x, this.y);
+    }
 }
 
 export class PercentagePos extends Vector2 {

@@ -3,8 +3,10 @@ import { open, save } from '@tauri-apps/api/dialog';
 import { readBinaryFile, readTextFile, writeBinaryFile, writeTextFile } from '@tauri-apps/api/fs';
 import { encode } from "base64-arraybuffer";
 import { CanvasState, Layer } from "haumea/canvas";
-import { Signal } from "src/util";
+import { getClickLocation, Signal } from "src/util";
 import { PercentagePos } from "./math";
+import { canvasBase, getCanvasPosition, setCanvasPosition, transition } from "./preview";
+import { get } from "svelte/store";
 
 export class ProjectTabType {
     static HOME = new ProjectTabType("HOME","icons/home.svg");
@@ -54,6 +56,7 @@ export class CanvasProjectTab extends ProjectTab {
     get activeState() {
         return this.stateList[this.stateList.length + this.currentState];
     }
+    //TODO: moveBy Function to deprecate preview.ts
     setState(state: CanvasState) {
         this.stateList[0] = state;
     }
@@ -87,7 +90,20 @@ export class CanvasProjectTab extends ProjectTab {
         this.activeStateChange.signal();
         console.log(this.savedState, this.currentState);
     }
-
+    /**
+     * NOTE: This function modifies the values of the current tab and changes the position of the active tab!
+     * TODO: FIX THIS
+     * @param scrollDelta e.deltaY from the scroll event
+     */
+    zoomBy(scrollDelta: number) {
+        transition.set(true);
+        const mouseLocation = getClickLocation(get(canvasBase));
+        const oldZoom = this.zoom;
+        const newZoom = scrollDelta < 0 ? Math.min(1000, this.zoom *1.25) : Math.max(0.01, this.zoom /1.25);
+        this.zoom = newZoom;
+ 
+        setCanvasPosition(getCanvasPosition().add(mouseLocation.negate()).product(newZoom/oldZoom).add(mouseLocation).asPixelPos());
+    }
 
     get canUndo() {
         return this.currentState != -50 && this.stateList.length != -this.currentState;

@@ -1,29 +1,28 @@
 <script lang="ts">
     import type { Layer } from "src/haumea/canvas";
+    import type { Vector2 } from "src/haumea/math";
     import { transition } from "src/haumea/preview";
     import { App, CanvasProjectTab } from "src/haumea/tab";
     import CanvasPreview from "./CanvasPreview.svelte";
 export let layer: Layer;
 
-let x,y,w,h: number;
-
+let pos: Vector2;
+let dimension: Vector2;
 $$: App.activeTabChange => let activeCanvas: CanvasProjectTab = App.activeCanvas;
 $$: $: activeCanvas?.zoomChange => let zoom = activeCanvas?.zoom;
 
 let updateCanvas = () => {
-    x = layer.minPoint.x;
-    y = layer.minPoint.y;
-    w = layer.dimensions.x;
-    h = layer.dimensions.y;
-    console.log("UPDATED CANVAS POS")
+    pos = layer.minPoint.clone();
+    dimension = activeCanvas.activeState.dimension.clone();
+    console.log("UPDATED CANVAS POS", pos, dimension)
 }
     
 $$: $: layer.dimensionChange => updateCanvas();
 </script>
 
 
-<div class="canvas" style="left: {x*zoom}px; top: {y*zoom}px; width: {w*zoom}px; height: {h*zoom}px; opacity: {layer.visible ? "1" : "0"}; transition: {$transition ? "0.2s all" : "none"}"> 
-    <CanvasPreview bind:layer={layer}></CanvasPreview>
+<div class="canvas" style="left: {0}px; top: {0}px; width: {dimension.x*zoom}px; height: {dimension.y*zoom}px; opacity: {layer.visible ? "1" : "0"}; transition: {$transition ? "0.2s all" : "none"}"> 
+    <CanvasPreview bind:layer={layer} from={pos.negate()} to={dimension.add(pos.negate())}></CanvasPreview>
 </div>
 
 <style lang="scss">

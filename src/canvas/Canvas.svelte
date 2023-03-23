@@ -47,7 +47,7 @@ on:mousedown={(e) => $currentWindowId == "" ? $currentTool.onmousedown(e) : null
 on:mouseup={(e) => $currentWindowId == "" ? $currentTool.onmouseup(e) : null}
 on:keydown={(e) => $currentWindowId == "" ? $currentTool.onkeydown(e) : null}
 bind:this={$canvasBase} style="width:calc(100% - {$innerRect.width}px); margin-left:{$innerRect.x}px; height:calc(100vh - {$innerRect.height}px)" 
-on:wheel|passive={(e) => onWheel(e)}
+on:wheel|passive={(e) => $currentTool.onwheel(e)}
 class:no-cursor={$currentWindowId == ""}>
 
     <div class="shadow"
