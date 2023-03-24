@@ -5,11 +5,11 @@ import ColorSelector from "./tabs/ColorSelector.svelte";
 import Test from "./tabs/Test.svelte";
 
 import { fade } from 'svelte/transition';
-import Toolbar from "./tabs/Toolbar.svelte";
+import Toolbar from "./tabs/toolbar/Toolbar.svelte";
 import WindowNav from "./WindowNav.svelte";
 import WindowResizer from "./WindowResizer.svelte";
 import {TabId, indexCount, windows, type WindowData} from 'src/haumea/window'
-    import Layers from "./tabs/Layers.svelte";
+    import Layers from "./tabs/layer/Layers.svelte";
 
 export let id: string;
 let data:WindowData = $windows.get(id);

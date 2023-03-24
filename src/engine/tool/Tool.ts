@@ -3,30 +3,23 @@ import { App } from "src/haumea/tab";
 import { get } from "svelte/store";
 import { getCanvasPosition, setCanvasPosition, transition } from "../../haumea/preview";
 import { clickState } from "../../store";
-
-export class ToolID {
-    public static CURSOR_TOOL = "CURSOR_TOOL"
-    public static MOVE_TOOL = "MOVE_TOOL"
-    public static PENCIL_TOOL = "PENCIL_TOOL"
-    public static ERASER_TOOL = "ERASER_TOOL"
-    public static CROP_TOOL = "CROP_TOOL"
-    public static PAINT_BUCKET_TOOL = "PAINT_BUCKET_TOOL"
-    public static EYEDROPPER_TOOL = "EYEDROPPER_TOOL"
-    public static ROTATE_TOOL = "ROTATE_TOOL"
-}
+import { ToolType } from "./ToolManager";
 
 export class Tool {
+    public type: ToolType
     onmousemove: Function = () => {};
     onmousedown: Function = () => {};
     onmouseup: Function = () => {};
     onkeydown: Function = () => {};
     onkeyup:Function = () => {};
     onwheel: Function = () => {};
-    constructor(public type: string) {};
+    constructor(type: ToolType) {
+        this.type = type
+    };
 }
 
 export class CursorTool extends Tool {
-    constructor() {super(ToolID.CURSOR_TOOL)}
+    constructor() {super(ToolType.CURSOR_TOOL)}
     onmousedown = (e) => {
         transition.set(false);
     }

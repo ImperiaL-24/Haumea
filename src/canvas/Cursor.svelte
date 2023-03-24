@@ -2,7 +2,7 @@
 import PencilCursor from "../cursor/PencilCursor.svelte";
 import EyedropperCursor from "../cursor/EyedropperCursor.svelte";
 import { ToolID } from "../engine/tool/Tool";
-import { currentTool } from "../engine/tool/ToolManager";
+import { currentTool, ToolType } from "../engine/tool/ToolManager";
 import { clickState } from "../store";
 
 import EraserCursor from "src/cursor/EraserCursor.svelte";
@@ -12,15 +12,15 @@ import EraserCursor from "src/cursor/EraserCursor.svelte";
 </script>
 
 <div draggable="false" style="top:{$clickState.position.y}px; left:{$clickState.position.x}px;">
-    {#if $currentTool.type == ToolID.EYEDROPPER_TOOL}
+    {#if $currentTool.type == ToolType.EYEDROPPER_TOOL}
         <EyedropperCursor instance={$currentTool}/>
-        {:else if $currentTool.type == ToolID.PENCIL_TOOL}
+        {:else if $currentTool.type == ToolType.PENCIL_TOOL}
         <PencilCursor instance={$currentTool}/>
-        {:else if $currentTool.type == ToolID.ERASER_TOOL}
+        {:else if $currentTool.type == ToolType.ERASER_TOOL}
         <EraserCursor instance={$currentTool}/>
-        {:else if $currentTool.type == ToolID.CURSOR_TOOL}
+        {:else if $currentTool.type == ToolType.CURSOR_TOOL}
         <CursorCursor/>
-        {:else if $currentTool.type == ToolID.MOVE_TOOL}
+        {:else if $currentTool.type == ToolType.MOVE_TOOL}
         <MoveCursor/>
     {/if}
 </div>

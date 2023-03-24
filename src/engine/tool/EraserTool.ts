@@ -1,4 +1,4 @@
-import { Tool, ToolID } from "./Tool";
+import { Tool } from "./Tool";
 import { get, writable, type Writable } from "svelte/store";
 import { getClickLocation } from "../../util";
 import { canvasShadow, getCanvasPosition, setCanvasPosition, transition } from "haumea/preview";
@@ -8,6 +8,7 @@ import { App } from "haumea/tab";
 import { Vector2 } from "haumea/math";
 import { Brush } from "src/haumea/tool/tool";
 import { Color } from "src/haumea/color";
+import { ToolType } from "./ToolManager";
 
 let mouseDownTarget: HTMLElement;
 
@@ -16,7 +17,7 @@ export class EraserTool extends Tool {
     lastClick: Vector2
     eyedropper: EyedropperTool = new EyedropperTool();
     hasSaved: boolean = false;
-    constructor() {super(ToolID.ERASER_TOOL)}
+    constructor() {super(ToolType.ERASER_TOOL)}
     onmousedown = () => {
         mouseDownTarget = get(clickState).target;
         if(mouseDownTarget.parentElement.parentElement.classList.contains("shadow")) {

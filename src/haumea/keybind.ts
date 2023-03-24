@@ -67,12 +67,12 @@ export class Action {
     }, Keybind.from("E"))
 
     static PENCIL_TOOL_SIZE_INC = new Action("Pencil Tool Brush Size Increase", () => {
-        if(get(currentTool).type==ToolType.PENCIL_TOOL.type)
+        if(get(currentTool).type==ToolType.PENCIL_TOOL)
         get(currentTool).updateSize((n) => n+1);
     }, Keybind.from("W"))
 
     static PENCIL_TOOL_SIZE_DEC = new Action("Pencil Tool Brush Size Decrease", () => {
-        if(get(currentTool).type==ToolType.PENCIL_TOOL.type)
+        if(get(currentTool).type==ToolType.PENCIL_TOOL)
         get(currentTool).updateSize((n) => n>1 ? n-1 : n);
     }, Keybind.from("S"))
 
