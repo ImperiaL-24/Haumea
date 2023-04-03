@@ -2,14 +2,15 @@ import { clickState, colorTarget } from "../../store";
 import { getClickLocation } from "../../util";
 import { get, writable, type Writable } from "svelte/store";
 import { canvasShadow, getPixelColor } from "haumea/preview";
-import { Tool, ToolID } from "./Tool";
+import { Tool } from "./Tool";
 import { Color } from "haumea/color";
 import { App } from "haumea/tab";
+import { ToolType } from "./ToolManager";
 
 export class EyedropperTool extends Tool {
     originalColor: Writable<Color> = writable();
     newColor: Writable<Color> = writable();
-    constructor() {super(ToolID.EYEDROPPER_TOOL)}
+    constructor() {super("EYEDROPPER_TOOL")}
     onmousedown = () => {
         
         const zoom  = App.activeCanvas.zoom;

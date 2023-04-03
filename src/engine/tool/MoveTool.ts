@@ -4,12 +4,13 @@ import { App } from "src/haumea/tab";
 import { clickState } from "src/store";
 import { getClickLocation } from "src/util";
 import { get } from "svelte/store";
-import { Tool, ToolID } from "./Tool";
+import { Tool } from "./Tool";
+import { ToolType } from "./ToolManager";
 
 export class MoveTool extends Tool {
     private previousLocation: Vector2
 
-    constructor() {super(ToolID.MOVE_TOOL)}
+    constructor() {super("MOVE_TOOL")}
     onmousedown = (e) => {
         transition.set(false);
         const zoom  = App.activeCanvas.zoom;

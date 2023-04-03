@@ -17,7 +17,7 @@ export class PencilTool extends Tool {
     lastClick: Vector2
     eyedropper: EyedropperTool = new EyedropperTool();
     hasSaved: boolean = false;
-    constructor() {super(ToolType.PENCIL_TOOL)}
+    constructor() {super("PENCIL_TOOL")}
     onmousedown = () => {
         if(get(modifierState).altKey) return this.eyedropper.onmousedown();
 

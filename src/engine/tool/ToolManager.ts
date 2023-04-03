@@ -1,9 +1,10 @@
 import { writable, type Writable } from "svelte/store";
+import { CursorTool } from "./CursorTool";
 import { EraserTool } from "./EraserTool";
 import { EyedropperTool } from "./EyedropperTool";
 import { MoveTool } from "./MoveTool";
 import { PencilTool } from "./PencilTool";
-import { CursorTool, type Tool } from "./Tool";
+import type {  Tool } from "./Tool";
 
 
 export class ToolType {

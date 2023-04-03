@@ -17,7 +17,7 @@ export class EraserTool extends Tool {
     lastClick: Vector2
     eyedropper: EyedropperTool = new EyedropperTool();
     hasSaved: boolean = false;
-    constructor() {super(ToolType.ERASER_TOOL)}
+    constructor() {super("ERASER_TOOL")}
     onmousedown = () => {
         mouseDownTarget = get(clickState).target;
         if(mouseDownTarget.parentElement.parentElement.classList.contains("shadow")) {
