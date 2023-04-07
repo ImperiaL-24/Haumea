@@ -29,12 +29,23 @@
     <div class="content">
         <p>Layer {index}</p>
     </div>
+    <div class="move">
+        <div on:click={() => {if(App.activeCanvas.activeState.layers.length != index+1) App.activeCanvas.addState().swapLayers(index,index+1)}}>▲</div>
+        <div on:click={() => {if(index!=0) App.activeCanvas.addState().swapLayers(index,index-1)}}>▼</div>
+    </div>
 </div>  
 
 <style lang="scss">
     img {
         width: 1.25em;
         filter: invert(100%);
+    }
+    .move {
+        width: 1rem;
+        margin: 10px;
+        div {
+            text-align: center;
+        }
     }
     .visibility {
         width: 2.4rem;
@@ -69,7 +80,7 @@
     }
 
     .content {
-        width: calc(100% - 5.4rem - 10px);
+        width: calc(100% - 6.4rem - 30px);
         display: flex;
         justify-content: center;
     }

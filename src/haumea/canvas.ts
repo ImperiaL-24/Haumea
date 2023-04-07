@@ -3,6 +3,7 @@ import { Vector2 } from "haumea/math";
 import type { CanvasProjectTab } from "./tab";
 import type { Brush } from "./tool/tool";
 import { transition } from "./preview";
+import { Color } from "./color";
 
 export class Layer {
     canvas: OffscreenCanvas;
@@ -114,6 +115,10 @@ export class Layer {
         const end = to ?? new Vector2(this.canvas.width, this.canvas.height);
         return this.ctx.getImageData(start.x,start.y, end.x-start.x, end.y-start.y);
     }
+    getPixelColor(location: Vector2) {
+        let data = this.ctx.getImageData(location.x-this.minPoint.x, location.y- this.minPoint.y, 1, 1).data
+        return new Color(data[0], data[1], data[2]);
+    }
     async asJSON() {
         const dataBlob: Blob = await this.canvas.convertToBlob();
         return {
@@ -189,6 +194,10 @@ export class CanvasState {
         this.layersChange.signal();
         this.activeLayerChange.signal();
         
+    }
+    swapLayers(i1:number, i2:number) {
+        [this._layers[i1],this._layers[i2]] = [this._layers[i2],this._layers[i1]];
+        this.layersChange.signal();
     }
     async asJSON() {
         let layers = [];

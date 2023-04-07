@@ -14,18 +14,18 @@ export class EyedropperTool extends Tool {
     onmousedown = () => {
         
         const zoom  = App.activeCanvas.zoom;
-
+        const layer = App.activeCanvas.activeState.activeLayer;
         const location = getClickLocation(get(canvasShadow)).product(1/zoom);
-        const pixelColor = getPixelColor(location);
+        const pixelColor = layer.getPixelColor(location);
         this.originalColor.set(Color.newFromHSV(...get(colorTarget)));
         this.newColor.set(pixelColor);
     }
     onmousemove = () => {
         if(!get(clickState).leftClick) return;
         const zoom  = App.activeCanvas.zoom;
-
+        const layer = App.activeCanvas.activeState.activeLayer;
         const location = getClickLocation(get(canvasShadow)).product(1/zoom);
-        const pixelColor = getPixelColor(location);
+        const pixelColor = layer.getPixelColor(location);
         this.newColor.set(pixelColor);
     }
     onmouseup = () => {
