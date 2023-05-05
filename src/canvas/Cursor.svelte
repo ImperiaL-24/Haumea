@@ -7,6 +7,7 @@ import { clickState } from "../store";
 import EraserCursor from "src/cursor/EraserCursor.svelte";
     import CursorCursor from "src/cursor/CursorCursor.svelte";
     import MoveCursor from "src/cursor/MoveCursor.svelte";
+    import PaintBucketCursor from "src/cursor/PaintBucketCursor.svelte";
 
 </script>
 
@@ -21,6 +22,8 @@ import EraserCursor from "src/cursor/EraserCursor.svelte";
         <CursorCursor/>
         {:else if $currentTool.type == ToolType.MOVE_TOOL.type}
         <MoveCursor/>
+        {:else if $currentTool.type == ToolType.PAINT_BUCKET_TOOL.type}
+        <PaintBucketCursor/>
     {/if}
 </div>
 

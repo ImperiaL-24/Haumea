@@ -72,6 +72,11 @@ export class Layer {
         this.maxPoint = this.maxPoint.add(delta);
         this.dimensionChange.signal();
     }
+    set(position: Vector2, color: Color) {
+        const colorRGB = color.asRGB();
+        this.ctx.fillStyle = "rgba("+colorRGB[0]+","+colorRGB[1]+","+colorRGB[2]+","+1+")";
+        this.ctx.fillRect(position.x-this.minPoint.x, position.y-this.minPoint.y,1,1);
+    } 
     drawTo(position: Vector2, brush: Brush, silent:boolean = false) {
         const color = brush.color.asRGB();
         const pixel = new ImageData(brush.size,brush.size);
