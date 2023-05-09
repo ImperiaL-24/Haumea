@@ -15,10 +15,12 @@ let mouseDownTarget: HTMLElement;
 export class EraserTool extends Tool {
     size: Writable<number> = writable(1);
     lastClick: Vector2
+    lastZoom: number;
     eyedropper: EyedropperTool = new EyedropperTool();
     hasSaved: boolean = false;
     constructor() {super("ERASER_TOOL")}
     onmousedown = () => {
+        if(get(modifierState).altKey) return;
         mouseDownTarget = get(clickState).target;
         if(mouseDownTarget.parentElement.parentElement.classList.contains("shadow")) {
             App.activeCanvas.addState();
@@ -32,8 +34,16 @@ export class EraserTool extends Tool {
         this.lastClick = location;
     }
     onmousemove = () => {
-        if(!get(clickState).leftClick) return;
+        
+        const zoom  = App.activeCanvas.zoom;
 
+        if(get(modifierState).altKey &&  get(clickState).rightClick) {
+            if(this.lastZoom == null) this.lastZoom = get(this.size);
+            console.log(get(clickState).rightClickDelta.product(1/zoom).floor().x, this.lastZoom);
+            this.size.update(() => Math.max(1,this.lastZoom+get(clickState).rightClickDelta.product(1/zoom).floor().x))
+            return;
+        }
+        if(!get(clickState).leftClick) return;
         mouseDownTarget = get(clickState).target;
 
         if(mouseDownTarget.parentElement.parentElement.classList.contains("shadow") && this.hasSaved == false) {
@@ -41,7 +51,7 @@ export class EraserTool extends Tool {
             this.hasSaved = true;
         }
 
-        const zoom  = App.activeCanvas.zoom;
+        
         const layer = App.activeCanvas.activeState.activeLayer;
 
         const location = getClickLocation(get(canvasShadow)).product(1/zoom);
@@ -54,6 +64,7 @@ export class EraserTool extends Tool {
         this
     }
     onmouseup = () => {
+        this.lastZoom = null;
         mouseDownTarget = null;
         this.hasSaved = false;
         

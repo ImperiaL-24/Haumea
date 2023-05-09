@@ -1,9 +1,10 @@
 <script lang="ts">
 import type { PencilTool } from "../engine/tool/PencilTool";
-import { modifierState } from "../store";
+import { clickState, modifierState } from "../store";
 import EyedropperCursor from "./EyedropperCursor.svelte";
 import type { Tool } from "src/engine/tool/Tool";
     import { App, CanvasProjectTab } from "haumea/tab";
+    import { get } from "svelte/store";
 
 export let instance: Tool;
 const tool = instance as PencilTool;
@@ -19,7 +20,7 @@ $: {
     });
 }
 </script>
-{#if $modifierState.altKey}
+{#if $modifierState.altKey && !$clickState.rightClick}
     <EyedropperCursor instance={tool.eyedropper}/>
 {:else}
     <div class="main" style="height: {cursorSize}px; width: {cursorSize}px;">

@@ -1,6 +1,21 @@
-<!--TODO: EYEDROPPER TOOL ICON-->
+<script lang="ts">
+    import { modifierState } from "src/store";
 
-<img src="tools/paint_bucket.svg" alt="cursor">
+
+    import EyedropperCursor from "./EyedropperCursor.svelte";
+    import type { PaintBucketTool } from "src/engine/tool/PaintBucketTool";
+    import type { Tool } from "src/engine/tool/Tool";
+    export let instance: Tool;
+    const tool = instance as PaintBucketTool;
+
+</script>
+<!--TODO: EYEDROPPER TOOL ICON-->
+{#if $modifierState.altKey}
+    <EyedropperCursor instance={tool.eyedropper}/>
+{:else}
+    <img src="tools/paint_bucket.svg" alt="cursor">
+{/if}
+
 <style lang="scss">
     img {
         height: 18px;

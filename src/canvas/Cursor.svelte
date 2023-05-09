@@ -2,7 +2,7 @@
 import PencilCursor from "../cursor/PencilCursor.svelte";
 import EyedropperCursor from "../cursor/EyedropperCursor.svelte";
 import { currentTool, ToolType } from "../engine/tool/ToolManager";
-import { clickState } from "../store";
+import { clickState, modifierState } from "../store";
 
 import EraserCursor from "src/cursor/EraserCursor.svelte";
     import CursorCursor from "src/cursor/CursorCursor.svelte";
@@ -11,7 +11,7 @@ import EraserCursor from "src/cursor/EraserCursor.svelte";
 
 </script>
 
-<div draggable="false" style="top:{$clickState.position.y}px; left:{$clickState.position.x}px;">
+<div draggable="false" style="top:{$clickState.position.y}px; left:{$clickState.position.x - (($currentTool.type == "PENCIL_TOOL" || $currentTool.type == "ERASER_TOOL") && $clickState.rightClick && $modifierState.altKey ? $clickState.rightClickDelta.x : 0)}px;">
     {#if $currentTool.type == ToolType.EYEDROPPER_TOOL.type}
         <EyedropperCursor instance={$currentTool}/>
         {:else if $currentTool.type == ToolType.PENCIL_TOOL.type}
@@ -23,7 +23,7 @@ import EraserCursor from "src/cursor/EraserCursor.svelte";
         {:else if $currentTool.type == ToolType.MOVE_TOOL.type}
         <MoveCursor/>
         {:else if $currentTool.type == ToolType.PAINT_BUCKET_TOOL.type}
-        <PaintBucketCursor/>
+        <PaintBucketCursor instance={$currentTool}/>
     {/if}
 </div>
 

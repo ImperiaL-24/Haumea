@@ -3,6 +3,7 @@ import { get } from "svelte/store";
 import { currentTool, ToolType } from "../engine/tool/ToolManager";
 import { App, CanvasProjectTab } from "./tab";
 import { Vector2 } from "./math";
+import { Modal, activeModal } from "./modal";
 
 class Keybind {
     key: string
@@ -85,8 +86,9 @@ export class Action {
     }, Keybind.from("V"))
 
     static NEW_TAB = new Action("New", () => {
-        App.openTab(new CanvasProjectTab()); 
-        unfocusNavbar()
+        // App.openTab(new CanvasProjectTab()); 
+        // unfocusNavbar()
+        activeModal.set(Modal.NEW_PROJECT);
     }, Keybind.from("Ctrl+N"), "icons/add-document.svg")
 
     static OPEN = new Action("Open", () => {

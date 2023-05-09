@@ -16,6 +16,7 @@
     import { App, ProjectTab, ProjectTabType } from "haumea/tab";
     import {anchors} from "haumea/anchor"
     import Home from "./home/Home.svelte";
+    import ModalProvider from "./modal/ModalProvider.svelte";
     
     $$: App.activeTabChange => let activeTab: ProjectTab = App.activeTab;
     
@@ -121,7 +122,7 @@
         <p>Setting</p>
     {/if}
 </div>
-
+<ModalProvider></ModalProvider>
 <svelte:window 
 on:mousemove={(e) => { mouseMove(e)}} 
 on:mouseup={(e) => {$currentWindowId=""; mouseUp(e)}} 

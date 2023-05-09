@@ -50,7 +50,6 @@ export class PaintBucketTool extends Tool {
             App.activeCanvas.zoomBy(e.deltaY);
             return;
         }
-        //TODO: Eraser TOOl and this maybe have transition to true?
         let delta = e.deltaY > 0 ? -50*App.activeCanvas.zoom/100-10 : 50*App.activeCanvas.zoom/100+10;
         let distance: Vector2 = get(modifierState).ctrlKey ? new Vector2(delta, 0) : new Vector2(0, delta);
         setCanvasPosition(getCanvasPosition().add(distance).asPixelPos());

@@ -14,7 +14,9 @@ let mouseDownTarget: HTMLElement;
 
 export class PencilTool extends Tool {
     size: Writable<number> = writable(1);
-    lastClick: Vector2
+    lastClick: Vector2;
+    lastZoom: number;
+
     eyedropper: EyedropperTool = new EyedropperTool();
     hasSaved: boolean = false;
     constructor() {super("PENCIL_TOOL")}
@@ -34,7 +36,16 @@ export class PencilTool extends Tool {
         this.lastClick = location;
     }
     onmousemove = () => {
-        if(get(modifierState).altKey) return this.eyedropper.onmousemove();
+        if(get(modifierState).altKey && !get(clickState).rightClick) return this.eyedropper.onmousemove();
+
+        const zoom  = App.activeCanvas.zoom;
+
+        if(get(modifierState).altKey &&  get(clickState).rightClick) {
+            if(this.lastZoom == null) this.lastZoom = get(this.size);
+            console.log(get(clickState).rightClickDelta.product(1/zoom).floor().x, this.lastZoom);
+            this.size.update(() => Math.max(1,this.lastZoom+get(clickState).rightClickDelta.product(1/zoom).floor().x))
+            return;
+        }
         if(!get(clickState).leftClick) return;
 
         mouseDownTarget = get(clickState).target;
@@ -44,7 +55,7 @@ export class PencilTool extends Tool {
             this.hasSaved = true;
         }
 
-        const zoom  = App.activeCanvas.zoom;
+        
         const layer = App.activeCanvas.activeState.activeLayer;
 
         const location = getClickLocation(get(canvasShadow)).product(1/zoom);
@@ -56,7 +67,9 @@ export class PencilTool extends Tool {
         this.lastClick = location;
         this
     }
-    onmouseup = () => {
+    onmouseup = () => { 
+        this.lastZoom = null;
+        console.log(this.lastZoom)
         if(get(modifierState).altKey) return this.eyedropper.onmouseup();
         mouseDownTarget = null;
         this.hasSaved = false;
