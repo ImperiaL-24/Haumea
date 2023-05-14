@@ -38,7 +38,7 @@ export class PencilTool extends Tool {
     onmousemove = () => {
         if(get(modifierState).altKey && !get(clickState).rightClick) return this.eyedropper.onmousemove();
 
-        const zoom  = App.activeCanvas.zoom;
+        const zoom  = App.activeCanvas?.zoom;
 
         if(get(modifierState).altKey &&  get(clickState).rightClick) {
             if(this.lastZoom == null) this.lastZoom = get(this.size);

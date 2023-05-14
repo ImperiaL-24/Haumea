@@ -17,6 +17,7 @@
     import {anchors} from "haumea/anchor"
     import Home from "./home/Home.svelte";
     import ModalProvider from "./modal/ModalProvider.svelte";
+    import { activeModal } from "./haumea/modal";
     
     $$: App.activeTabChange => let activeTab: ProjectTab = App.activeTab;
     
@@ -60,7 +61,7 @@
     
     onMount(async () => {
         
-        addWindow(new WindowBuilder(TabType.ColorSelector,TabType.Test, TabType.Layers).tabbed(true).build());
+        addWindow(new WindowBuilder(TabType.ColorSelector, TabType.Layers).tabbed(true).build());
         addWindow(new WindowBuilder(TabType.Toolbar).resizeable(false).size(40, 335).build());
         const unlisten = await appWindow.onFocusChanged(({ payload: isFocused }) => {
             $isWindowFocused = isFocused;
@@ -124,12 +125,13 @@
 </div>
 <ModalProvider></ModalProvider>
 <!--keydown and keyup need preventDefault!-->
+
 <svelte:window 
 on:mousemove={(e) => { mouseMove(e)}} 
 on:mouseup={(e) => {$currentWindowId=""; mouseUp(e)}} 
 on:mousedown={(e) => {mouseDown(e)}}  
-on:keydown={(e) => {keyModifier(e); processKey(e);}}
-on:keyup={(e) => keyModifier(e)}/>
+on:keydown={(e) => {if($activeModal == null) e.preventDefault(); keyModifier(e); processKey(e);}}
+on:keyup={(e) => {if($activeModal == null) e.preventDefault(); keyModifier(e)}}/>
 
 <style lang="scss">
     .top {

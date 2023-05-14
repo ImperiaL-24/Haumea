@@ -37,9 +37,13 @@
             <NavbarSeparator/>
             <ActionNavbarButton action={Action.RELOAD}/>
         </NavbarCategory>
-        <NavbarCategory text="Select"><p>hi3</p></NavbarCategory>
-        <NavbarCategory text="Layer"><p>hi4</p></NavbarCategory>
-        <NavbarCategory text="Window"><p>hi5</p></NavbarCategory>
+        <NavbarCategory text="Select"><p>Select</p></NavbarCategory>
+        <NavbarCategory text="Layer"><p>Layer</p></NavbarCategory>
+        <NavbarCategory text="Window">
+            <ActionNavbarButton disabled={!activeCanvas} action={Action.WINDOW_COLOR}/>
+            <ActionNavbarButton disabled={!activeCanvas} action={Action.WINDOW_LAYER}/>
+            <ActionNavbarButton disabled={!activeCanvas} action={Action.WINDOW_TOOLS}/>
+        </NavbarCategory>
     </div>
     
     <div class="right">

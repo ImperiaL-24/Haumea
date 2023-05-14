@@ -59,7 +59,7 @@ class:tabless-nav={!data.tabbed}
     </div>
 {/if}
 </nav>
-
+<img class="close" on:click={() => removeWindow(data)}  src="icons/cross.svg"/>
 <svelte:window on:mousemove={() => {move()}} on:mouseup={() => { windowDrop(); data.moving = false; data.resizing="none"}}></svelte:window>
 
 <style lang="scss">
@@ -97,6 +97,8 @@ class:tabless-nav={!data.tabbed}
     }
 
 
+
+
 }
 .tabless-nav {
     height: 15px!important;
@@ -105,4 +107,14 @@ class:tabless-nav={!data.tabbed}
 .isHovered {
     outline-width: 2px;
 }
+
+.close {
+    height: 8px;
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 3px 6px;
+        filter: invert(18%);
+        z-index: 1;
+    }
 </style>

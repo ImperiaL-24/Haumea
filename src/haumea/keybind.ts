@@ -4,6 +4,7 @@ import { currentTool, ToolType } from "../engine/tool/ToolManager";
 import { App, CanvasProjectTab } from "./tab";
 import { Vector2 } from "./math";
 import { Modal, activeModal } from "./modal";
+import { TabType, WindowBuilder, addWindow } from "./window";
 
 class Keybind {
     key: string
@@ -109,8 +110,19 @@ export class Action {
 
     static TEST = new Action("Test", () => {
         console.warn("TEST ACTION RUN!")
-        App.activeCanvas.activeState.activeLayer.moveBy(new Vector2(10,10));
     }, Keybind.from("Ctrl+X"), "icons/file-export.svg")
+
+    static WINDOW_COLOR = new Action("Colors", () => {
+        addWindow(new WindowBuilder(TabType.ColorSelector).tabbed(true).build());
+    }, Keybind.NONE, "icons/window.svg")
+
+    static WINDOW_LAYER = new Action("Layers", () => {
+        addWindow(new WindowBuilder(TabType.Layers).tabbed(true).build());
+    }, Keybind.NONE, "icons/window.svg")
+
+    static WINDOW_TOOLS = new Action("Tools", () => {
+        addWindow(new WindowBuilder(TabType.Toolbar).resizeable(false).size(40, 335).build());
+    }, Keybind.NONE, "icons/window.svg")
 }
 
 const actions = [
