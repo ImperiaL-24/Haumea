@@ -123,12 +123,13 @@
     {/if}
 </div>
 <ModalProvider></ModalProvider>
+<!--keydown and keyup need preventDefault!-->
 <svelte:window 
 on:mousemove={(e) => { mouseMove(e)}} 
 on:mouseup={(e) => {$currentWindowId=""; mouseUp(e)}} 
 on:mousedown={(e) => {mouseDown(e)}}  
-on:keydown|preventDefault={(e) => {keyModifier(e); processKey(e);}}
-on:keyup|preventDefault={(e) => keyModifier(e)}/>
+on:keydown={(e) => {keyModifier(e); processKey(e);}}
+on:keyup={(e) => keyModifier(e)}/>
 
 <style lang="scss">
     .top {

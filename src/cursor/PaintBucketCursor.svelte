@@ -9,7 +9,7 @@
     const tool = instance as PaintBucketTool;
 
 </script>
-<!--TODO: EYEDROPPER TOOL ICON-->
+
 {#if $modifierState.altKey}
     <EyedropperCursor instance={tool.eyedropper}/>
 {:else}
